@@ -10,6 +10,7 @@
 
 #include "MigrationScheme.h"
 #include <iostream>
+#include <sstream>
 using namespace std;
 class SEExpansion : public MigrationScheme {
 public:
@@ -47,7 +48,7 @@ public:
         cout << this->expansionK << endl;
         return "";
     }
-private:   
+protected:   
     double calcArrivalTime(const int x,const int y);
     
     SEExpansion(const SEExpansion& orig);

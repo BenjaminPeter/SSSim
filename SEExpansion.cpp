@@ -35,16 +35,16 @@ SEExpansion::SEExpansion(const SEExpansion& orig) {
 
 SEExpansion::~SEExpansion() {
     delete[] this->mRate;
-    delete this->expansionEvents;
+    //delete this->expansionEvents;
    
     delete[] this->arrivalTimes;
 }
 
 
 vector<pair<double,int> >* SEExpansion::getExpansionEvents(){
-    vector<pair<double,int> >* evVect = new vector<pair<double,int> >;
-    double tArrival;
-    int coord1d;
+    vector<pair<double,int> >* evVect = new vector<pair<double,int> >(0);
+    double tArrival=0;
+    int coord1d=0;
     for (int i=0; i<this->width;i++){
         for (int j=0; j<this->height;j++){
             tArrival=this->getArrivalTime(i*this->height+j);
@@ -58,9 +58,13 @@ vector<pair<double,int> >* SEExpansion::getExpansionEvents(){
     }
 
     sort(evVect->begin(),evVect->end(),&this->sorter);
-    for (vector<pair<double,int> >::iterator it=evVect->begin();it!=evVect->end();++it){
-        cout << "("<<this->coords1d2d(it->second)[0]<<"/"<<this->coords1d2d(it->second)[1]<<"):"<<it->first << endl;
-    }    
+    
+//    for (vector<pair<double,int> >::iterator it=evVect->begin();it!=evVect->end();++it){
+//        int*arr=this->coords1d2d(it->second);
+//        cout << "("<<arr[0]<<"/"<<arr[1]<<"):"<<it->first << endl;
+//        delete arr;
+//    }    
+    
     this->expansionEvents=evVect;
     return evVect;    
 }
@@ -114,8 +118,10 @@ bool SEExpansion::isInitialized(){
 double SEExpansion::getMigrationRate(const int direction, const int pos, 
                                      const double t){
     int* arr=this->coords1d2d(pos);
+
     int x=arr[0];
     int y=arr[1];
+    delete[] arr;
     if (t>this->getArrivalTime(pos))
         return 0;
     switch (direction){
