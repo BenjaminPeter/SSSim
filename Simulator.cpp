@@ -661,7 +661,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     double tmrca=0;
     int nMigrations=0;
     SFS* sfs;
-    FreqTable* ft = new FreqTable(params->samples.size());
+    FreqTable* ft = new FreqTable(this->ut, params->samples.size());
     
     Lineage* l;
     for (int r = 0; r < nReplicates; r++) {

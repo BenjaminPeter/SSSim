@@ -1,4 +1,4 @@
-defaultNReplicates=1000
+defaultNReplicates=100
 defaultWidth=101
 defaultHeight=101
 defaultDemeSize=10000

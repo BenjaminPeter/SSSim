@@ -22,6 +22,7 @@ public:
     virtual ~SimulationResults();
     void initialize(Parameters* params, int sampleSize, int* sampleSizes);
     vector<SFS*> sumSFS, sumSFS1d;
+    
     vector<SFS**> sfsSingleTrees;
     FreqTable* ft;
     double* fst,*psi,*deltaH;
@@ -32,9 +33,10 @@ public:
     double* jackknifeFST();
     double* jackknifePsi();
     double* jackknifeDeltaH();
-    
+    vector<vector<int> >* simulateSNP();
     static double doJackknife(int n, double* v);
 private:
+    double theta;
 
 };
 
