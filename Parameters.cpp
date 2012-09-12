@@ -38,7 +38,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
         if (string(argv[i]) == "-t") {
             cout << "bla" << endl;
-            ss->setTheta(atoi(argv[i + 1]));
+            ss->setTheta(atof(argv[i + 1]));
             cout << "set Theta to " << ss->getTheta() << endl;
             i += 1;
         }

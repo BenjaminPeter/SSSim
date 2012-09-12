@@ -10,11 +10,13 @@
 #include <string>
 #include <vector>
 #include <boost/unordered_map.hpp>
+#include "utils.h"
+#include "SNPTable.h"
 
 using namespace std;
 class FreqTable {
 public:
-    FreqTable(int nPops);    
+    FreqTable(utils* ut, int nPops);    
     virtual ~FreqTable();
     string toString();
     int nPops;
@@ -22,9 +24,20 @@ public:
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
     void addLine(double length, int* pops);
+    vector<int> drawSNP();
+    vector<vector<int> >* drawSNP(int nSNP);
+    vector<vector<int> >* drawSNP(double theta);
+
+    double getTTot() const {
+        return tTot;
+    }
+
+    
 private:
     FreqTable(const FreqTable& orig);
     double tTot;
+    utils* ut;
+    
 };
 
 #endif	/* FREQTABLE_H */

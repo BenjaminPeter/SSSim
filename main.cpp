@@ -87,9 +87,6 @@ int main(int argc, char* argv[]) {
     f << res->ft->toString();
     f.close();
 
-
-
-
     //printing SFS
     int n = 0;
     //cout  <<"nSamp:"<<params->samples.size()<<endl;
@@ -107,6 +104,30 @@ int main(int argc, char* argv[]) {
 
     }
 
+    //generate & print SNP
+    vector<vector<int> >*snps = res->simulateSNP();
+    sprintf(s, "%s.snp", params->outputPrefix.c_str());
+    vector<vector<int> >::const_iterator it1;
+    vector<int>::const_iterator it2;
+    f.open(s, ios::out);
+
+    int i;
+    bool firstCol;
+    for(it1=snps->begin();it1!=snps->end();++it1){
+        firstCol=true;
+        for(it2=it1->begin();it2!=it1->end();++it2){
+            if(firstCol){
+                firstCol=false;
+            }else{
+                f << "\t" ;
+            }
+            i = (*it2);
+            f <<i;
+        }
+        f <<endl;
+    }
+    f.close();
+    
 
     delete res;
     delete sim;
