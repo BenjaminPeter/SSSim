@@ -10,8 +10,9 @@
 #include <vector>
 #include "FreqTable.h"
 
-FreqTable::FreqTable(int nPops) {
+FreqTable::FreqTable(utils* ut, int nPops) {
     this->nPops = nPops;
+    this->ut = ut;
 }
 
 FreqTable::FreqTable(const FreqTable& orig) {
@@ -56,4 +57,38 @@ void FreqTable::addLine(double length, int* pops) {
     }
     this->tTot += length;
 
+}
+
+/*
+ * draws a single SNP from the frequency table
+ */
+vector<int> FreqTable::drawSNP(){
+    boost::unordered_map<vector<int>,double>::const_iterator iter;
+    double rn = this->ut->randomD(this->tTot);
+    for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
+        rn -= iter->second;
+        if(rn <0){
+            return iter->first;
+        }
+    }    
+}
+
+/*
+ * draws a set of n SNP according to some theta
+ */
+
+vector<vector<int> >* FreqTable::drawSNP(double theta){
+    int nSNP = this->ut->rpois(theta);
+    return this->drawSNP(nSNP);
+}
+
+/*
+ * draws n SNP
+ */
+vector<vector<int> >* FreqTable::drawSNP(int nSNP){
+    vector<vector<int> >* v = new vector<vector<int> >();
+    for(int i=0; i<nSNP; ++i){
+        v->push_back(this->drawSNP());
+    }
+    return v;
 }

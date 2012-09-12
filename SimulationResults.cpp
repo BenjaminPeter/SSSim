@@ -20,6 +20,7 @@ SimulationResults::~SimulationResults() {
 void SimulationResults::initialize(Parameters* params, int nSamples, int* sampleSizes) {
     int pos = 0;
     this->nSamples=nSamples;
+    this->theta = params->ss->getTheta();
     //initialize
     for (int i = 0; i < nSamples - 1; i++) {
         for (int j = i + 1; j < nSamples; j++) {
@@ -135,4 +136,12 @@ double* SimulationResults::jackknifeDeltaH(){
         jk[i] =this->doJackknife(this->nReplicates,this->vDeltaH[i]);
     }
     return jk;
+}
+
+/*
+ * this function simulates a set of SNP according to theta and the total tree 
+ * length from the frequency table
+ */
+vector<vector<int> >* SimulationResults::simulateSNP(){
+    this->ft->drawSNP(this->theta*this->ft->getTTot());        
 }
