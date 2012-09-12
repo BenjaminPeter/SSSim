@@ -8,6 +8,7 @@
 #include <sstream>
 #include <boost/unordered_map.hpp>
 #include <vector>
+#include <iostream>
 #include "FreqTable.h"
 
 FreqTable::FreqTable(int nPops) {
@@ -27,7 +28,7 @@ FreqTable::~FreqTable() {
 
 string FreqTable::toString() {
     stringstream ss;
-    cout <<"tTot:"<<"\t"<<this->tTot<<endl;
+    std::cout <<"tTot:"<<"\t"<<this->tTot<<endl;
     boost::unordered_map<vector<int>, double>::iterator iter;
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
 
