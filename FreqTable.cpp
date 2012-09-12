@@ -59,8 +59,6 @@ void FreqTable::addLine(double length, int* pops) {
     this->tTot += length;
 
 }
-<<<<<<< HEAD
-=======
 
 /*
  * draws a single SNP from the frequency table
@@ -95,4 +93,3 @@ vector<vector<int> >* FreqTable::drawSNP(int nSNP){
     }
     return v;
 }
->>>>>>> 27d8f818b7e482e2370359c6cb4ea3bfb965e8ef
