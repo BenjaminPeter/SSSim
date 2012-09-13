@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         }
 
     }
-
+ 
     //generate & print SNP
     vector<vector<int> >*snps = res->simulateSNP();
     sprintf(s, "%s.snp", params->outputPrefix.c_str());
