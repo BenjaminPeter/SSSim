@@ -14,7 +14,7 @@ defaultSample="-s 50 50 $s -s 40 50 $s -s 30 50 $s -s 20 50 $s -s 10 50 $s -s 0 
 ascSample="-s 50 50 $s -s 40 50 $s -s 30 50 $s -s 20 50 $s -s 10 50 $s -s 0 50 $s -s 50 60 100 -s 35 60 100"
 defaultSamp1="-s 50 50 $defaultSampleSize"
 defaultSamp2="-s 0 50 $defaultSampleSize"
-defaultTheta=1e-4
+defaultTheta=1e-5
 
 
 mkdir fig3.s
