@@ -66,6 +66,26 @@ Parameters::Parameters(int argc, char* argv[]) {
             i += 4;
         }
 
+        //adds sampling grid with -sgrid x0,y0,xend,yend,distance
+        if(string(argv[i]) == "-sgrid"){
+            int xStart = atoi(argv[i+1]);
+            int yStart = atoi(argv[i+2]);
+            int xEnd = atoi(argv[i+3]);
+            int yEnd = atoi(argv[i+4]);
+            int dist = atoi(argv[i+5]);
+            int sampSize = atoi(argv[i+6]);
+            for (int x = xStart; x < xEnd; x+=dist){
+                for (int y = yStart; y < yEnd; y+=dist){
+                    int* newSample = new int[3];
+                    newSample[0] = x;
+                    newSample[1] = y;
+                    newSample[2] = sampSize;
+                    samples.push_back(newSample);
+                }
+            }
+            i += 6;
+        }
+
         //add diagonal sequence of samples with -s xstart,ystart,yend,n
         if (string(argv[i]) == "--seqd") {
             int xStart = atoi(argv[i + 1]);
