@@ -665,6 +665,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     
     Lineage* l;
     for (int r = 0; r < nReplicates; r++) {
+        cout << "Tree "<<r<<endl;
         l = this->getNewGeneTree();
         
         l->addToFreqTable(ft);
