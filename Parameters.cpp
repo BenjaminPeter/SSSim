@@ -21,6 +21,12 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
+    this->outputFT=false;
+    this->outputSFS=false;
+    this->outputSNP=false;
+    this->outputStats=false;
+    this->outputStatsJK=false;
+    this->mPropagulePool=false;
 
 
     //cout <<" "<< nReplicates <<endl;
@@ -29,19 +35,47 @@ Parameters::Parameters(int argc, char* argv[]) {
 
 
     while (i < argc) {
-        //cout << i <<"/"<<argc<<":"<<argv[i]<<endl;
+        if (string(argv[i]) == "-t") {
+            cout << "bla" << endl;
+            ss->setTheta(atof(argv[i + 1]));
+            i += 1;
+        }
 
+//*****************************************************************************        
+//*******     output options                                             ********
+//***************************************************************************** 
         if (string(argv[i]) == "-o") {
             this->outputPrefix=argv[i+1];
             //cout << this->outputPrefix << endl;
             i += 1;
         }
-        if (string(argv[i]) == "-t") {
-            cout << "bla" << endl;
-            ss->setTheta(atof(argv[i + 1]));
-            cout << "set Theta to " << ss->getTheta() << endl;
-            i += 1;
+        if (string(argv[i]) == "--osfs") {
+            this->outputSFS=true;
         }
+        if (string(argv[i]) == "--oft") {
+            this->outputFT=true;
+        }
+        if (string(argv[i]) == "--osnp") {
+            this->outputSNP=true;
+        }
+        if (string(argv[i]) == "--ostats") {
+            this->outputStats=true;
+        }
+        if (string(argv[i]) == "--ostatsjk") {
+            this->outputStatsJK=true;
+        }
+
+//*****************************************************************************        
+//*******     migration options                                        ********
+//***************************************************************************** 
+        if (string(argv[i]) == "-mpp") {
+            this->mPropagulePool=true;
+        }
+
+        
+//*****************************************************************************        
+//*******     get Samples                                              ********
+//*****************************************************************************        
         //add new sample with -s x,y,n
         if (string(argv[i]) == "-s") {
             int* newSample = new int[3];

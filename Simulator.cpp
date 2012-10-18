@@ -17,8 +17,9 @@ Simulator::Simulator(long seed) {
     this->migrationScheme = 0;
     this->nLineagesStart = 0;
     this->nSamplesStart = 0;
-    this->nMigrationEvents=0;
+    this->nMigrationEvents = 0;
     this->sampMapStart = boost::unordered_map<int, Sample*>();
+    this->propagulePoolMigration = false;
 }
 
 Simulator::Simulator(const Simulator& orig) {
@@ -239,7 +240,7 @@ double Simulator::migRejFunction(const double t) {
         pSize = this->migrationScheme->getPopSize(pos, t);
         if (pSize > 0)
             lambdaT += nl * (mNorth + mSouth + mEast + mWest) / pSize;
-            //cout <<"mRate: "<<(mNorth + mSouth + mEast + mWest) / pSize<<endl;
+        //cout <<"mRate: "<<(mNorth + mSouth + mEast + mWest) / pSize<<endl;
     }
     return lambdaT;
 }
@@ -437,64 +438,49 @@ void Simulator::addMigrationEvent(Event* ev) {
 }
 
 void Simulator::addExpansionEvent(pair<double, int>* ev) {
-    //cout <<"-------before--------"<<endl;
-    //cout <<this->toString();
-    //cout <<"-------ebefore--------"<<endl;
-    //cerr <<"Expansion event NYI";
     int pos = ev->second;
     int* arr = this->migrationScheme->coords1d2d(pos);
     int x = arr[0];
     int y = arr[1];
     delete[] arr;
 
-    int k = this->migrationScheme->getExpansionK(x,y);
-    //cout << "colonization event at[" << x<<","<<y<<"]: k="<<k<<endl;
+    int k = this->migrationScheme->getExpansionK(x, y);
     double pDir[4], mRate[4], rTot = 0, randomNumber;
     Lineage * lineage;
 
 
-    //cout<<"colonization event at["<<x<<","<<y<<"]: totally"<<this->nLineages<<" \tpresent at time\t";
-    //cout<<this->timeSinceStart<<endl;
     this->timeSinceStart = ev->first;
     if (this->sampMap.count(ev->second) == 1) {
         Sample * sample = this->sampMap[ev->second];
-        //cout <<"there are "<<sample->getNlineages()<<" lineages in this deme"<<endl;
 
         //if there is a founding propagule size set, check if we need to perform
         // additional coalescent events
 
         if (k > 0 && sample->getNlineages() > 1) {
             int nAncLineages = 1;
-            double pNAncLineages,logPNAncLineages;
+            double pNAncLineages, logPNAncLineages;
             randomNumber = this->ut->randomD(1);
 
             //if there are more lineages than k, reduce to k...
             if (sample->getNlineages() > k) {
-                //cout <<"with k="<<k<<":, reducing from "<<sample->getNlineages();
-                //cout <<" lineages ("<<sample->getNlineages()-k;
-                //cout <<" coalescent events)"<<endl;
                 int nCoal = sample->getNlineages() - k;
                 for (int i = 0; i < nCoal; i++) {
                     this->addCoalEvent(new Event(1, sample, 0));
-                   // cout <<"new number of lineages: "<<sample->getNlineages()<<endl;
                 }
             } else {
                 while (nAncLineages <= k) {
                     logPNAncLineages = log(this->ut->getStirlingNumberD(sample->getNlineages(),
                             nAncLineages));
                     //pNAncLineages = this->ut->getStirlingNumber(sample->getNlineages(),
-                    logPNAncLineages += this->ut->logFallingFactorial(k,nAncLineages);
+                    logPNAncLineages += this->ut->logFallingFactorial(k, nAncLineages);
                     //pNAncLineages *= this->ut->fallingFactorial(k, nAncLineages);
-                    logPNAncLineages -= log(k)*sample->getNlineages();
+                    logPNAncLineages -= log(k) * sample->getNlineages();
                     //pNAncLineages /= pow(k, sample->getNlineages());
                     //randomNumber -= pNAncLineages;
-                    float f =exp(logPNAncLineages);
+                    float f = exp(logPNAncLineages);
                     if (f == f) //check for nan
-                        randomNumber -=f;
+                        randomNumber -= f;
                     if (randomNumber < 0) {
-                        // cout <<"with k="<<k<<":, reducing to "<<nAncLineages;
-                        //cout <<" lineages ("<<sample->getNlineages()-nAncLineages;
-                        //cout <<" coalescent events)"<<endl;
                         int nCoal = sample->getNlineages() - nAncLineages;
                         for (int i = 0; i < nCoal; i++) {
                             this->addCoalEvent(new Event(1, sample, 0));
@@ -504,8 +490,8 @@ void Simulator::addExpansionEvent(pair<double, int>* ev) {
                     nAncLineages++;
                 }
             }
-
         }
+        //cout <<"nlineages:"<< sample->getNlineages()<<endl;
         int h = this->migrationScheme->getHeight();
         //get population sizes/migration rates of surrounding demes:
         pDir[0] = this->migrationScheme->getPopSize(pos + 1, ev->first);
@@ -527,22 +513,61 @@ void Simulator::addExpansionEvent(pair<double, int>* ev) {
         for (int i = 0; i < 4; i++) {
             rTot += pDir[i] * mRate[i];
         }
-        
+
         //cout <<"rTot:"<<rTot<<endl;
 
         int l = 0;
-        while (sample->getNlineages() > 0) {
-            // cout <<"moving lineage "<<l++;
+
+        //propagule pool: send all migrants to a single adjacient deme
+
+        if (this->propagulePoolMigration) {
+            int direction;
             randomNumber = this->ut->randomD(rTot);
-            //cout <<"   rng:"<<randomNumber;
             for (int i = 0; i < 4; i++) {
                 randomNumber -= pDir[i] * mRate[i];
                 if (randomNumber < 0) {
-                    //cout <<"  direction "<<i+2;
-                    //lineage =sample->getRandomLineageForMigration();
-                    this->addMigrationEvent(new Event(i + 2, sample, 0));
-                    //cout<< "  "<< sample->getNlineages() << " lienages left"<<endl;
+                    direction = i;
                     break;
+                }
+            }
+            bool samplePresent = true;
+            while (samplePresent && sample->getNlineages() > 0) {
+                // cout <<"moving lineage "<<l++;
+                //randomNumber = this->ut->randomD(rTot);
+                //cout <<"   rng:"<<randomNumber;
+                //for (int i = 0; i < 4; i++) {
+                //    randomNumber -= pDir[i] * mRate[i];
+                //    if (randomNumber < 0) {
+                        //cout <<"  direction "<<i+2;
+                        //lineage =sample->getRandomLineageForMigration();
+                        if (sample->getNlineages() == 1) {
+                            samplePresent = false;
+                        }
+                        this->addMigrationEvent(new Event(direction + 2, sample, 0));
+                        //cout<< "  "<< sample->getNlineages() << " lienages left"<<endl;
+                        //break;
+                //    }
+                //}
+            }
+        } else {
+            //migrant pool: send all migrants to random adjacient demes
+            bool samplePresent = true;
+            while (samplePresent && sample->getNlineages() > 0) {
+                // cout <<"moving lineage "<<l++;
+                randomNumber = this->ut->randomD(rTot);
+                //cout <<"   rng:"<<randomNumber;
+                for (int i = 0; i < 4; i++) {
+                    randomNumber -= pDir[i] * mRate[i];
+                    if (randomNumber < 0) {
+                        //cout <<"  direction "<<i+2;
+                        //lineage =sample->getRandomLineageForMigration();
+                        if (sample->getNlineages() == 1) {
+                            samplePresent = false;
+                        }
+                        this->addMigrationEvent(new Event(i + 2, sample, 0));
+                        //cout<< "  "<< sample->getNlineages() << " lienages left"<<endl;
+                        break;
+                    }
                 }
             }
         }
@@ -597,13 +622,13 @@ Lineage* Simulator::getNewGeneTree() {
     this->copySampStartToSamp();
     this->timeSinceLastCoalEvent = 0;
     this->timeSinceStart = 0;
-    this->nMigrationEvents=0;
+    this->nMigrationEvents = 0;
     this->expansionEvents = this->migrationScheme->getExpansionEvents();
     Event *ev;
     int evc = 0;
     while (true) {
         ev = this->getNextEvent3();
-        if (DEBUG) cout << this->timeSinceStart<<"\t"<<ev->toString()<<endl;
+        if (DEBUG) cout << this->timeSinceStart << "\t" << ev->toString() << endl;
         if (ev->type == 0) {
             delete ev;
             break;
@@ -653,21 +678,22 @@ void Simulator::addSequenceSimulator(SequenceSimulator * ss) {
 SimulationResults* Simulator::doSimulations(Parameters* params) {
 
     vector<int*> samples = params->samples;
-
+    //vector<SFS*> curSFS;
     int pos = 0, nReplicates = params->nReplicates;
     int* sampleSizes = params->sampleSizes;
     SimulationResults* res = new SimulationResults();
-    res->initialize(params, samples.size(),sampleSizes);
-    double tmrca=0;
-    int nMigrations=0;
+    res->initialize(params, samples.size(), sampleSizes);
+    double tmrca = 0;
+    int nMigrations = 0;
     SFS* sfs;
     FreqTable* ft = new FreqTable(this->ut, params->samples.size());
-    
+    this->propagulePoolMigration = params->mPropagulePool;
+
     Lineage* l;
     for (int r = 0; r < nReplicates; r++) {
         cout << "Tree "<<r<<endl;
         l = this->getNewGeneTree();
-        
+
         l->addToFreqTable(ft);
         pos = 0;
         for (int i = 0; i < samples.size() - 1; i++) {
@@ -677,8 +703,9 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
                 //res->vPsi[pos][r] = StatCalculator::getPsi(sfs);
                 //res->vFst[pos][r] = StatCalculator::getFST(sfs);
                 *(res->sumSFS[pos]) += *sfs;
-                res->sfsSingleTrees[pos][r]=sfs;
-                //delete sfs;
+                //curSFS.push_back(sfs);
+                //res->sfsSingleTrees[pos][r]=sfs;
+                delete sfs;
                 pos++;
             }
         }
@@ -686,33 +713,33 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
             sfs = this->seqSim->create1DSFS(l, i);
             *(res->sumSFS1d[i]) += *sfs;
         }
-        tmrca+=this->timeSinceStart;
-        nMigrations+=this->nMigrationEvents;
+        tmrca += this->timeSinceStart;
+        nMigrations += this->nMigrationEvents;
         delete l;
     }
-           
-    tmrca/=nReplicates;
-    cout <<"TMRCA:\t"<<tmrca <<"\tmEvents\t"<<nMigrations<<endl;
 
-    res->ft=ft;
-    
+    tmrca /= nReplicates;
+    cout << "TMRCA:\t" << tmrca << "\tmEvents\t" << nMigrations << endl;
+
+    res->ft = ft;
+
     pos = 0;
     for (int i = 0; i < samples.size() - 1; i++) {
         for (int j = i + 1; j < samples.size(); j++) {
             res->fst[pos] = StatCalculator::getFST(res->sumSFS[pos]);
             res->psi[pos] = StatCalculator::getPsi(res->sumSFS[pos]);
             res->deltaH[pos] = StatCalculator::getDeltaH(res->sumSFS[pos]);
-            for(int r=0; r< nReplicates; r++){
-                SFS* tmpSFS = new SFS(*res->sumSFS[pos]);
+            for (int r = 0; r < nReplicates; r++) {
+                //SFS* tmpSFS = new SFS(*res->sumSFS[pos]);
                 //cout <<tmpSFS->toString();
-                *(tmpSFS) -= *(res->sfsSingleTrees[pos][r]);
-                res->vPsi[pos][r]=StatCalculator::getPsi(tmpSFS);
-                res->vFst[pos][r]=StatCalculator::getFST(tmpSFS);
-                res->vDeltaH[pos][r]=StatCalculator::getDeltaH(tmpSFS);
+                //*(tmpSFS) -= *(curSFS[pos]);
+                //res->vPsi[pos][r]=StatCalculator::getPsi(tmpSFS);
+                //res->vFst[pos][r]=StatCalculator::getFST(tmpSFS);
+                //res->vDeltaH[pos][r]=StatCalculator::getDeltaH(tmpSFS);
             }
             //cout << i << "\t" << j << "\t" << res->fst[pos] << "\t" << res->psi[pos] << "\t" << res->deltaH[pos] << endl;
             pos++;
-        }    
+        }
     }
 
 

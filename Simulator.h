@@ -122,6 +122,7 @@ private:
         return myself->coalMigRejFunction(t);
     }**/
     void copySampStartToSamp();
+    bool propagulePoolMigration;
 };
 
 #endif	/* SIMULATOR_H */
