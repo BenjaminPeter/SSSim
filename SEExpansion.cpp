@@ -110,7 +110,7 @@ bool SEExpansion::isInitialized(){
 
 
     double SEExpansion::getPopSize(const int pos, const double t){            
-        if (t<this->getArrivalTime(pos))
+        if (t<this->getArrivalTime(pos)&t>0)
             return this->k;
         return 0;        
     }
@@ -176,6 +176,8 @@ void SEExpansion::setMigrationRatesUniform(double north, double south, double ea
 }
 
 double SEExpansion::getArrivalTime(const int pos){
+    if( pos>=this->width*this->height) return 0;
+    if( pos<0) return 0;
     return this->arrivalTimes[pos];
 }
 

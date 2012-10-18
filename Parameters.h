@@ -33,6 +33,8 @@ public:
     int nReplicates;//how many trees should be sampled?    
     int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
+    bool outputSFS,outputFT,outputSNP,outputStats,outputStatsJK;
+    bool mPropagulePool;
 private:
 
 };

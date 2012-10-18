@@ -11,6 +11,8 @@
 #include "FreqTable.h"
 #include "Parameters.h"
 #include <vector>
+#include <sstream>
+#include <string>
 #include "math.h"
 class Parameters;
 using namespace std;
@@ -20,16 +22,16 @@ public:
     SimulationResults();
     SimulationResults(const SimulationResults& orig);
     virtual ~SimulationResults();
-    void initialize(Parameters* params, int sampleSize, int* sampleSizes);
+    void initialize(Parameters* params, int sampleSize, int* sampleSizes, bool singleTrees=false);
     vector<SFS*> sumSFS, sumSFS1d;
     
-    vector<SFS**> sfsSingleTrees;
+    //vector<SFS**> sfsSingleTrees;
     FreqTable* ft;
     double* fst,*psi,*deltaH;
     double** vFst,**vPsi,**vDeltaH;
     int nSamples,nReplicates;
-    void printStats();
-    void printStatsWithJK();
+    string printStats();
+    string printStatsWithJK();
     double* jackknifeFST();
     double* jackknifePsi();
     double* jackknifeDeltaH();
