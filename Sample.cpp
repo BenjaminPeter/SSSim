@@ -87,6 +87,11 @@ void Sample::merge2randomLineages(double curTime){
     delete[] lids;
 }
 
+Lineage* Sample::getRandomLineage(){
+    int lid1 = this->ut->random1(this->nLineages);
+    Lineage * l1 = this->lineages[lid1];
+    return l1;
+}
 Lineage* Sample::getRandomLineageForMigration(){
     int lid1 = this->ut->random1(this->nLineages);
     Lineage * l1 = this->lineages[lid1];

@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
 #include "Simulator.h"
 #include "MigrationScheme.h"
 #include "IsolationByDistance.h"
@@ -34,7 +36,7 @@ public:
     int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
     bool outputSFS,outputFT,outputSNP,outputStats,outputStatsJK;
-    bool mPropagulePool;
+    bool mPropagulePool,outputLoci;
 private:
 
 };
