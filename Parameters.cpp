@@ -22,6 +22,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
+<<<<<<< HEAD
     this->outputFT=false;
     this->outputSFS=false;
     this->outputSNP=false;
@@ -29,6 +30,16 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->outputStatsJK=false;
     this->mPropagulePool=false;
     ss->setTheta(-1);
+=======
+    this->outputFT = false;
+    this->outputSFS = false;
+    this->outputSNP = false;
+    this->outputStats = false;
+    this->outputStatsJK = false;
+    this->outputLoci = false;
+    this->mPropagulePool = false;
+
+>>>>>>> 6215c84878b7902b019b10af1c3cc4a6efc4bef9
 
     //cout <<" "<< nReplicates <<endl;
     bool hasMigScheme = false;
@@ -54,6 +65,9 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->outputPrefix=argv[i+1];
             //cout << this->outputPrefix << endl;
             i += 1;
+        }
+        if (string(argv[i]) == "--oloci") {
+            this->outputLoci=true;
         }
         if (string(argv[i]) == "--osfs") {
             this->outputSFS=true;
@@ -267,14 +281,24 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     this->sampleSizes = new int[samples.size()];
     i = 0;
+
+    char s[100];
+    ofstream f;
+
+    sprintf(s, "%s.loc", this->outputPrefix.c_str());
+    f.open(s, ios::out);
     for (vector<int*>::iterator it = samples.begin(); it != samples.end(); ++it) {
         x = (*it)[0];
         y = (*it)[1];
         n = (*it)[2];
         sampleSizes[i] = n;
+        if ( this->outputLoci ){
+            f << i << "\t"<<x <<"\t"<< y<<endl;
+        }
         sim->addSampleStart(x, y, n);
         i++;
     }
+    f.close();
 }
 
 Parameters::Parameters() {

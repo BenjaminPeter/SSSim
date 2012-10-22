@@ -31,6 +31,7 @@ public:
     void merge2lineages(int l1,int l2, double curTime);
     void merge2randomLineages(double curTime);
     Lineage* getRandomLineageForMigration();
+    Lineage* getRandomLineage();
     void addLineage(Lineage* lineage);
     string toString();
     string toStringShort();

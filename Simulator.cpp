@@ -69,22 +69,23 @@ void Simulator::vPrint(string s) {
     }
 }
 
-void Simulator::addSampleStart(int* pos, int nNewLineages) {
-    this->addSampleStart(pos[0], pos[1], nNewLineages);
-
+void Simulator::addSampleStart(int* pos, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {
+    this->addSampleStart(pos[0], pos[1], nNewLineages,outputLoci,sOutputLoci);
 }
 
-void Simulator::addSampleStart(int x, int y, int nNewLineages) {
+void Simulator::addSampleStart(int x, int y, int nNewLineages,bool outputLoci,stringstream* sOutputLoci) {
     int pos = this->migrationScheme->coords2d1d(x, y);
     if (this->migrationScheme->getArrivalTime(pos) == 0) {
         cerr << "Error: sample (" << x << "," << y << ") outside the colonized area" << endl;
         throw 10;
     } else {
     }
-    //cout <<"Arrival for sample (" <<x<<","<<y<<") :"<<this->migrationScheme->getArrivalTime(pos)<<endl;
 
     Lineage* l;
     vector<Lineage*>newLineages;
+    if (outputLoci){
+        (*sOutputLoci) << this->nSamplesStart <<"\t"<< x << "\t"<< y<<endl;
+    }
     for (int i = this->nLineagesStart; i<this->nLineagesStart + nNewLineages; i++) {
         l = new LineageTemplate(i, x, y, this->nSamplesStart);
         //printf("%s",l->toString().c_str());
@@ -692,6 +693,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
 
     Lineage* l;
     for (int r = 0; r < nReplicates; r++) {
+        cout << "Tree "<<r<<endl;
         l = this->getNewGeneTree();
 
         l->addToFreqTable(ft);

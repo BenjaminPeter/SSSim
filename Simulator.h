@@ -46,8 +46,9 @@ public:
     void vPrint(string s);
     //void setWidth(int width);
     //void setHeight(int height);
-    void addSampleStart(int * pos,int nNewLineages);
-    void addSampleStart(int x, int y, int nNewLineages);
+    void addSampleStart(int * pos,int nNewLineages,bool outputLoci=false, stringstream* ssOutputLoci=NULL);
+    void addSampleStart(int x, int y, int nNewLineages,
+            bool outputLoci=false, stringstream* ssOutputLoci=NULL);
     void removeSample(int x, int y);
     void addSequenceSimulator(SequenceSimulator* ss);
     

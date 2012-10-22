@@ -8,6 +8,8 @@
 #ifndef LINEAGETEMPLATE_H
 #define	LINEAGETEMPLATE_H
 #include "Lineage.h"
+#include <string>
+#include <sstream>
 
 class LineageTemplate:public Lineage {
 public:
@@ -25,6 +27,10 @@ public:
         throw 10;
     }
     virtual ~LineageTemplate();
+    string toString(){
+        stringstream ss;
+        ss <<this->startPop <<"\t"<<startX<<"\t"<<startY<<endl;
+    }
 private:
     LineageTemplate(const LineageTemplate& orig);
 };
