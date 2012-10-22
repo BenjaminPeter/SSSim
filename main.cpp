@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 
     if (params->outputSNP) {
         //generate & print SNP
-        vector<vector<int> >*snps = res->simulateSNP();
+        vector<vector<int> >*snps = res->simulateSNP(true);
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
         vector<vector<int> >::const_iterator it1;
         vector<int>::const_iterator it2;

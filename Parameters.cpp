@@ -17,6 +17,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         cout <<argv[i]<<" ";
     }
     cout << endl;
+    
     this->outputPrefix="out_";
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
@@ -27,7 +28,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->outputStats=false;
     this->outputStatsJK=false;
     this->mPropagulePool=false;
-
+    ss->setTheta(-1);
 
     //cout <<" "<< nReplicates <<endl;
     bool hasMigScheme = false;
@@ -36,8 +37,13 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     while (i < argc) {
         if (string(argv[i]) == "-t") {
-            cout << "bla" << endl;
             ss->setTheta(atof(argv[i + 1]));
+            i += 1;
+        }
+        
+        //set number of SNP
+        if (string(argv[i]) == "-N") {
+            this->nSNP=atoi(argv[i+1]);
             i += 1;
         }
 

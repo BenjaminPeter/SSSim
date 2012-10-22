@@ -46,8 +46,15 @@ string FreqTable::toString() {
     return ss.str();
 }
 
-void FreqTable::addLine(double length, int* pops) {
+void FreqTable::addLine(double length, int* pops,bool checkShared) {
+    
     vector<int> vect(pops, pops + this->nPops);
+    if(checkShared){
+        for(vector<int>::const_iterator it=vect.begin();it != vect.end(); ++it){
+            if(it==0)
+                return;
+        }
+    }
     //cout <<"vect"<<vect[0]<<"\t"<<vect[1]<<endl;
     if (this->freqs.find(vect) != this->freqs.end()) {
        // cout << "found"<<"\t"<<this->freqs[vect];
@@ -57,7 +64,6 @@ void FreqTable::addLine(double length, int* pops) {
         this->freqs.insert(pair<vector<int>, double >(vect, length));
     }
     this->tTot += length;
-
 }
 
 /*

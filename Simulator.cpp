@@ -687,6 +687,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     int nMigrations = 0;
     SFS* sfs;
     FreqTable* ft = new FreqTable(this->ut, params->samples.size());
+    FreqTable* ftShared = new FreqTable(this->ut, params->samples.size());
     this->propagulePoolMigration = params->mPropagulePool;
 
     Lineage* l;
@@ -694,6 +695,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
         l = this->getNewGeneTree();
 
         l->addToFreqTable(ft);
+        l->addToFreqTable(ftShared,true);
         pos = 0;
         for (int i = 0; i < samples.size() - 1; i++) {
             for (int j = i + 1; j < samples.size(); j++) {
@@ -721,6 +723,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     cout << "TMRCA:\t" << tmrca << "\tmEvents\t" << nMigrations << endl;
 
     res->ft = ft;
+    res->ftShared = ftShared;
 
     pos = 0;
     for (int i = 0; i < samples.size() - 1; i++) {

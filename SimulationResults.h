@@ -26,7 +26,7 @@ public:
     vector<SFS*> sumSFS, sumSFS1d;
     
     //vector<SFS**> sfsSingleTrees;
-    FreqTable* ft;
+    FreqTable* ft,ftShared;
     double* fst,*psi,*deltaH;
     double** vFst,**vPsi,**vDeltaH;
     int nSamples,nReplicates;
@@ -35,7 +35,8 @@ public:
     double* jackknifeFST();
     double* jackknifePsi();
     double* jackknifeDeltaH();
-    vector<vector<int> >* simulateSNP();
+    vector<vector<int> >* simulateSNPTheta(bool shared=false);
+    vector<vector<int> >* simulateSNPN(bool shared=false);
     static double doJackknife(int n, double* v);
 private:
     double theta;

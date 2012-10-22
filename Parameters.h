@@ -35,6 +35,7 @@ public:
     string outputPrefix;
     bool outputSFS,outputFT,outputSNP,outputStats,outputStatsJK;
     bool mPropagulePool;
+    int nSNP; //how many SNP should be sampled
 private:
 
 };

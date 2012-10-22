@@ -46,16 +46,18 @@ public:
     //void getChildIds();
     //vector<Lineage*> getChildren();
     
-    void addToFreqTable(FreqTable* ft){
-        ft->addLine(this->length,this->pops);
+    void addToFreqTable(FreqTable* ft, bool checkShared){
+        ft->addLine(this->length,this->pops,checkShared);
         //cerr << this->length << "\t" << this->pops[0]<< "\t"<<this->pops[1]<<endl;
         if (this->left != NULL){
-            this->left->addToFreqTable(ft);
+            this->left->addToFreqTable(ft,checkShared);
         }
         if (this->right != NULL){
-            this->right->addToFreqTable(ft);
+            this->right->addToFreqTable(ft,checkShared);
         }
     }
+    
+        
     
     virtual bool* getSNPString(const int nTotLineages);
     virtual void addSubtreeToSFS(SFS* sfs,int pop1, int pop2){
