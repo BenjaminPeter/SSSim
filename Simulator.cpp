@@ -693,7 +693,8 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
 
     Lineage* l;
     for (int r = 0; r < nReplicates; r++) {
-        cout << "Tree "<<r<<endl;
+        //cout<<r<<nReplicates<<float(r)/nReplicates<<endl;
+        utils::printProgressBar(100*r/nReplicates,"computing trees");
         l = this->getNewGeneTree();
 
         l->addToFreqTable(ft);
@@ -720,6 +721,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
         nMigrations += this->nMigrationEvents;
         delete l;
     }
+    cout <<"done!"<<endl;
 
     tmrca /= nReplicates;
     cout << "TMRCA:\t" << tmrca << "\tmEvents\t" << nMigrations << endl;

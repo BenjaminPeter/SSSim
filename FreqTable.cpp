@@ -50,10 +50,14 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
     
     vector<int> vect(pops, pops + this->nPops);
     if(checkShared){
+        int nShared=0;
         for(vector<int>::const_iterator it=vect.begin();it != vect.end(); ++it){
-            if(it==0)
-                return;
+            if(*it>=0){
+                nShared++;
+            }
         }
+        if (nShared<2)
+            return;
     }
     //cout <<"vect"<<vect[0]<<"\t"<<vect[1]<<endl;
     if (this->freqs.find(vect) != this->freqs.end()) {
@@ -95,7 +99,9 @@ vector<vector<int> >* FreqTable::drawSNP(double theta){
 vector<vector<int> >* FreqTable::drawSNP(int nSNP){
     vector<vector<int> >* v = new vector<vector<int> >();
     for(int i=0; i<nSNP; ++i){
+        utils::printProgressBar(100*i/nSNP,"drawing SNP");
         v->push_back(this->drawSNP());
     }
+    cout <<"done!"<<endl;
     return v;
 }

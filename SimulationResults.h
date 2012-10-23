@@ -26,10 +26,10 @@ public:
     vector<SFS*> sumSFS, sumSFS1d;
     
     //vector<SFS**> sfsSingleTrees;
-    FreqTable* ft,ftShared;
+    FreqTable* ft,*ftShared;
     double* fst,*psi,*deltaH;
     double** vFst,**vPsi,**vDeltaH;
-    int nSamples,nReplicates;
+    int nSamples,nReplicates,nSNP;
     string printStats();
     string printStatsWithJK();
     double* jackknifeFST();

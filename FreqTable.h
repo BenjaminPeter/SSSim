@@ -23,7 +23,7 @@ public:
     boost::unordered_map<vector<int>, double> freqs;
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
-    void addLine(double length, int* pops, bool checkShared=False);
+    void addLine(double length, int* pops, bool checkShared=false);
     vector<int> drawSNP();
     vector<vector<int> >* drawSNP(int nSNP);
     vector<vector<int> >* drawSNP(double theta);

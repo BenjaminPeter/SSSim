@@ -21,6 +21,7 @@ void SimulationResults::initialize(Parameters* params, int nSamples, int* sample
     int pos = 0;
     this->nSamples = nSamples;
     this->theta = params->ss->getTheta();
+    this->nSNP=params->nSNP;
     //initialize
     for (int i = 0; i < nSamples - 1; i++) {
         for (int j = i + 1; j < nSamples; j++) {
@@ -149,7 +150,7 @@ double* SimulationResults::jackknifeDeltaH() {
  * this function simulates a set of SNP according to theta and the total tree 
  * length from the frequency table
  */
-vector<vector<int> >* SimulationResults::simulateSNPTheta(bool shared=false) {
+vector<vector<int> >* SimulationResults::simulateSNPTheta(bool shared) {
     if (theta<0){
         cerr<< "theta not set" <<endl;
         throw 10;
@@ -164,10 +165,12 @@ vector<vector<int> >* SimulationResults::simulateSNPTheta(bool shared=false) {
 /*
  * this function simulates a set of N SNP 
  */
-vector<vector<int> >* SimulationResults::simulateSNPTheta(bool shared=false) {
+vector<vector<int> >* SimulationResults::simulateSNPN(bool shared) {
+    
     if (shared){
-        return this->ftShared->drawSNP(this->theta * this->ftShared->getTTot());
+        return this->ftShared->drawSNP(this->nSNP);
+        cout <<"SimulationResults::simulateSNPN:drawing shared"<<endl;
     }else{
-        return this->ft->drawSNP(this->theta * this->ft->getTTot());
+        return this->ft->drawSNP(this->nSNP);
     }
 }

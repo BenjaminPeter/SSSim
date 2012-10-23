@@ -22,24 +22,15 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
-<<<<<<< HEAD
     this->outputFT=false;
     this->outputSFS=false;
     this->outputSNP=false;
     this->outputStats=false;
     this->outputStatsJK=false;
     this->mPropagulePool=false;
+    this->nSNP=0;
     ss->setTheta(-1);
-=======
-    this->outputFT = false;
-    this->outputSFS = false;
-    this->outputSNP = false;
-    this->outputStats = false;
-    this->outputStatsJK = false;
-    this->outputLoci = false;
-    this->mPropagulePool = false;
 
->>>>>>> 6215c84878b7902b019b10af1c3cc4a6efc4bef9
 
     //cout <<" "<< nReplicates <<endl;
     bool hasMigScheme = false;
@@ -48,12 +39,17 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     while (i < argc) {
         if (string(argv[i]) == "-t") {
+            if(this->nSNP>0)
+                cerr <<"Warning: Setting theta and N at the same time"<<endl;
             ss->setTheta(atof(argv[i + 1]));
             i += 1;
         }
         
         //set number of SNP
         if (string(argv[i]) == "-N") {
+            if(ss->getTheta()>0)
+                cerr <<"Warning: Setting theta and N at the same time"<<endl;
+            //cout <<argv[i+1]<<endl;
             this->nSNP=atoi(argv[i+1]);
             i += 1;
         }

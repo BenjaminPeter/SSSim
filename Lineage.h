@@ -46,7 +46,7 @@ public:
     //void getChildIds();
     //vector<Lineage*> getChildren();
     
-    void addToFreqTable(FreqTable* ft, bool checkShared){
+    void addToFreqTable(FreqTable* ft, bool checkShared=false){
         ft->addLine(this->length,this->pops,checkShared);
         //cerr << this->length << "\t" << this->pops[0]<< "\t"<<this->pops[1]<<endl;
         if (this->left != NULL){

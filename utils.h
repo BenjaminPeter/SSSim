@@ -14,6 +14,7 @@
 #include <gsl/gsl_math.h>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/special_functions/gamma.hpp>
+#include <string>
 
 
 class utils {
@@ -35,6 +36,7 @@ public:
     long double getStirlingNumberD(int i,int j);
     long int fallingFactorial(int n, int j);   
     long double logFallingFactorial(int n, int j);  
+    static void printProgressBar(int percent,std::string label="");
 private:
     long int ** stirlingNumberMatrix;
     long double ** stirlingNumberMatrixD;
