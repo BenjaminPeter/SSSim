@@ -25,6 +25,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->outputFT=false;
     this->outputSFS=false;
     this->outputSNP=false;
+    this->outputSNPShared=false;
     this->outputStats=false;
     this->outputStatsJK=false;
     this->mPropagulePool=false;
@@ -73,6 +74,9 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
         if (string(argv[i]) == "--osnp") {
             this->outputSNP=true;
+        }
+        if (string(argv[i]) == "--osnps") {
+            this->outputSNPShared=true;
         }
         if (string(argv[i]) == "--ostats") {
             this->outputStats=true;
@@ -150,6 +154,11 @@ Parameters::Parameters(int argc, char* argv[]) {
             }
             i += 4;
         }
+        
+        
+        /**********************************************************
+         *  Models         
+         **********************************************************/
         //ibd: set width, height, k, 1 migration rate
         if (string(argv[i]) == "--ibd") {
             if (hasMigScheme) {

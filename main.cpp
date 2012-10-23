@@ -117,9 +117,35 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (params->outputSNP) {
+    if (params->outputSNPShared) {
         //generate & print SNP
         vector<vector<int> >*snps = res->simulateSNPN(true);
+        sprintf(s, "%s.snps", params->outputPrefix.c_str());
+        vector<vector<int> >::const_iterator it1;
+        vector<int>::const_iterator it2;
+        f.open(s, ios::out);
+
+        int i;
+        bool firstCol;
+        for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
+            firstCol = true;
+            for (it2 = it1->begin(); it2 != it1->end(); ++it2) {
+                if (firstCol) {
+                    firstCol = false;
+                } else {
+                    f << "\t";
+                }
+                i = (*it2);
+                f << i;
+            }
+            f << endl;
+        }
+        f.close();
+    }
+    
+    if (params->outputSNP) {
+        //generate & print SNP
+        vector<vector<int> >*snps = res->simulateSNPN(false);
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
         vector<vector<int> >::const_iterator it1;
         vector<int>::const_iterator it2;

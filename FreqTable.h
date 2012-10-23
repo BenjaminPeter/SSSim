@@ -31,12 +31,13 @@ public:
     double getTTot() const {
         return tTot;
     }
-
     
+    int getNEntries();
 private:
     FreqTable(const FreqTable& orig);
     double tTot;
     utils* ut;
+    int nEntries;
     
 };
 

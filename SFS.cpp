@@ -129,10 +129,10 @@ SFS::~SFS() {
     }
     
     void SFS::addToEntry(int i, int j, double entry){
-        //if(0==i && j==0)
-        //    return;
-        //if(0==this->size1 && j==this->size2);
-        //    return;        
+        if(0==i && j==0)
+            return;
+        if(0==this->size1 && j==this->size2)
+            return;        
         if(0<=i && i<=this->size1 && 0<=j  && j<=this->size2){
             this->tTot+= entry;
             this->data[i][j]+=entry;

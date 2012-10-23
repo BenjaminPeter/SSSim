@@ -699,6 +699,8 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
 
         l->addToFreqTable(ft);
         l->addToFreqTable(ftShared,true);
+        //cout<<"nEntries:  "<<ft->getNEntries()<<"\t"<<ftShared->getNEntries()<<endl;
+        
         pos = 0;
         for (int i = 0; i < samples.size() - 1; i++) {
             for (int j = i + 1; j < samples.size(); j++) {
