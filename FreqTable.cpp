@@ -74,13 +74,14 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
 /*
  * draws a single SNP from the frequency table
  */
-vector<int> FreqTable::drawSNP(){
+vector<int>* FreqTable::drawSNP(){
     boost::unordered_map<vector<int>,double>::const_iterator iter;
     double rn = this->ut->randomD(this->tTot);
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
         rn -= iter->second;
         if(rn <0){
-            return iter->first;
+            vector<int>* v= new vector<int>(iter->first);
+            return v;
         }
     }    
 }
@@ -89,7 +90,7 @@ vector<int> FreqTable::drawSNP(){
  * draws a set of n SNP according to some theta
  */
 
-vector<vector<int> >* FreqTable::drawSNP(double theta){
+vector<vector<int>* >* FreqTable::drawSNP(double theta){
     int nSNP = this->ut->rpois(theta);
     return this->drawSNP(nSNP);
 }
@@ -97,8 +98,8 @@ vector<vector<int> >* FreqTable::drawSNP(double theta){
 /*
  * draws n SNP
  */
-vector<vector<int> >* FreqTable::drawSNP(int nSNP){
-    vector<vector<int> >* v = new vector<vector<int> >(nSNP);
+vector<vector<int>* >* FreqTable::drawSNP(int nSNP){
+    vector<vector<int>* >* v = new vector<vector<int>* >(nSNP);
     for(int i=0; i<nSNP; ++i){
         utils::printProgressBar(100*i/nSNP,"drawing SNP");
         (*v)[i]=this->drawSNP();

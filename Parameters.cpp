@@ -12,6 +12,7 @@
 
 using namespace std;
 
+int Parameters::verbose=0;
 Parameters::Parameters(int argc, char* argv[]) {
     for (int i=0; i<argc;i++){
         cout <<argv[i]<<" ";
@@ -29,6 +30,8 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->outputStats=false;
     this->outputStatsJK=false;
     this->mPropagulePool=false;
+    this->outputTree=false;
+    Parameters::verbose=0;
     this->nSNP=0;
     ss->setTheta(-1);
 
@@ -63,6 +66,10 @@ Parameters::Parameters(int argc, char* argv[]) {
             //cout << this->outputPrefix << endl;
             i += 1;
         }
+        if (string(argv[i]) == "--verbose") {
+            Parameters::verbose=atoi(argv[i+1]);
+            i += 1;
+        }
         if (string(argv[i]) == "--oloci") {
             this->outputLoci=true;
         }
@@ -83,6 +90,9 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
         if (string(argv[i]) == "--ostatsjk") {
             this->outputStatsJK=true;
+        }
+        if (string(argv[i]) == "--otree") {
+            this->outputTree=true;
         }
 
 //*****************************************************************************        

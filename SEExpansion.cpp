@@ -110,7 +110,7 @@ bool SEExpansion::isInitialized(){
 
 
     double SEExpansion::getPopSize(const int pos, const double t){            
-        if (t<this->getArrivalTime(pos)&t>0)
+        if (t<this->getArrivalTime(pos)&t>=0)
             return this->k;
         return 0;        
     }

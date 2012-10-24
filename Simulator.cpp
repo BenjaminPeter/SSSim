@@ -113,12 +113,18 @@ Event* Simulator::getNextEvent3() {
     }
     Event* evCoal = this->getNextCoalEvent();
     Event* evMig = this->getNextMigEvent();
-    //cout <<"-------------\ntime:"<<this->timeSinceStart<<endl;
-    //cout <<"propCoal:"<<evCoal->toString();
-    //cout <<"propMig:"<<evMig->toString();//<<evMig->time<<endl;
+    
+    if(Parameters::verbose>999){
+        cout <<"-------------\ntime:"<<this->timeSinceStart<<endl;
+        cout <<"propCoal:"<<evCoal->toString();
+        cout <<"propMig:"<<evMig->toString();//<<evMig->time<<endl;
+    }
     if (this->expansionEvents->size() > 0) {
         pair<double, int>* expansion = &this->expansionEvents->back();
-        //cout <<"propExp:"<<expansion->first-this->timeSinceStart<<"/"<<expansion->second<<endl;
+        
+        if(Parameters::verbose>999)
+            cout <<"propExp:"<<expansion->first-this->timeSinceStart<<"/"<<expansion->second<<endl;
+        
         if (expansion->first < this->timeSinceStart + evCoal->time && expansion->first < this->timeSinceStart + evMig->time) {
             this->addExpansionEvent(expansion);
             this->expansionEvents->pop_back();
@@ -152,8 +158,12 @@ Event* Simulator::getNextCoalEvent() {
     int nl, pos;
     double tEvent;
     double rMax = this->coalRejFunction(this->timeSinceStart);
+    if(Parameters::verbose>1999)
+        cout <<"getNextCoalEvent::rMax:" <<rMax<<endl;
 
     tEvent = this->ut->nhpp2((void*) this, rMax, &Simulator::wrapper_coalRejFunction, this->timeSinceStart, false);
+    if(Parameters::verbose>1999)
+        cout <<"getNextCoalEvent::tEvent:" <<tEvent  <<endl;
     return this->whichCoalEvent(tEvent);
 }
 
@@ -168,6 +178,10 @@ double Simulator::coalRejFunction(const double t) {
         sample = iter->second;
         nl = sample->getNlineages();
         pSize = this->migrationScheme->getPopSize(pos, t);
+        if(Parameters::verbose>1999){
+            cout <<"coalRejFunction:: ["<<pos<<"\t"<<nl<<"\t"<<pSize<<"]"<<endl;        
+        }
+        
         if (pSize != 0)
             lambdaT += nl * (nl - 1.) / 2. / pSize;
     }
@@ -439,11 +453,15 @@ void Simulator::addMigrationEvent(Event* ev) {
 }
 
 void Simulator::addExpansionEvent(pair<double, int>* ev) {
+
     int pos = ev->second;
     int* arr = this->migrationScheme->coords1d2d(pos);
     int x = arr[0];
     int y = arr[1];
     delete[] arr;
+        if(Parameters::verbose>499){
+        cout <<"["<<ev->first<<"]:Expansion in deme ("<<x<<","<<y<<")"<<endl;
+    }
 
     int k = this->migrationScheme->getExpansionK(x, y);
     double pDir[4], mRate[4], rTot = 0, randomNumber;
@@ -629,7 +647,7 @@ Lineage* Simulator::getNewGeneTree() {
     int evc = 0;
     while (true) {
         ev = this->getNextEvent3();
-        if (DEBUG) cout << this->timeSinceStart << "\t" << ev->toString() << endl;
+        if (Parameters::verbose>999) cout << "["<<this->timeSinceStart<<"]:" << ev->toString() << endl;
         if (ev->type == 0) {
             delete ev;
             break;
@@ -692,10 +710,23 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     this->propagulePoolMigration = params->mPropagulePool;
 
     Lineage* l;
+    ofstream f;
+
+    if(params->outputTree){
+        char s[100];
+        sprintf(s, "%s.tree", params->outputPrefix.c_str());
+        f.open(s, ios::out);   
+    }
+    
     for (int r = 0; r < nReplicates; r++) {
         //cout<<r<<nReplicates<<float(r)/nReplicates<<endl;
         utils::printProgressBar(100*r/nReplicates,"computing trees");
         l = this->getNewGeneTree();
+      
+        
+        if(params->outputTree)
+            f << l->toString()<<endl;
+        
 
         l->addToFreqTable(ft);
         l->addToFreqTable(ftShared,true);
@@ -723,6 +754,8 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
         nMigrations += this->nMigrationEvents;
         delete l;
     }
+    if(params->outputTree)
+        f.close();
     cout <<"done!"<<endl;
 
     tmrca /= nReplicates;

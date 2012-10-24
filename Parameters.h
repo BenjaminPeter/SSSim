@@ -36,7 +36,14 @@ public:
     int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
     bool outputSFS,outputFT,outputSNP,outputSNPShared,outputStats,outputStatsJK;
-
+    bool outputTree;
+    static int verbose; //verbosity level:
+    /*for now
+     * 0: no output
+     * 1: very basic
+     * 1000: highly messy low level debugging
+     
+     */
     bool mPropagulePool,outputLoci;
     int nSNP; //how many SNP should be sampled
 
@@ -44,6 +51,7 @@ public:
 private:
 
 };
+
 
 #endif	/* PARSEARGS_H */
 

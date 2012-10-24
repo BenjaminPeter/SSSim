@@ -104,6 +104,7 @@ int main(int argc, char* argv[]) {
         //printing SFS
         int n = 0;
         for (int i = 0; i < (params->samples.size() - 1); i++) {
+            utils::printProgressBar(n/params->samples.size()/(params->samples.size()-1)*2,"printing sfs ");
             for (int j = i + 1; j < params->samples.size(); j++) {
                 char s[100];
                 sprintf(s, "%s_%d_%d.sfs", params->outputPrefix.c_str(), i, j);
@@ -119,9 +120,9 @@ int main(int argc, char* argv[]) {
 
     if (params->outputSNPShared) {
         //generate & print SNP
-        vector<vector<int> >*snps = res->simulateSNPN(true);
+        vector<vector<int>* >*snps = res->simulateSNPN(true);
         sprintf(s, "%s.snps", params->outputPrefix.c_str());
-        vector<vector<int> >::const_iterator it1;
+        vector<vector<int>* >::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -129,7 +130,7 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = it1->begin(); it2 != it1->end(); ++it2) {
+            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {
@@ -145,9 +146,9 @@ int main(int argc, char* argv[]) {
     
     if (params->outputSNP) {
         //generate & print SNP
-        vector<vector<int> >*snps = res->simulateSNPN(false);
+        vector<vector<int>* >*snps = res->simulateSNPN(false);
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
-        vector<vector<int> >::const_iterator it1;
+        vector<vector<int>* >::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -155,7 +156,7 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = it1->begin(); it2 != it1->end(); ++it2) {
+            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {
