@@ -9,7 +9,7 @@
 #include "Parameters.h"
 #include <stdio.h>
 
-#define DEBUG 0
+
 
 Simulator::Simulator(long seed) {
     this->verbose = false;
