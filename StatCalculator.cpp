@@ -44,13 +44,13 @@ double StatCalculator::getFST(SFS* sfs) {
             double entry = sfs->getEntry(i, j);
             pi1 += entry * i * (n1 - i);
             pi2 += entry * j * (n2 - j);
-            pib += entry * (i + j)*((n1 + n2)-(i + j));
+            pib += entry * (i * (n2 - j)+ j * (n1 - i));
             //printf("i: %d; j: %d; n1: %d; n2: %d sfs: %f pi: %f\n",i,j,n1,n2,entry,entry*i*(n1-i));
         }
     }
     pi1 /= (n1 * (n1 - 1) / 2);
     pi2 /= (n2 * (n2 - 1) / 2);
-    pib /= ((n1 + n2)*((n1 + n2) - 1) / 2);
+    pib /= (n1 * n2);
     //printf("pi1: %f; pi2: %f; pib: %f\n",pi1,pi2,pib);
     return 1. - (pi1 + pi2) / 2 / pib;
 
