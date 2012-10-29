@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "stdio.h"
 
+gsl_rng* utils::rng=NULL;
 utils::utils(long seed){
     this->setupRng(seed);
     this->stirlingNumberMatrix=0;
@@ -17,7 +18,7 @@ utils::utils(long seed){
     this->stirlingNumberMax=0;
 }
 utils::~utils(){
-    gsl_rng_free (this->rng);
+    gsl_rng_free (utils::rng);
     if (this->stirlingNumbersReady && this->stirlingNumberMatrix!=NULL&& this->stirlingNumberMatrixD!=NULL){
         for (int i=0; i<this->stirlingNumberMax;i++){
             delete[] this->stirlingNumberMatrix[i];
@@ -35,27 +36,27 @@ void utils::setupRng(long seed){
         seed           = time(NULL) * getpid();
     }
     //printf("rng initialized with seed %ld\n",seed);    
-    gsl_rng_set(this->rng,seed);
+    gsl_rng_set(utils::rng,seed);
 }
 int* utils::random2(const int n){
     int* arr = new int[2];
-    arr[0]= gsl_rng_uniform_int (this->rng, n);
-    arr[1] =gsl_rng_uniform_int (this->rng, n-1);
+    arr[0]= gsl_rng_uniform_int (utils::rng, n);
+    arr[1] =gsl_rng_uniform_int (utils::rng, n-1);
     return arr;   
 }
 
 int utils::random1(const int n){
-    return gsl_rng_uniform_int (this->rng, n);
+    return gsl_rng_uniform_int (utils::rng, n);
 }
 
 double utils::randomD(const double n){
-    return gsl_rng_uniform(this->rng)*n;
+    return gsl_rng_uniform(utils::rng)*n;
 }
 
 double utils::rexp(const double rate){
     if (rate==0)
         return GSL_POSINF;
-    return gsl_ran_exponential(this->rng,1./rate);
+    return gsl_ran_exponential(utils::rng,1./rate);
 
 }
 
@@ -63,27 +64,34 @@ int utils::rpois(const double lambda){
     if (lambda==0){
         return 0;
     }
-    return gsl_ran_poisson(this->rng,lambda);
+    return gsl_ran_poisson(utils::rng,lambda);
 }
 
 unsigned int* utils::rmultinom(int nTrials, int size, double* probabilities){
     unsigned int* res = new unsigned int[size];
-    gsl_ran_multinomial(this->rng,size,nTrials,probabilities,res);
+    gsl_ran_multinomial(utils::rng,size,nTrials,probabilities,res);
     return res;
+}
+
+void utils::rshuffle(std::vector<vector<int> >* toShuffle){
+    int (*fp)(int)=utils::random1;
+//    typedef int (utils::*BLA) (int);
+//    BLA fp = &utils::random1;
+    random_shuffle(toShuffle->begin(),toShuffle->end(),fp);   
 }
 
 double utils::nhpp(double rMax, double(*rejFunction)(const double) , bool isConst){
     if (rMax==0)
         return GSL_POSINF;
     if (isConst)
-        return gsl_ran_exponential(this->rng,1./rMax);
+        return gsl_ran_exponential(utils::rng,1./rMax);
                 
     int nRejections=0;
     int maxRejections=10000;
     double rve,rvu;
     while (nRejections<maxRejections){
-        rve     =       gsl_ran_exponential(this->rng,1./rMax);
-        rvu     =       gsl_rng_uniform(this->rng);
+        rve     =       gsl_ran_exponential(utils::rng,1./rMax);
+        rvu     =       gsl_rng_uniform(utils::rng);
         if (rejFunction(rve)/rMax < rvu)
             return rve;
         nRejections++;
@@ -99,14 +107,14 @@ double utils::nhpp2(void* obj, double rMax, double (*rejFunction)(void* obj, con
     if (rMax==GSL_POSINF)
         return 0;
     if (isConst)
-        return gsl_ran_exponential(this->rng,1./rMax);
+        return gsl_ran_exponential(utils::rng,1./rMax);
                 
     int nRejections=0;
     int maxRejections=10000;
     double rve,rvu;
     while (nRejections<maxRejections){
-        rve     =       gsl_ran_exponential(this->rng,1./rMax);
-        rvu     =       gsl_rng_uniform(this->rng);
+        rve     =       gsl_ran_exponential(utils::rng,1./rMax);
+        rvu     =       gsl_rng_uniform(utils::rng);
         tmp=rejFunction(obj,rve+tAdd);
         //no event happens
         if (tmp==0){

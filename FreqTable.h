@@ -16,7 +16,7 @@
 using namespace std;
 class FreqTable {
 public:
-    FreqTable(utils* ut, int nPops);    
+    FreqTable(int nPops);    
     virtual ~FreqTable();
     string toString();
     int nPops;
@@ -36,7 +36,6 @@ public:
 private:
     FreqTable(const FreqTable& orig);
     double tTot;
-    utils* ut;
     int nEntries;
     
 };

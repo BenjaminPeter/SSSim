@@ -79,7 +79,7 @@ bool** SequenceSimulator::createSequenceMatrix(Lineage* l){
     for(int i=0;i<nChildren;i++){
         dataSet[i]=new bool[MAXSNP];
     }
-    l->addSubtreeSNP(this->ut,dataSet,sPos,nSNP,nChildren,theta);
+    l->addSubtreeSNP(dataSet,sPos,nSNP,nChildren,theta);
     //l->getSNPString(l->childIds.size());
     
     /*cur=l;

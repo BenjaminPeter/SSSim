@@ -66,7 +66,7 @@ public:
     virtual void addSubtreeToSFS(SFS* sfs,int pop1){
         cerr<<"shoulndt be here: Lineage::addSubtreeToSFS "<<endl;
     }    
-    virtual void addSubtreeSNP(utils* ut, bool** dataSet,string* sPos, int nSNP, 
+    virtual void addSubtreeSNP(bool** dataSet,string* sPos, int nSNP, 
                                 const int nChildren, 
                                 const double theta){/*
         stringstream ss;

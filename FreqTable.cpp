@@ -12,9 +12,8 @@
 #include "FreqTable.h"
 #include "Parameters.h"
 
-FreqTable::FreqTable(utils* ut, int nPops) {
+FreqTable::FreqTable(int nPops) {
     this->nPops = nPops;
-    this->ut = ut;
 }
 
 FreqTable::FreqTable(const FreqTable& orig) {
@@ -77,7 +76,7 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
  */
 vector<int> FreqTable::drawSNP(){
     boost::unordered_map<vector<int>,double>::const_iterator iter;
-    double rn = this->ut->randomD(this->tTot);
+    double rn = utils::randomD(this->tTot);
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
         rn -= iter->second;
         if(rn <0){
@@ -91,7 +90,7 @@ vector<int> FreqTable::drawSNP(){
  */
 
 vector<vector<int> >* FreqTable::drawSNP(double theta){
-    int nSNP = this->ut->rpois(theta);
+    int nSNP = utils::rpois(theta);
     return this->drawSNP(nSNP);
 }
 
@@ -125,18 +124,21 @@ vector<vector<int> >* FreqTable::drawSNP(int nSNP){
     }
     if (Parameters::verbose>99) cout << "copied freqTable: "<<this->nEntries<<endl;
     
-    unsigned int* snp=this->ut->rmultinom(nSNP,nEntries,&branchLengths[0]);
+    unsigned int* snp=utils::rmultinom(nSNP,nEntries,&branchLengths[0]);
     if (Parameters::verbose>99) cout << "got SNP pos: "<<this->nEntries<<endl;
     
-    gsl_ran_shuffle (ut->rng, snp, nSNP, sizeof(unsigned int) );
-    if (Parameters::verbose>99) cout << "done randomizing: " <<endl;
     
-    for(int i=0; i<nSNP;++i){
-        (*snpFinal)[i] = snpRows[snp[i]];
+    for(int i=0; i<this->nEntries;++i){
+        for(int j=0; j<snp[i];++j){
+            
+            snpFinal->push_back( snpRows[i]);
+        }
     }
     if (Parameters::verbose>99) cout << "got SNP: "<<endl;
+    utils::rshuffle(snpFinal);
+    if (Parameters::verbose>99) cout << "done randomizing: " <<endl;
     
-    
+
     
     cout <<"done!"<<endl;
     return snpFinal;

@@ -22,8 +22,8 @@ using namespace std;
 class Sample {
 public:
     //static int ns;
-    Sample(int x, int y, vector<Lineage*> lineages,utils* ut);
-    Sample(int* pos, vector<Lineage*> lineages,utils * ut);
+    Sample(int x, int y, vector<Lineage*> lineages);
+    Sample(int* pos, vector<Lineage*> lineages);
     Sample(const Sample& orig,int nPops);    
     //Sample(Coords* pos, vector<Lineage*> lineages);
 

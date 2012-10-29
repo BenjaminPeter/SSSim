@@ -8,21 +8,19 @@
 #include "Sample.h"
 using namespace std;
 
-Sample::Sample(int x, int y, vector<Lineage *> lineages, utils* ut) {
+Sample::Sample(int x, int y, vector<Lineage *> lineages) {
     this->x=x;
     this->y=y;
     this->lineages=lineages;
     this->nLineages=lineages.size();
-    this->ut=ut;
     //Sample::ns++;
     //cout<<"created sample a"<<this->ns<<endl;        
 }
-Sample::Sample(int* pos, vector<Lineage *> lineages, utils* ut) {
+Sample::Sample(int* pos, vector<Lineage *> lineages) {
     this->x=pos[0];
     this->y=pos[1];
     this->lineages=lineages;
     this->nLineages=lineages.size();
-    this->ut=ut;
     //this->ns++;        
     //cout<<"created sample b"<<this->ns<<endl;
 }
@@ -37,7 +35,6 @@ Sample::Sample(const Sample& orig,int nPops) {
         nl = new TerminalLineage(*orig.lineages[i],nPops);
         this->lineages.push_back(nl);
     }
-    this->ut=orig.ut;
     //this->ns++;
     //cout<<"created sample cp"<<this->ns<<endl;
 }
@@ -82,18 +79,18 @@ void Sample::deleteAllLineages(){
     this->lineages.clear();    
 }
 void Sample::merge2randomLineages(double curTime){
-    int*lids=this->ut->random2(this->nLineages);
+    int*lids=utils::random2(this->nLineages);
     this->merge2lineages(lids[0],lids[1],curTime);
     delete[] lids;
 }
 
 Lineage* Sample::getRandomLineage(){
-    int lid1 = this->ut->random1(this->nLineages);
+    int lid1 = utils::random1(this->nLineages);
     Lineage * l1 = this->lineages[lid1];
     return l1;
 }
 Lineage* Sample::getRandomLineageForMigration(){
-    int lid1 = this->ut->random1(this->nLineages);
+    int lid1 = utils::random1(this->nLineages);
     Lineage * l1 = this->lineages[lid1];
     this->lineages[lid1] = this->lineages[this->nLineages-1];
     this->lineages.resize(this->nLineages-1,NULL);

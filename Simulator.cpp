@@ -91,7 +91,7 @@ void Simulator::addSampleStart(int x, int y, int nNewLineages,bool outputLoci,st
         //printf("%s",l->toString().c_str());
         newLineages.push_back(l);
     }
-    Sample* newSample = new Sample(x, y, newLineages, this->ut);
+    Sample* newSample = new Sample(x, y, newLineages);
     this->nLineagesStart += nNewLineages;
     this->nSamplesStart++;
     this->sampMapStart.insert(pair<int, Sample*>(pos, newSample));
@@ -232,7 +232,7 @@ Event* Simulator::getNextMigEvent() {
     double tEvent;
 
 
-    tEvent = this->ut->nhpp2((void*) this, rMax, &Simulator::wrapper_migRejFunction, this->timeSinceStart, false);
+    tEvent = utils::nhpp2((void*) this, rMax, &Simulator::wrapper_migRejFunction, this->timeSinceStart, false);
     return this->whichMigEvent(tEvent);
 }
 
@@ -283,7 +283,7 @@ Event* Simulator::whichMigEvent(double t) {
             lambdaT += nl * (mNorth + mSouth + mEast + mWest) / pSize;
     }
     if (lambdaT < 0.000000001) return new Event(0, NULL, 100000000000);
-    double randomNumber = this->ut->randomD(lambdaT);
+    double randomNumber = utils::randomD(lambdaT);
 
     for (iter = this->sampMap.begin(); iter != this->sampMap.end(); ++iter) {
         pos = iter->first;
@@ -440,7 +440,7 @@ void Simulator::addMigrationEvent(Event* ev) {
     } else {
         vector<Lineage*> newLineages;
         newLineages.push_back(migLineage);
-        Sample* newSample = new Sample(newX, newY, newLineages, this->ut);
+        Sample* newSample = new Sample(newX, newY, newLineages);
         this->sampMap.insert(pair<int, Sample*>(newCoords, newSample));
         this->nSamples += 1;
     }
@@ -705,8 +705,8 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     double tmrca = 0;
     int nMigrations = 0;
     SFS* sfs;
-    FreqTable* ft = new FreqTable(this->ut, params->samples.size());
-    FreqTable* ftShared = new FreqTable(this->ut, params->samples.size());
+    FreqTable* ft = new FreqTable(params->samples.size());
+    FreqTable* ftShared = new FreqTable(params->samples.size());
     this->propagulePoolMigration = params->mPropagulePool;
 
     Lineage* l;
