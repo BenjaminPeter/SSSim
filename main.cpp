@@ -120,9 +120,9 @@ int main(int argc, char* argv[]) {
 
     if (params->outputSNPShared) {
         //generate & print SNP
-        vector<vector<int>* >*snps = res->simulateSNPN(true);
+        vector<vector<int> >*snps = res->simulateSNPN(true);
         sprintf(s, "%s.snps", params->outputPrefix.c_str());
-        vector<vector<int>* >::const_iterator it1;
+        vector<vector<int> >::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
+            for (it2 = (it1)->begin(); it2 != (it1)->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {
@@ -146,9 +146,9 @@ int main(int argc, char* argv[]) {
     
     if (params->outputSNP) {
         //generate & print SNP
-        vector<vector<int>* >*snps = res->simulateSNPN(false);
+        vector<vector<int> >*snps = res->simulateSNPN(false);
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
-        vector<vector<int>* >::const_iterator it1;
+        vector<vector<int> >::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
+            for (it2 = (it1)->begin(); it2 != (it1)->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {

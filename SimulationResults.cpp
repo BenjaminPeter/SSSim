@@ -150,7 +150,7 @@ double* SimulationResults::jackknifeDeltaH() {
  * this function simulates a set of SNP according to theta and the total tree 
  * length from the frequency table
  */
-vector<vector<int>* >* SimulationResults::simulateSNPTheta(bool shared) {
+vector<vector<int> >* SimulationResults::simulateSNPTheta(bool shared) {
     if (theta<0){
         cerr<< "theta not set" <<endl;
         throw 10;
@@ -165,7 +165,7 @@ vector<vector<int>* >* SimulationResults::simulateSNPTheta(bool shared) {
 /*
  * this function simulates a set of N SNP 
  */
-vector<vector<int>* >* SimulationResults::simulateSNPN(bool shared) {
+vector<vector<int> >* SimulationResults::simulateSNPN(bool shared) {
     
     if (shared){
         return this->ftShared->drawSNP(this->nSNP);

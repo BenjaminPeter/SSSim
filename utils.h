@@ -36,6 +36,7 @@ public:
     long double getStirlingNumberD(int i,int j);
     long int fallingFactorial(int n, int j);   
     long double logFallingFactorial(int n, int j);  
+    unsigned int* rmultinom(int nTrials, int size, double* probabilities);
     static void printProgressBar(int percent,std::string label="");
 private:
     long int ** stirlingNumberMatrix;

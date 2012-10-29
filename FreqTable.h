@@ -24,9 +24,9 @@ public:
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
     void addLine(double length, int* pops, bool checkShared=false);
-    vector<int>* drawSNP();
-    vector<vector<int>* >* drawSNP(int nSNP);
-    vector<vector<int>* >* drawSNP(double theta);
+    vector<int> drawSNP();
+    vector<vector<int> >* drawSNP(int nSNP);
+    vector<vector<int> >* drawSNP(double theta);
 
     double getTTot() const {
         return tTot;

@@ -66,6 +66,12 @@ int utils::rpois(const double lambda){
     return gsl_ran_poisson(this->rng,lambda);
 }
 
+unsigned int* utils::rmultinom(int nTrials, int size, double* probabilities){
+    unsigned int* res = new unsigned int[size];
+    gsl_ran_multinomial(this->rng,size,nTrials,probabilities,res);
+    return res;
+}
+
 double utils::nhpp(double rMax, double(*rejFunction)(const double) , bool isConst){
     if (rMax==0)
         return GSL_POSINF;

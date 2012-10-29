@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "FreqTable.h"
+#include "Parameters.h"
 
 FreqTable::FreqTable(utils* ut, int nPops) {
     this->nPops = nPops;
@@ -74,14 +75,13 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
 /*
  * draws a single SNP from the frequency table
  */
-vector<int>* FreqTable::drawSNP(){
+vector<int> FreqTable::drawSNP(){
     boost::unordered_map<vector<int>,double>::const_iterator iter;
     double rn = this->ut->randomD(this->tTot);
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
         rn -= iter->second;
         if(rn <0){
-            vector<int>* v= new vector<int>(iter->first);
-            return v;
+            return iter->first;
         }
     }    
 }
@@ -90,22 +90,56 @@ vector<int>* FreqTable::drawSNP(){
  * draws a set of n SNP according to some theta
  */
 
-vector<vector<int>* >* FreqTable::drawSNP(double theta){
+vector<vector<int> >* FreqTable::drawSNP(double theta){
     int nSNP = this->ut->rpois(theta);
     return this->drawSNP(nSNP);
 }
 
 /*
- * draws n SNP
+ * draws n SNP, old version  that draws one snp at a time
  */
-vector<vector<int>* >* FreqTable::drawSNP(int nSNP){
-    vector<vector<int>* >* v = new vector<vector<int>* >(nSNP);
+/*vector<vector<int> >* FreqTable::drawSNP(int nSNP){
+    vector<vector<int> >* v = new vector<vector<int>* >(nSNP);
     for(int i=0; i<nSNP; ++i){
         utils::printProgressBar(100*i/nSNP,"drawing SNP");
-        (*v)[i]=this->drawSNP();
+        v[i]=this->drawSNP();
     }
     cout <<"done!"<<endl;
     return v;
+}*/
+/*
+ * draws n SNP, new version that draws from a multinomial, maybe faster?
+ */
+vector<vector<int> >* FreqTable::drawSNP(int nSNP){
+    if (Parameters::verbose>99) cout << "FreqTable::drawSNP:nEntries: "<<this->nEntries<<endl;
+    vector<vector<int> > snpRows;
+    vector<vector<int> >* snpFinal = new vector<vector<int> >();
+    vector<double > branchLengths;
+    snpRows.reserve(this->nEntries);
+    snpFinal->reserve(nSNP);
+    branchLengths.reserve(this->nEntries);
+    
+    for(boost::unordered_map<vector<int>, double>::const_iterator it = this->freqs.begin(); it!=this->freqs.end(); ++it){
+        snpRows.push_back(it->first);
+        branchLengths.push_back(it->second);
+    }
+    if (Parameters::verbose>99) cout << "copied freqTable: "<<this->nEntries<<endl;
+    
+    unsigned int* snp=this->ut->rmultinom(nSNP,nEntries,&branchLengths[0]);
+    if (Parameters::verbose>99) cout << "got SNP pos: "<<this->nEntries<<endl;
+    
+    gsl_ran_shuffle (ut->rng, snp, nSNP, sizeof(unsigned int) );
+    if (Parameters::verbose>99) cout << "done randomizing: " <<endl;
+    
+    for(int i=0; i<nSNP;++i){
+        (*snpFinal)[i] = snpRows[snp[i]];
+    }
+    if (Parameters::verbose>99) cout << "got SNP: "<<endl;
+    
+    
+    
+    cout <<"done!"<<endl;
+    return snpFinal;
 }
 
 int FreqTable::getNEntries(){

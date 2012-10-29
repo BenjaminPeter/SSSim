@@ -35,8 +35,8 @@ public:
     double* jackknifeFST();
     double* jackknifePsi();
     double* jackknifeDeltaH();
-    vector<vector<int>* >* simulateSNPTheta(bool shared=false);
-    vector<vector<int>* >* simulateSNPN(bool shared=false);
+    vector<vector<int> >* simulateSNPTheta(bool shared=false);
+    vector<vector<int> >* simulateSNPN(bool shared=false);
     static double doJackknife(int n, double* v);
 private:
     double theta;
