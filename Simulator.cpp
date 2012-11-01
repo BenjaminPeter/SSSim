@@ -545,6 +545,9 @@ void Simulator::addExpansionEvent(pair<double, int>* ev) {
             for (int i = 0; i < 4; i++) {
                 randomNumber -= pDir[i] * mRate[i];
                 if (randomNumber < 0) {
+                    if(Parameters::verbose>999){
+                        cout <<"Deme("<<x<<","<<y<<"); ppMigration: direction"<<i<<endl;
+                    }
                     direction = i;
                     break;
                 }

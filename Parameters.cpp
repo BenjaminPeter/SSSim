@@ -98,7 +98,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 //*****************************************************************************        
 //*******     migration options                                        ********
 //***************************************************************************** 
-        if (string(argv[i]) == "-mpp") {
+        if (string(argv[i]) == "--mpp") {
             this->mPropagulePool=true;
         }
 
@@ -131,7 +131,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
 
         //adds sampling grid with -sgrid x0,y0,xend,yend,distance
-        if(string(argv[i]) == "-sgrid"){
+        if(string(argv[i]) == "--sgrid"){
             int xStart = atoi(argv[i+1]);
             int yStart = atoi(argv[i+2]);
             int xEnd = atoi(argv[i+3]);
