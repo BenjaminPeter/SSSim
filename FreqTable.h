@@ -13,6 +13,8 @@
 #include "utils.h"
 #include "SNPTable.h"
 
+
+class SNPTable;
 using namespace std;
 class FreqTable {
 public:
@@ -20,13 +22,13 @@ public:
     virtual ~FreqTable();
     string toString();
     int nPops;
-    boost::unordered_map<vector<int>, double> freqs;
+    boost::unordered_map<vector<int>*, double> freqs;
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
     void addLine(double length, int* pops, bool checkShared=false);
-    vector<int> drawSNP();
-    vector<vector<int> >* drawSNP(int nSNP);
-    vector<vector<int> >* drawSNP(double theta);
+    vector<int>* drawSNP();
+    SNPTable* drawSNP(int nSNP);
+    SNPTable* drawSNP(double theta);
 
     double getTTot() const {
         return tTot;

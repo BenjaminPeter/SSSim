@@ -15,7 +15,7 @@ public:
     SFS(){size1=0;data=0;size2=0;tTot=0;normalized=false;};
     SFS(const SFS& orig);   
     SFS(int s1,int s2);
-
+    SFS(int s1);
     
     virtual ~SFS();
     string toString();
@@ -56,7 +56,7 @@ public:
 
 
 
-    SFS(int s1);
+
 private:
 
     double** data;

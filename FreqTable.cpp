@@ -30,10 +30,10 @@ FreqTable::~FreqTable() {
 string FreqTable::toString() {
     stringstream ss;
     std::cout <<"tTot:"<<"\t"<<this->tTot<<endl;
-    boost::unordered_map<vector<int>, double>::iterator iter;
+    boost::unordered_map<vector<int>*, double>::iterator iter;
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
 
-        const vector<int>* v = &iter->first;
+        const vector<int>* v = iter->first;
         double length = iter->second;
         if (length > 0) {
             ss << length / this->tTot;
@@ -48,10 +48,10 @@ string FreqTable::toString() {
 
 void FreqTable::addLine(double length, int* pops,bool checkShared) {
     
-    vector<int> vect(pops, pops + this->nPops);
+    vector<int>* vect= new vector<int>(pops, pops + this->nPops);
     if(checkShared){
         int nShared=0;
-        for(vector<int>::const_iterator it=vect.begin();it != vect.end(); ++it){
+        for(vector<int>::const_iterator it=vect->begin();it != vect->end(); ++it){
             if(*it>0){
                 nShared++;
             }
@@ -60,12 +60,23 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
             return;
     }
     //cout <<"vect"<<vect[0]<<"\t"<<vect[1]<<endl;
-    if (this->freqs.find(vect) != this->freqs.end()) {
+    boost::unordered_map<vector<int>*,double>::iterator it;
+    bool newEntry=true;
+    for(it = this->freqs.begin(); it != this->freqs.end(); ++it){
+        vector<int>* a= it->first;
+        if ( *a == *vect){
+            this->freqs[vect] += length;
+            newEntry = false;
+            break;
+        }
+    }
+    if (newEntry){
+    //if (this->freqs.find(vect) != this->freqs.end()) {
        // cout << "found"<<"\t"<<this->freqs[vect];
-        this->freqs[vect] += length;
+//        this->freqs[vect] += length;
         //cout << "\t"<<this->freqs[vect]<<endl;
-    } else {
-        this->freqs.insert(pair<vector<int>, double >(vect, length));
+  //  } else {
+        this->freqs.insert(pair<vector<int>*, double >(vect, length));
         this->nEntries++;
     }
     this->tTot += length;
@@ -74,8 +85,8 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
 /*
  * draws a single SNP from the frequency table
  */
-vector<int> FreqTable::drawSNP(){
-    boost::unordered_map<vector<int>,double>::const_iterator iter;
+vector<int>* FreqTable::drawSNP(){
+    boost::unordered_map<vector<int>*,double>::const_iterator iter;
     double rn = utils::randomD(this->tTot);
     for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
         rn -= iter->second;
@@ -89,7 +100,7 @@ vector<int> FreqTable::drawSNP(){
  * draws a set of n SNP according to some theta
  */
 
-vector<vector<int> >* FreqTable::drawSNP(double theta){
+SNPTable* FreqTable::drawSNP(double theta){
     int nSNP = utils::rpois(theta);
     return this->drawSNP(nSNP);
 }
@@ -106,19 +117,22 @@ vector<vector<int> >* FreqTable::drawSNP(double theta){
     cout <<"done!"<<endl;
     return v;
 }*/
+
 /*
  * draws n SNP, new version that draws from a multinomial, maybe faster?
  */
-vector<vector<int> >* FreqTable::drawSNP(int nSNP){
+SNPTable* FreqTable::drawSNP(int nSNP){
     if (Parameters::verbose>99) cout << "FreqTable::drawSNP:nEntries: "<<this->nEntries<<endl;
-    vector<vector<int> > snpRows;
-    vector<vector<int> >* snpFinal = new vector<vector<int> >();
+    vector<vector<int>* > snpRows;
+    vector<vector<int>* >* snpFinal = new vector<vector<int>* >();
     vector<double > branchLengths;
     snpRows.reserve(this->nEntries);
     snpFinal->reserve(nSNP);
     branchLengths.reserve(this->nEntries);
     
-    for(boost::unordered_map<vector<int>, double>::const_iterator it = this->freqs.begin(); it!=this->freqs.end(); ++it){
+    
+    boost::unordered_map<vector<int>*, double>::iterator it;
+    for(it = this->freqs.begin(); it!=this->freqs.end(); ++it){
         snpRows.push_back(it->first);
         branchLengths.push_back(it->second);
     }
@@ -141,9 +155,11 @@ vector<vector<int> >* FreqTable::drawSNP(int nSNP){
 
     
     cout <<"done!"<<endl;
-    return snpFinal;
+    SNPTable* st = new SNPTable(snpFinal,nSNP,this->nPops);
+    return st;
 }
 
 int FreqTable::getNEntries(){
     return this->nEntries;
 }
+

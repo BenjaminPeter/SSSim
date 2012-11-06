@@ -18,6 +18,7 @@ public:
     static double getDeltaH(SFS* sfs);
     static double getFST(SFS* sfs);
     static double getPsi(SFS* sfs);
+    static double getH(SFS* sfs);
 private:
 
 };

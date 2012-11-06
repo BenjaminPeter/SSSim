@@ -13,24 +13,79 @@
 using namespace std;
 
 int Parameters::verbose=0;
+boost::unordered_map<int,Sample*> Parameters::sampMapStart=boost::unordered_map<int,Sample*>();
+int Parameters::nLineagesStart=0;
+int Parameters::nSamplesStart=0;
+int* Parameters::sampleSizes = NULL;
+
+
+void Parameters::printHelp(){
+    cout << "Usage and options: /sssim <number of trees>"<<endl;
+    cout <<"\t-t"<<"\ttheta = 4Nmu for generation of SNP"<<endl;
+    cout <<"\t--theta"<<"\tsame as -t"<<endl;
+    cout <<"\t-N"<<"\tnumber of SNP to sample, cannot be set at the same time with -t"<<endl;
+    cout <<"\t-h"<<"\tshows this help dialog"<<endl;
+    cout <<"\t--help"<<"\tsame as -h"<<endl;
+    cout <<"\t--verbose\t"<<"debug level, the higher, the more detailed debug messages will be displayed"<<endl;
+    cout <<"\t--mpp\t"<<"use migrant pool propagatin"<<endl;
+    cout <<endl;
+    
+    cout <<"\t-o <prefix>\t"<<"defines an output prefix, defaults to out_"<<endl;
+    cout <<"\t--oloci\t"<<"outputs a file (*.loc) with the sample locations"<<endl;
+    cout <<"\t--osfs\t"<<"outputs a file (*.loc) with pairwise SFS"<<endl;
+    cout <<"\t--oft\t"<<"outputs a file (*.ft) with frequency table"<<endl;
+    cout <<"\t--osnp\t"<<"ouputs a file (*.snp) with SNPs drawn from the generated trees"<<endl;
+    cout <<"\t--osnps\t"<<"ouputs a file (*.snps) with SNPs drawn from the generated trees shared between at least two populations"<<endl;
+    cout <<"\t--ostats\t"<<"outputs a file (*.stats) with FST, psi and DH"<<endl;
+    cout <<"\t--ostatsJK\t"<<"outputs a file (*.statsjk) with FST, psi and DH, along with se based on Jackknife (NOT WORKING)"<<endl;
+    cout <<"\t--otree\t"<<"outputs a file (*.tree) with the trees simualted in newick format"<<endl;
+    cout <<endl;
+    
+    cout <<"\t-s <x> <y> <n>\t"<<"adds a new sample of size n at location (x,y)"<<endl;
+    cout <<"\t--sseq <x> <ystart> <yend> <n> [offset]\t"<<"adds a sequence of samples"<<endl;
+    cout <<"\t--sseqd <x> <ystart> <yend> <n> [offset]\t"<<"adds a diagonal sequence of samples"<<endl;
+    cout <<"\t--sgrid <x0> <y0> <xend> <yend> <offset> <n>\t"<<"adds grid of samples from (x0,y0) to (xend,yend), with offset k and sample size n"<<endl;
+    cout <<endl;
+    
+    cout <<"\t--ibd <w> <h> <N> <m>\t"<<"adds ibd migration scheme on a w x h grid with deme size N and scaled migration rate m"<<endl;
+    cout <<"\t--ibde <w> <h> <N> <m_a> <m_b> <x_s> <x_e>\t"<<endl;
+    cout <<"\t--see <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag>\t"<<endl;
+    cout <<"\t--seedk <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag> <centralArea> <kCentral>\t"<<endl;
+    cout <<endl;
+    cout <<"\t\t<mandatory arguments in angle brackets>"<<endl;
+    cout <<"\t\t[optional arguments in square brackets]"<<endl;
+    exit;
+}
+
+
 Parameters::Parameters(int argc, char* argv[]) {
     for (int i=0; i<argc;i++){
         cout <<argv[i]<<" ";
     }
     cout << endl;
     
+    this->mPropagulePool=false;    
     this->outputPrefix="out_";
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
     this->outputFT=false;
     this->outputSFS=false;
+    
     this->outputSNP=false;
     this->outputSNPShared=false;
+    
     this->outputStats=false;
-    this->outputStatsJK=false;
-    this->mPropagulePool=false;
+    this->outputStatsJK=false;    
+    
+    this->outputSNPStats=false;
+    this->outputSNPSharedStats=false;
+    this->bootstrapSNPSharedStats = 0;
+    this->bootstrapSNPStats = 0;
+       
+    
     this->outputTree=false;
+    
     Parameters::verbose=0;
     this->nSNP=0;
     ss->setTheta(-1);
@@ -42,7 +97,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
 
     while (i < argc) {
-        if (string(argv[i]) == "-t") {
+        if (string(argv[i]) == "-t"||string(argv[i]) == "--theta") {
             if(this->nSNP>0)
                 cerr <<"Warning: Setting theta and N at the same time"<<endl;
             ss->setTheta(atof(argv[i + 1]));
@@ -61,6 +116,10 @@ Parameters::Parameters(int argc, char* argv[]) {
 //*****************************************************************************        
 //*******     output options                                             ********
 //***************************************************************************** 
+        if (string(argv[i]) == "-h"||string(argv[i]) == "--help") {
+            this->printHelp();
+            return;
+        }
         if (string(argv[i]) == "-o") {
             this->outputPrefix=argv[i+1];
             //cout << this->outputPrefix << endl;
@@ -70,6 +129,26 @@ Parameters::Parameters(int argc, char* argv[]) {
             Parameters::verbose=atoi(argv[i+1]);
             i += 1;
         }
+        
+        
+        if (string(argv[i]) == "--osnpstats") {
+            this->outputSNPStats = true;
+        }
+        if (string(argv[i]) == "--osnpsstats") {
+            this->outputSNPSharedStats = true;
+        }
+        if (string(argv[i]) == "--obssnp") {
+            this->bootstrapSNPStats = atoi(argv[i+1]);
+            i +=1;
+        }
+
+        if (string(argv[i]) == "--obssnps") {
+            this->bootstrapSNPSharedStats = atoi(argv[i+1]);
+            i +=1;
+        }
+
+        
+        
         if (string(argv[i]) == "--oloci") {
             this->outputLoci=true;
         }
@@ -116,11 +195,18 @@ Parameters::Parameters(int argc, char* argv[]) {
             i += 3;
         }
 
-        //add sequence of samples with -s x,ystart,yend,n
-        if (string(argv[i]) == "--seq") {
+        //add sequence of samples with -s x,ystart,yend,n [offset]
+        if (string(argv[i]) == "--sseq") {           
             int yStart = atoi(argv[i + 2]);
             int yEnd = atoi(argv[i + 3]);
-            for (int y = yStart; y < yEnd; ++y) {
+            
+            int offset = 1;
+            if(i+5<argc){
+                if (argv[i+5][0] != '-'){
+                    offset=atoi(argv[i+5]);
+                }
+            }
+            for (int y = yStart; y < yEnd; y+=offset) {
                 int* newSample = new int[3];
                 newSample[0] = atoi(argv[i + 1]);
                 newSample[1] = y;
@@ -151,10 +237,18 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
 
         //add diagonal sequence of samples with -s xstart,ystart,yend,n
-        if (string(argv[i]) == "--seqd") {
+        if (string(argv[i]) == "--sseqd") {
             int xStart = atoi(argv[i + 1]);
             int yStart = atoi(argv[i + 2]);
             int yEnd = atoi(argv[i + 3]);
+            
+            int offset = 1;
+            if(i+5<argc){
+                if (argv[i+5][0] != '-'){
+                    offset=atoi(argv[i+5]);
+                }
+            }
+            
             for (int j = 0; j < yEnd - yStart; ++j) {
                 int* newSample = new int[3];
                 newSample[0] = xStart + j;
@@ -310,7 +404,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         if ( this->outputLoci ){
             f << i << "\t"<<x <<"\t"<< y<<endl;
         }
-        sim->addSampleStart(x, y, n);
+        this->addSampleStart(x, y, n);
         i++;
     }
     f.close();
@@ -323,5 +417,34 @@ Parameters::Parameters(const Parameters& orig) {
 }
 
 Parameters::~Parameters() {
+}
+
+void Parameters::addSampleStart(int* pos, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {
+    this->addSampleStart(pos[0], pos[1], nNewLineages,outputLoci,sOutputLoci);
+}
+
+void Parameters::addSampleStart(int x, int y, int nNewLineages,bool outputLoci,stringstream* sOutputLoci) {
+    int pos = ms->coords2d1d(x, y);
+    if (ms->getArrivalTime(pos) == 0) {
+        cerr << "Error: sample (" << x << "," << y << ") outside the colonized area,   " ;
+        cerr << "ArrivalTime:"<<ms->getArrivalTime(pos)<<endl;
+        throw 10;
+    } else {
+    }
+
+    Lineage* l;
+    vector<Lineage*>newLineages;
+    if (outputLoci){
+        (*sOutputLoci) << this->nSamplesStart <<"\t"<< x << "\t"<< y<<"\t"<<nNewLineages<<endl;
+    }
+    for (int i = this->nLineagesStart; i<this->nLineagesStart + nNewLineages; i++) {
+        l = new LineageTemplate(i, x, y, this->nSamplesStart);
+        newLineages.push_back(l);
+    }
+    Sample* newSample = new Sample(x, y, newLineages);
+    this->nLineagesStart += nNewLineages;
+    this->nSamplesStart++;
+    Parameters::sampMapStart.insert(pair<int, Sample*>(pos, newSample));
+
 }
 

@@ -26,7 +26,7 @@
 #include "Parameters.h"
 #include "StatCalculator.h"
 #include "SimulationResults.h"
-
+#include <stdio.h>
 
 using namespace std;
 
@@ -34,43 +34,52 @@ class Parameters;
 class SimulationResults;
 class Simulator {
 public:
-    int nLineages,nSamples,nLineagesStart,nSamplesStart;
-    boost::unordered_map<int,Sample*> sampMap, sampMapStart;
-    bool verbose;
+    int nLineages,nSamples;
+    boost::unordered_map<int,Sample*> sampMap;
     MigrationScheme * migrationScheme;
     utils* ut;
+    SequenceSimulator* seqSim;
     
+    //constructors
     Simulator(long seed=0);
     Simulator(const Simulator& orig);
     virtual ~Simulator();
-    void vPrint(string s);
-    //void setWidth(int width);
-    //void setHeight(int height);
-    void addSampleStart(int * pos,int nNewLineages,bool outputLoci=false, stringstream* ssOutputLoci=NULL);
-    void addSampleStart(int x, int y, int nNewLineages,
-            bool outputLoci=false, stringstream* ssOutputLoci=NULL);
-    void removeSample(int x, int y);
-    void addSequenceSimulator(SequenceSimulator* ss);
+             
     
+    //samples
+    void removeSample(int x, int y);
+    
+    
+    
+    
+
+    
+    
+    //generating time for next event
     Event* getNextCoalEvent();
     Event* getNextMigEvent();
     Event* getNextCoalMigEvent();
     Event* getNextEvent3();
-    //Event* getNextEvent4();
-    Event* getNextEvent2();
-    Event* getNextEvent();
+    //Event* getNextEvent2();
+    //Event* getNextEvent();
     
+    
+    //adding events
     void addEvent(Event* ev);
     void addCoalEvent(Event* ev);
     void addMigrationEvent(Event* ev);
     void addExpansionEvent(pair<double,int>* ev);
     void terminate();
+    
+    
+    
+    //running the simulation
     SimulationResults* doSimulations(Parameters* params);
     Lineage* getNewGeneTree();
 
-    string toString();
     
-        
+    //set up
+    void addSequenceSimulator(SequenceSimulator* ss);       
     void setMigrationScheme(MigrationScheme* ms){
         this->migrationScheme=ms;
         //this->expansionEvents=ms->getExpansionEvents();
@@ -81,32 +90,30 @@ public:
             
         }
         //cout << "stirling number"<<this->ut->getStirlingNumber(5,2)<<endl;
-    };
-    
+    }   
     bool migrationSchemeReady(){
         return this->migrationScheme->isInitialized();
     }
     
     
-    SequenceSimulator* seqSim;
-    
-    //int carCap;
-private:       
-    //boost::unordered_map<int,double> coalEvents;
-    //boost::unordered_map<pair<int,int>,double> migEvents;
-    //double totRateCoalEvents,totRateMigEvents;
+    string toString();
 
-    //double*** mRates;
-    //int width,height;
+private:       
     double timeSinceLastCoalEvent;
     double timeSinceStart;
     int nMigrationEvents;
+    bool propagulePoolMigration;
+    
     
     vector<pair<double,int> >* expansionEvents;
+
     
+    //rejection sampling for nhpp
     double coalRejFunction(double t);
     double migRejFunction(double t);
     //double coalMigRejFunction(double t);
+    
+    //what exactly happens?
     Event* whichCoalEvent(double t);
     Event* whichMigEvent(double t);
     //Event* whichCoalMigEvent(double t);
@@ -118,12 +125,13 @@ private:
         Simulator* myself=(Simulator*)myself_ptr;
         return myself->migRejFunction(t);
     }
+    
     /*static double wrapper_coalMigRejFunction(void* myself_ptr,double t){
         Simulator* myself=(Simulator*)myself_ptr;
         return myself->coalMigRejFunction(t);
     }**/
     void copySampStartToSamp();
-    bool propagulePoolMigration;
+
 };
 
 #endif	/* SIMULATOR_H */

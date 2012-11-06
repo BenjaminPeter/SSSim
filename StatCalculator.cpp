@@ -57,12 +57,13 @@ double StatCalculator::getFST(SFS* sfs) {
 }
 
 double StatCalculator::getPsi(SFS* sfs) {
-    double psi = 0, all = 0;
-    for (int i = 1; i < sfs->getSize1() + 1; ++i) {
-        for (int j = 1; j < sfs->getSize2() + 1; ++j) {
+    double psi = 0;
+    double all = 0;
+    for (int i = 1; i <= sfs->getSize1(); ++i) {
+        for (int j = 1; j <= sfs->getSize2(); ++j) {
             double entry = sfs->getEntry(i, j);
-            psi += (float(i) / sfs->getSize1() - float(j) / sfs->getSize2()) * entry;
-            if ((i != 0 || j != 0) && (i != sfs->getSize1() || j != sfs->getSize2()))
+            psi += entry* (i - j);
+            if (i != sfs->getSize1() || j != sfs->getSize2())
                 all += entry;
         }
     }
@@ -71,3 +72,15 @@ double StatCalculator::getPsi(SFS* sfs) {
     }
     return psi / all;
 } 
+
+double StatCalculator::getH(SFS* sfs){
+    double all = 0;
+    double h =0;
+    int n = sfs->getSize1();
+    for (int i=1; i<n;++i){
+        double entry = sfs->getEntry(i);
+        h += entry * i * (n-i) / float(n) / n;
+        all += entry;
+    }
+    return h / all;
+}

@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <boost/unordered_map.hpp>
+#include "Sample.h"
 #include "Simulator.h"
 #include "MigrationScheme.h"
 #include "IsolationByDistance.h"
@@ -25,6 +27,7 @@ public:
     Parameters();
     Parameters(const Parameters& orig);
     virtual ~Parameters();
+    static boost::unordered_map<int,Sample*> sampMapStart;
 
     MigrationScheme* ms; //defines how migration is handled
     SequenceSimulator* ss; //simulates a sequence from a tree
@@ -33,10 +36,12 @@ public:
     bool calcDeltaH, calcFST, calcPsi;
     //(x,y) coords and the number of lineages samples
     int nReplicates;//how many trees should be sampled?    
-    int* sampleSizes; //calculated from samples, just the sample sizes.
+    static int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
     bool outputSFS,outputFT,outputSNP,outputSNPShared,outputStats,outputStatsJK;
     bool outputTree;
+    bool outputSNPStats, outputSNPSharedStats;
+    int bootstrapSNPStats, bootstrapSNPSharedStats;
     static int verbose; //verbosity level:
     /*for now
      * 0: no output
@@ -46,8 +51,13 @@ public:
      */
     bool mPropagulePool,outputLoci;
     int nSNP; //how many SNP should be sampled
-
-
+    
+    void addSampleStart(int * pos,int nNewLineages,bool outputLoci=false, stringstream* ssOutputLoci=NULL);
+    void addSampleStart(int x, int y, int nNewLineages,
+            bool outputLoci=false, stringstream* ssOutputLoci=NULL);
+    static int nLineagesStart;
+    static int nSamplesStart;
+    void printHelp();
 private:
 
 };

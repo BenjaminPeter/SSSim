@@ -73,7 +73,7 @@ unsigned int* utils::rmultinom(int nTrials, int size, double* probabilities){
     return res;
 }
 
-void utils::rshuffle(std::vector<vector<int> >* toShuffle){
+void utils::rshuffle(std::vector<vector<int>* >* toShuffle){
     int (*fp)(int)=utils::random1;
 //    typedef int (utils::*BLA) (int);
 //    BLA fp = &utils::random1;

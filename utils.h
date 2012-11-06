@@ -39,7 +39,7 @@ public:
     long int fallingFactorial(int n, int j);   
     long double logFallingFactorial(int n, int j);  
     static unsigned int* rmultinom(int nTrials, int size, double* probabilities);
-    static void rshuffle(std::vector<std::vector<int> >* toShuffle);
+    static void rshuffle(std::vector<std::vector<int>* >* toShuffle);
     static void printProgressBar(int percent,std::string label="");
 private:
     long int ** stirlingNumberMatrix;
