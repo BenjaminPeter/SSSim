@@ -61,6 +61,9 @@ int main(int argc, char* argv[]) {
     char s[100];
     Parameters* params = new Parameters(argc, argv);
 
+
+
+
     Simulator* sim = params->sim;
 
     if (!sim->migrationSchemeReady()) {
@@ -73,6 +76,15 @@ int main(int argc, char* argv[]) {
 
 
     ofstream f;
+    if (params->outputCommand) {
+        f.open(s, ios::out);
+        sprintf(s, "%s.cmd", params->outputPrefix.c_str());
+        for (int i = 0; i < argc; i++) {
+            f << argv[i] << " ";
+        }
+        f.close();
+    }
+
     if (params->outputStats) {
         sprintf(s, "%s.stats", params->outputPrefix.c_str());
         f.open(s, ios::out);
@@ -230,7 +242,7 @@ int main(int argc, char* argv[]) {
 
             //actual resampling
             for (int rsmp = 0; rsmp < params->bootstrapSNPSharedStats; ++rsmp) {
-                utils::printProgressBar(100*rsmp/params->bootstrapSNPSharedStats,"resampling... ");
+                utils::printProgressBar(100 * rsmp / params->bootstrapSNPSharedStats, "resampling... ");
                 SNPTable* snpt2 = snpt->getBootstrapResample();
                 vector<double>* vFST = snpt2->getFST();
                 vector<double>* vPsi = snpt2->getPsi();

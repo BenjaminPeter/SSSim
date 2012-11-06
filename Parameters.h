@@ -39,7 +39,7 @@ public:
     static int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
     bool outputSFS,outputFT,outputSNP,outputSNPShared,outputStats,outputStatsJK;
-    bool outputTree;
+    bool outputTree,outputCommand;
     bool outputSNPStats, outputSNPSharedStats;
     int bootstrapSNPStats, bootstrapSNPSharedStats;
     static int verbose; //verbosity level:

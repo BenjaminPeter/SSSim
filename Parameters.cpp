@@ -12,82 +12,80 @@
 
 using namespace std;
 
-int Parameters::verbose=0;
-boost::unordered_map<int,Sample*> Parameters::sampMapStart=boost::unordered_map<int,Sample*>();
-int Parameters::nLineagesStart=0;
-int Parameters::nSamplesStart=0;
+int Parameters::verbose = 0;
+boost::unordered_map<int, Sample*> Parameters::sampMapStart = boost::unordered_map<int, Sample*>();
+int Parameters::nLineagesStart = 0;
+int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
 
+void Parameters::printHelp() {
+    cout << "Usage and options: /sssim <number of trees>" << endl;
+    cout << "\t-t" << "\ttheta = 4Nmu for generation of SNP" << endl;
+    cout << "\t--theta" << "\tsame as -t" << endl;
+    cout << "\t-N" << "\tnumber of SNP to sample, cannot be set at the same time with -t" << endl;
+    cout << "\t-h" << "\tshows this help dialog" << endl;
+    cout << "\t--help" << "\tsame as -h" << endl;
+    cout << "\t--verbose\t" << "debug level, the higher, the more detailed debug messages will be displayed" << endl;
+    cout << "\t--mpp\t" << "use migrant pool propagatin" << endl;
+    cout << endl;
 
-void Parameters::printHelp(){
-    cout << "Usage and options: /sssim <number of trees>"<<endl;
-    cout <<"\t-t"<<"\ttheta = 4Nmu for generation of SNP"<<endl;
-    cout <<"\t--theta"<<"\tsame as -t"<<endl;
-    cout <<"\t-N"<<"\tnumber of SNP to sample, cannot be set at the same time with -t"<<endl;
-    cout <<"\t-h"<<"\tshows this help dialog"<<endl;
-    cout <<"\t--help"<<"\tsame as -h"<<endl;
-    cout <<"\t--verbose\t"<<"debug level, the higher, the more detailed debug messages will be displayed"<<endl;
-    cout <<"\t--mpp\t"<<"use migrant pool propagatin"<<endl;
-    cout <<endl;
-    
-    cout <<"\t-o <prefix>\t"<<"defines an output prefix, defaults to out_"<<endl;
-    cout <<"\t--oloci\t"<<"outputs a file (*.loc) with the sample locations"<<endl;
-    cout <<"\t--osfs\t"<<"outputs a file (*.loc) with pairwise SFS"<<endl;
-    cout <<"\t--oft\t"<<"outputs a file (*.ft) with frequency table"<<endl;
-    cout <<"\t--osnp\t"<<"ouputs a file (*.snp) with SNPs drawn from the generated trees"<<endl;
-    cout <<"\t--osnps\t"<<"ouputs a file (*.snps) with SNPs drawn from the generated trees shared between at least two populations"<<endl;
-    cout <<"\t--ostats\t"<<"outputs a file (*.stats) with FST, psi and DH"<<endl;
-    cout <<"\t--ostatsJK\t"<<"outputs a file (*.statsjk) with FST, psi and DH, along with se based on Jackknife (NOT WORKING)"<<endl;
-    cout <<"\t--otree\t"<<"outputs a file (*.tree) with the trees simualted in newick format"<<endl;
-    cout <<endl;
-    
-    cout <<"\t-s <x> <y> <n>\t"<<"adds a new sample of size n at location (x,y)"<<endl;
-    cout <<"\t--sseq <x> <ystart> <yend> <n> [offset]\t"<<"adds a sequence of samples"<<endl;
-    cout <<"\t--sseqd <x> <ystart> <yend> <n> [offset]\t"<<"adds a diagonal sequence of samples"<<endl;
-    cout <<"\t--sgrid <x0> <y0> <xend> <yend> <offset> <n>\t"<<"adds grid of samples from (x0,y0) to (xend,yend), with offset k and sample size n"<<endl;
-    cout <<endl;
-    
-    cout <<"\t--ibd <w> <h> <N> <m>\t"<<"adds ibd migration scheme on a w x h grid with deme size N and scaled migration rate m"<<endl;
-    cout <<"\t--ibde <w> <h> <N> <m_a> <m_b> <x_s> <x_e>\t"<<endl;
-    cout <<"\t--see <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag>\t"<<endl;
-    cout <<"\t--seedk <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag> <centralArea> <kCentral>\t"<<endl;
-    cout <<endl;
-    cout <<"\t\t<mandatory arguments in angle brackets>"<<endl;
-    cout <<"\t\t[optional arguments in square brackets]"<<endl;
+    cout << "\t-o <prefix>\t" << "defines an output prefix, defaults to out_" << endl;
+    cout << "\t--oloci\t" << "outputs a file (*.loc) with the sample locations" << endl;
+    cout << "\t--osfs\t" << "outputs a file (*.loc) with pairwise SFS" << endl;
+    cout << "\t--oft\t" << "outputs a file (*.ft) with frequency table" << endl;
+    cout << "\t--osnp\t" << "ouputs a file (*.snp) with SNPs drawn from the generated trees" << endl;
+    cout << "\t--osnps\t" << "ouputs a file (*.snps) with SNPs drawn from the generated trees shared between at least two populations" << endl;
+    cout << "\t--ostats\t" << "outputs a file (*.stats) with FST, psi and DH" << endl;
+    cout << "\t--ostatsJK\t" << "outputs a file (*.statsjk) with FST, psi and DH, along with se based on Jackknife (NOT WORKING)" << endl;
+    cout << "\t--otree\t" << "outputs a file (*.tree) with the trees simualted in newick format" << endl;
+    cout << endl;
+
+    cout << "\t-s <x> <y> <n>\t" << "adds a new sample of size n at location (x,y)" << endl;
+    cout << "\t--sseq <x> <ystart> <yend> <n> [offset]\t" << "adds a sequence of samples" << endl;
+    cout << "\t--sseqd <x> <ystart> <yend> <n> [offset]\t" << "adds a diagonal sequence of samples" << endl;
+    cout << "\t--sgrid <x0> <y0> <xend> <yend> <offset> <n>\t" << "adds grid of samples from (x0,y0) to (xend,yend), with offset k and sample size n" << endl;
+    cout << endl;
+
+    cout << "\t--ibd <w> <h> <N> <m>\t" << "adds ibd migration scheme on a w x h grid with deme size N and scaled migration rate m" << endl;
+    cout << "\t--ibde <w> <h> <N> <m_a> <m_b> <x_s> <x_e>\t" << endl;
+    cout << "\t--see <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag>\t" << endl;
+    cout << "\t--seedk <w> <h> <N> <k> <m> <x_s> <y_s> <t0> <t_Lag> <centralArea> <kCentral>\t" << endl;
+    cout << endl;
+    cout << "\t\t<mandatory arguments in angle brackets>" << endl;
+    cout << "\t\t[optional arguments in square brackets]" << endl;
     exit;
 }
 
-
 Parameters::Parameters(int argc, char* argv[]) {
-    for (int i=0; i<argc;i++){
-        cout <<argv[i]<<" ";
+    for (int i = 0; i < argc; i++) {
+        cout << argv[i] << " ";
     }
     cout << endl;
-    
-    this->mPropagulePool=false;    
-    this->outputPrefix="out_";
+
+    this->mPropagulePool = false;
+    this->outputPrefix = "out_";
     this->ss = new SequenceSimulator();
     this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
-    this->outputFT=false;
-    this->outputSFS=false;
-    
-    this->outputSNP=false;
-    this->outputSNPShared=false;
-    
-    this->outputStats=false;
-    this->outputStatsJK=false;    
-    
-    this->outputSNPStats=false;
-    this->outputSNPSharedStats=false;
+    this->outputFT = false;
+    this->outputSFS = false;
+
+    this->outputSNP = false;
+    this->outputSNPShared = false;
+
+    this->outputStats = false;
+    this->outputStatsJK = false;
+
+    this->outputSNPStats = false;
+    this->outputSNPSharedStats = false;
     this->bootstrapSNPSharedStats = 0;
     this->bootstrapSNPStats = 0;
-       
-    
-    this->outputTree=false;
-    
-    Parameters::verbose=0;
-    this->nSNP=0;
+    this->outputCommand = false;
+
+    this->outputTree = false;
+
+    Parameters::verbose = 0;
+    this->nSNP = 0;
     ss->setTheta(-1);
 
 
@@ -97,40 +95,43 @@ Parameters::Parameters(int argc, char* argv[]) {
 
 
     while (i < argc) {
-        if (string(argv[i]) == "-t"||string(argv[i]) == "--theta") {
-            if(this->nSNP>0)
-                cerr <<"Warning: Setting theta and N at the same time"<<endl;
+        if (string(argv[i]) == "-t" || string(argv[i]) == "--theta") {
+            if (this->nSNP > 0)
+                cerr << "Warning: Setting theta and N at the same time" << endl;
             ss->setTheta(atof(argv[i + 1]));
             i += 1;
         }
-        
+
         //set number of SNP
         if (string(argv[i]) == "-N") {
-            if(ss->getTheta()>0)
-                cerr <<"Warning: Setting theta and N at the same time"<<endl;
+            if (ss->getTheta() > 0)
+                cerr << "Warning: Setting theta and N at the same time" << endl;
             //cout <<argv[i+1]<<endl;
-            this->nSNP=atoi(argv[i+1]);
+            this->nSNP = atoi(argv[i + 1]);
             i += 1;
         }
 
-//*****************************************************************************        
-//*******     output options                                             ********
-//***************************************************************************** 
-        if (string(argv[i]) == "-h"||string(argv[i]) == "--help") {
+        //*****************************************************************************        
+        //*******     output options                                             ********
+        //***************************************************************************** 
+        if (string(argv[i]) == "-h" || string(argv[i]) == "--help") {
             this->printHelp();
             return;
         }
         if (string(argv[i]) == "-o") {
-            this->outputPrefix=argv[i+1];
+            this->outputPrefix = argv[i + 1];
             //cout << this->outputPrefix << endl;
             i += 1;
         }
+        if (string(argv[i]) == "--ocmd") {
+            this->outputCommand = true;
+        }
         if (string(argv[i]) == "--verbose") {
-            Parameters::verbose=atoi(argv[i+1]);
+            Parameters::verbose = atoi(argv[i + 1]);
             i += 1;
         }
-        
-        
+
+
         if (string(argv[i]) == "--osnpstats") {
             this->outputSNPStats = true;
         }
@@ -138,53 +139,53 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->outputSNPSharedStats = true;
         }
         if (string(argv[i]) == "--obssnp") {
-            this->bootstrapSNPStats = atoi(argv[i+1]);
-            i +=1;
+            this->bootstrapSNPStats = atoi(argv[i + 1]);
+            i += 1;
         }
 
         if (string(argv[i]) == "--obssnps") {
-            this->bootstrapSNPSharedStats = atoi(argv[i+1]);
-            i +=1;
+            this->bootstrapSNPSharedStats = atoi(argv[i + 1]);
+            i += 1;
         }
 
-        
-        
+
+
         if (string(argv[i]) == "--oloci") {
-            this->outputLoci=true;
+            this->outputLoci = true;
         }
         if (string(argv[i]) == "--osfs") {
-            this->outputSFS=true;
+            this->outputSFS = true;
         }
         if (string(argv[i]) == "--oft") {
-            this->outputFT=true;
+            this->outputFT = true;
         }
         if (string(argv[i]) == "--osnp") {
-            this->outputSNP=true;
+            this->outputSNP = true;
         }
         if (string(argv[i]) == "--osnps") {
-            this->outputSNPShared=true;
+            this->outputSNPShared = true;
         }
         if (string(argv[i]) == "--ostats") {
-            this->outputStats=true;
+            this->outputStats = true;
         }
         if (string(argv[i]) == "--ostatsjk") {
-            this->outputStatsJK=true;
+            this->outputStatsJK = true;
         }
         if (string(argv[i]) == "--otree") {
-            this->outputTree=true;
+            this->outputTree = true;
         }
 
-//*****************************************************************************        
-//*******     migration options                                        ********
-//***************************************************************************** 
+        //*****************************************************************************        
+        //*******     migration options                                        ********
+        //***************************************************************************** 
         if (string(argv[i]) == "--mpp") {
-            this->mPropagulePool=true;
+            this->mPropagulePool = true;
         }
 
-        
-//*****************************************************************************        
-//*******     get Samples                                              ********
-//*****************************************************************************        
+
+        //*****************************************************************************        
+        //*******     get Samples                                              ********
+        //*****************************************************************************        
         //add new sample with -s x,y,n
         if (string(argv[i]) == "-s") {
             int* newSample = new int[3];
@@ -196,17 +197,17 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
 
         //add sequence of samples with -s x,ystart,yend,n [offset]
-        if (string(argv[i]) == "--sseq") {           
+        if (string(argv[i]) == "--sseq") {
             int yStart = atoi(argv[i + 2]);
             int yEnd = atoi(argv[i + 3]);
-            
+
             int offset = 1;
-            if(i+5<argc){
-                if (argv[i+5][0] != '-'){
-                    offset=atoi(argv[i+5]);
+            if (i + 5 < argc) {
+                if (argv[i + 5][0] != '-') {
+                    offset = atoi(argv[i + 5]);
                 }
             }
-            for (int y = yStart; y < yEnd; y+=offset) {
+            for (int y = yStart; y < yEnd; y += offset) {
                 int* newSample = new int[3];
                 newSample[0] = atoi(argv[i + 1]);
                 newSample[1] = y;
@@ -217,15 +218,15 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
 
         //adds sampling grid with -sgrid x0,y0,xend,yend,distance
-        if(string(argv[i]) == "--sgrid"){
-            int xStart = atoi(argv[i+1]);
-            int yStart = atoi(argv[i+2]);
-            int xEnd = atoi(argv[i+3]);
-            int yEnd = atoi(argv[i+4]);
-            int dist = atoi(argv[i+5]);
-            int sampSize = atoi(argv[i+6]);
-            for (int x = xStart; x < xEnd; x+=dist){
-                for (int y = yStart; y < yEnd; y+=dist){
+        if (string(argv[i]) == "--sgrid") {
+            int xStart = atoi(argv[i + 1]);
+            int yStart = atoi(argv[i + 2]);
+            int xEnd = atoi(argv[i + 3]);
+            int yEnd = atoi(argv[i + 4]);
+            int dist = atoi(argv[i + 5]);
+            int sampSize = atoi(argv[i + 6]);
+            for (int x = xStart; x < xEnd; x += dist) {
+                for (int y = yStart; y < yEnd; y += dist) {
                     int* newSample = new int[3];
                     newSample[0] = x;
                     newSample[1] = y;
@@ -241,14 +242,14 @@ Parameters::Parameters(int argc, char* argv[]) {
             int xStart = atoi(argv[i + 1]);
             int yStart = atoi(argv[i + 2]);
             int yEnd = atoi(argv[i + 3]);
-            
+
             int offset = 1;
-            if(i+5<argc){
-                if (argv[i+5][0] != '-'){
-                    offset=atoi(argv[i+5]);
+            if (i + 5 < argc) {
+                if (argv[i + 5][0] != '-') {
+                    offset = atoi(argv[i + 5]);
                 }
             }
-            
+
             for (int j = 0; j < yEnd - yStart; ++j) {
                 int* newSample = new int[3];
                 newSample[0] = xStart + j;
@@ -258,8 +259,8 @@ Parameters::Parameters(int argc, char* argv[]) {
             }
             i += 4;
         }
-        
-        
+
+
         /**********************************************************
          *  Models         
          **********************************************************/
@@ -342,7 +343,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
             i += 9;
         }
-  
+
 
         //Slatkin & Excoffier expansion with central area with different expansion k
         //width, height, k, ek, m, x0, y0, t0, tLag centralArea ekCentral
@@ -382,8 +383,8 @@ Parameters::Parameters(int argc, char* argv[]) {
 
             i += 11;
         }
-        i++;        
-        
+        i++;
+
     }
     sim->setMigrationScheme(ms);
     sim->addSequenceSimulator(ss);
@@ -401,8 +402,8 @@ Parameters::Parameters(int argc, char* argv[]) {
         y = (*it)[1];
         n = (*it)[2];
         sampleSizes[i] = n;
-        if ( this->outputLoci ){
-            f << i << "\t"<<x <<"\t"<< y<<endl;
+        if (this->outputLoci) {
+            f << i << "\t" << x << "\t" << y << endl;
         }
         this->addSampleStart(x, y, n);
         i++;
@@ -420,22 +421,22 @@ Parameters::~Parameters() {
 }
 
 void Parameters::addSampleStart(int* pos, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {
-    this->addSampleStart(pos[0], pos[1], nNewLineages,outputLoci,sOutputLoci);
+    this->addSampleStart(pos[0], pos[1], nNewLineages, outputLoci, sOutputLoci);
 }
 
-void Parameters::addSampleStart(int x, int y, int nNewLineages,bool outputLoci,stringstream* sOutputLoci) {
+void Parameters::addSampleStart(int x, int y, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {
     int pos = ms->coords2d1d(x, y);
     if (ms->getArrivalTime(pos) == 0) {
-        cerr << "Error: sample (" << x << "," << y << ") outside the colonized area,   " ;
-        cerr << "ArrivalTime:"<<ms->getArrivalTime(pos)<<endl;
+        cerr << "Error: sample (" << x << "," << y << ") outside the colonized area,   ";
+        cerr << "ArrivalTime:" << ms->getArrivalTime(pos) << endl;
         throw 10;
     } else {
     }
 
     Lineage* l;
     vector<Lineage*>newLineages;
-    if (outputLoci){
-        (*sOutputLoci) << this->nSamplesStart <<"\t"<< x << "\t"<< y<<"\t"<<nNewLineages<<endl;
+    if (outputLoci) {
+        (*sOutputLoci) << this->nSamplesStart << "\t" << x << "\t" << y << "\t" << nNewLineages << endl;
     }
     for (int i = this->nLineagesStart; i<this->nLineagesStart + nNewLineages; i++) {
         l = new LineageTemplate(i, x, y, this->nSamplesStart);
