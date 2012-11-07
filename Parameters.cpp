@@ -17,6 +17,7 @@ boost::unordered_map<int, Sample*> Parameters::sampMapStart = boost::unordered_m
 int Parameters::nLineagesStart = 0;
 int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
+bool Parameters::mPropagulePool = false;
 
 void Parameters::printHelp() {
     cout << "Usage and options: /sssim <number of trees>" << endl;

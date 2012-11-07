@@ -8,6 +8,7 @@
 #ifndef SIMULATOR_H
 #define	SIMULATOR_H
 #include <boost/unordered_map.hpp>
+#include <boost/thread.hpp>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -26,19 +27,24 @@
 #include "Parameters.h"
 #include "StatCalculator.h"
 #include "SimulationResults.h"
+#include "TreeSimulator.h"
+#include <boost/bind.hpp>
+
 #include <stdio.h>
 
 using namespace std;
 
 class Parameters;
 class SimulationResults;
+class TreeSimulator;
 class Simulator {
 public:
     int nLineages,nSamples;
     boost::unordered_map<int,Sample*> sampMap;
     MigrationScheme * migrationScheme;
     utils* ut;
-    SequenceSimulator* seqSim;
+    static SequenceSimulator* seqSim;
+    static int replicate;
     
     //constructors
     Simulator(long seed=0);
@@ -46,36 +52,11 @@ public:
     virtual ~Simulator();
              
     
-    //samples
-    void removeSample(int x, int y);
-    
-    
-    
-    
-
-    
-    
-    //generating time for next event
-    Event* getNextCoalEvent();
-    Event* getNextMigEvent();
-    Event* getNextCoalMigEvent();
-    Event* getNextEvent3();
-    //Event* getNextEvent2();
-    //Event* getNextEvent();
-    
-    
-    //adding events
-    void addEvent(Event* ev);
-    void addCoalEvent(Event* ev);
-    void addMigrationEvent(Event* ev);
-    void addExpansionEvent(pair<double,int>* ev);
-    void terminate();
-    
-    
+    static boost::mutex ftMutex, queueMutex;
     
     //running the simulation
     SimulationResults* doSimulations(Parameters* params);
-    Lineage* getNewGeneTree();
+    static void getNewGeneTree(Parameters* params, SimulationResults* res);
 
     
     //set up
@@ -95,42 +76,9 @@ public:
         return this->migrationScheme->isInitialized();
     }
     
-    
-    string toString();
+
 
 private:       
-    double timeSinceLastCoalEvent;
-    double timeSinceStart;
-    int nMigrationEvents;
-    bool propagulePoolMigration;
-    
-    
-    vector<pair<double,int> >* expansionEvents;
-
-    
-    //rejection sampling for nhpp
-    double coalRejFunction(double t);
-    double migRejFunction(double t);
-    //double coalMigRejFunction(double t);
-    
-    //what exactly happens?
-    Event* whichCoalEvent(double t);
-    Event* whichMigEvent(double t);
-    //Event* whichCoalMigEvent(double t);
-    static double wrapper_coalRejFunction(void* myself_ptr,double t){
-        Simulator* myself=(Simulator*)myself_ptr;
-        return myself->coalRejFunction(t);
-    }
-    static double wrapper_migRejFunction(void* myself_ptr,double t){
-        Simulator* myself=(Simulator*)myself_ptr;
-        return myself->migRejFunction(t);
-    }
-    
-    /*static double wrapper_coalMigRejFunction(void* myself_ptr,double t){
-        Simulator* myself=(Simulator*)myself_ptr;
-        return myself->coalMigRejFunction(t);
-    }**/
-    void copySampStartToSamp();
 
 };
 

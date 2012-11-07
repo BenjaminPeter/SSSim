@@ -71,19 +71,23 @@ int main(int argc, char* argv[]) {
         cerr << "mig scheme not properly initialized" << endl;
         return 1;
     }
-
-    SimulationResults* res = sim->doSimulations(params);
-
-
     ofstream f;
     if (params->outputCommand) {
-        f.open(s, ios::out);
         sprintf(s, "%s.cmd", params->outputPrefix.c_str());
+        f.open(s, ios::out);        
         for (int i = 0; i < argc; i++) {
             f << argv[i] << " ";
         }
+        f << endl;
         f.close();
     }
+    
+    
+    
+    SimulationResults* res = sim->doSimulations(params);
+
+
+
 
     if (params->outputStats) {
         sprintf(s, "%s.stats", params->outputPrefix.c_str());
@@ -248,6 +252,7 @@ int main(int argc, char* argv[]) {
                 vector<double>* vPsi = snpt2->getPsi();
                 vector<double>* vDeltaH = snpt2->getDeltaH();
                 vector<double>* vH = snpt2->getHeterozygosity();
+                delete snpt2;
                 k = 0;
                 for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
                     for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
@@ -265,6 +270,11 @@ int main(int argc, char* argv[]) {
                 f2 << endl;
                 f3 << endl;
                 f4 << endl;
+                
+                delete vFST;
+                delete vPsi;
+                delete vDeltaH;
+                delete vH;
             }
             f1.close();
             f2.close();

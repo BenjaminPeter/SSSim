@@ -49,7 +49,8 @@ public:
      * 1000: highly messy low level debugging
      
      */
-    bool mPropagulePool,outputLoci;
+    static bool mPropagulePool;
+    bool outputLoci;
     int nSNP; //how many SNP should be sampled
     
     void addSampleStart(int * pos,int nNewLineages,bool outputLoci=false, stringstream* ssOutputLoci=NULL);

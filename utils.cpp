@@ -10,27 +10,31 @@
 #include "stdio.h"
 
 gsl_rng* utils::rng=NULL;
+    long int** utils::stirlingNumberMatrix=0;
+    long double** utils::stirlingNumberMatrixD=0;
+    bool utils::stirlingNumbersReady=false;
+    int utils::stirlingNumberMax=0;
 utils::utils(long seed){
-    this->setupRng(seed);
-    this->stirlingNumberMatrix=0;
-    this->stirlingNumberMatrixD=0;
-    this->stirlingNumbersReady=false;
-    this->stirlingNumberMax=0;
+    utils::setupRng(seed);
+    utils::stirlingNumberMatrix=0;
+    utils::stirlingNumberMatrixD=0;
+    utils::stirlingNumbersReady=false;
+    utils::stirlingNumberMax=0;
 }
 utils::~utils(){
     gsl_rng_free (utils::rng);
-    if (this->stirlingNumbersReady && this->stirlingNumberMatrix!=NULL&& this->stirlingNumberMatrixD!=NULL){
-        for (int i=0; i<this->stirlingNumberMax;i++){
-            delete[] this->stirlingNumberMatrix[i];
-            delete[] this->stirlingNumberMatrixD[i];
+    if (utils::stirlingNumbersReady && utils::stirlingNumberMatrix!=NULL&& utils::stirlingNumberMatrixD!=NULL){
+        for (int i=0; i<utils::stirlingNumberMax;i++){
+            delete[] utils::stirlingNumberMatrix[i];
+            delete[] utils::stirlingNumberMatrixD[i];
         }
-        delete[] this->stirlingNumberMatrix;
-        delete[] this->stirlingNumberMatrixD;
+        delete[] utils::stirlingNumberMatrix;
+        delete[] utils::stirlingNumberMatrixD;
     }
 }
 void utils::setupRng(long seed){
     gsl_rng_env_setup();
-    this->rng           = gsl_rng_alloc(gsl_rng_mt19937);
+    utils::rng           = gsl_rng_alloc(gsl_rng_mt19937);
     
     if (seed==0){
         seed           = time(NULL) * getpid();
@@ -140,69 +144,69 @@ long double utils::logFallingFactorial(int n, int j){
 }
 
 void utils::setupStirlingNumberTable(int maxK){
-    this->stirlingNumberMatrix=new long int*[maxK];
+    utils::stirlingNumberMatrix=new long int*[maxK];
     for (int i=0;i<maxK;i++){
-        this->stirlingNumberMatrix[i]=new long int[maxK];
+        utils::stirlingNumberMatrix[i]=new long int[maxK];
         for (int j=0;j<maxK;j++){
-            this->stirlingNumberMatrix[i][j]=0;
+            utils::stirlingNumberMatrix[i][j]=0;
         }
     }
-    this->stirlingNumberMatrix[0][0]=1;
+    utils::stirlingNumberMatrix[0][0]=1;
     for (int i=1;i<maxK;i++){
-        this->stirlingNumberMatrix[i][0]=1;
+        utils::stirlingNumberMatrix[i][0]=1;
         for (int j=1;j<maxK;j++){
             if (i==j){
-                this->stirlingNumberMatrix[i][j]=1;
+                utils::stirlingNumberMatrix[i][j]=1;
             }else{
-                this->stirlingNumberMatrix[i][j]=this->stirlingNumberMatrix[i-1][j-1]+(j+1)*this->stirlingNumberMatrix[i-1][j];
+                utils::stirlingNumberMatrix[i][j]=utils::stirlingNumberMatrix[i-1][j-1]+(j+1)*utils::stirlingNumberMatrix[i-1][j];
             }
         }
     }
-    //this->stirlingNumbersReady=true;
-    this->stirlingNumberMax=maxK;
+    //utils::stirlingNumbersReady=true;
+    utils::stirlingNumberMax=maxK;
 }
 
 long int utils::getStirlingNumber(int i, int j){
-    if (!this->stirlingNumbersReady){
+    if (!utils::stirlingNumbersReady){
         cerr <<"stirling numbers not initialized"<<endl;
         throw 10;
     }
-    if (i>this->stirlingNumberMax || j>this->stirlingNumberMax || i<1 || j<1)
+    if (i>utils::stirlingNumberMax || j>utils::stirlingNumberMax || i<1 || j<1)
         return 0;
-    return this->stirlingNumberMatrix[i-1][j-1];
+    return utils::stirlingNumberMatrix[i-1][j-1];
 }
 
 void utils::setupStirlingNumberTableD(int maxK){
-    this->stirlingNumberMatrixD=new long double*[maxK];
+    utils::stirlingNumberMatrixD=new long double*[maxK];
     for (int i=0;i<maxK;i++){
-        this->stirlingNumberMatrixD[i]=new long double[maxK];
+        utils::stirlingNumberMatrixD[i]=new long double[maxK];
         for (int j=0;j<maxK;j++){
-            this->stirlingNumberMatrixD[i][j]=0;
+            utils::stirlingNumberMatrixD[i][j]=0;
         }
     }
-    this->stirlingNumberMatrixD[0][0]=1;
+    utils::stirlingNumberMatrixD[0][0]=1;
     for (int i=1;i<maxK;i++){
-        this->stirlingNumberMatrixD[i][0]=1;
+        utils::stirlingNumberMatrixD[i][0]=1;
         for (int j=1;j<maxK;j++){
             if (i==j){
-                this->stirlingNumberMatrixD[i][j]=1;
+                utils::stirlingNumberMatrixD[i][j]=1;
             }else{
-                this->stirlingNumberMatrixD[i][j]=this->stirlingNumberMatrixD[i-1][j-1]+(j+1)*this->stirlingNumberMatrixD[i-1][j];
+                utils::stirlingNumberMatrixD[i][j]=utils::stirlingNumberMatrixD[i-1][j-1]+(j+1)*utils::stirlingNumberMatrixD[i-1][j];
             }
         }
     }
-    this->stirlingNumbersReady=true;
-    this->stirlingNumberMax=maxK;
+    utils::stirlingNumbersReady=true;
+    utils::stirlingNumberMax=maxK;
 }
 
 long double utils::getStirlingNumberD(int i, int j){
-    if (!this->stirlingNumbersReady){
+    if (!utils::stirlingNumbersReady){
         cerr <<"stirling numbers not initialized"<<endl;
         throw 10;
     }
-    if (i>this->stirlingNumberMax || j>this->stirlingNumberMax || i<1 || j<1)
+    if (i>utils::stirlingNumberMax || j>utils::stirlingNumberMax || i<1 || j<1)
         return 0;
-    return this->stirlingNumberMatrixD[i-1][j-1];
+    return utils::stirlingNumberMatrixD[i-1][j-1];
 }
 
 void utils::printProgressBar(int percent,string label){

@@ -23,7 +23,7 @@ class utils {
 public:
     utils(long seed=0);
     ~utils();
-    void setupRng(long seed=0);
+    static void setupRng(long seed=0);
     static int* random2(const int n);
     static int random1(const int n);
     static double randomD(const double d);
@@ -32,20 +32,20 @@ public:
     static double nhpp(double rMax, double(*rejFunction)(const double),bool isConst=false);
     static double nhpp2(void* obj, double rMax, double (*rejFunction)(void* obj, const double), double tAdd=0,bool isConst=false);    
     static gsl_rng* rng;
-    void setupStirlingNumberTable(int maxK);
-    long int getStirlingNumber(int i,int j);
-    void setupStirlingNumberTableD(int maxK);
-    long double getStirlingNumberD(int i,int j);
-    long int fallingFactorial(int n, int j);   
-    long double logFallingFactorial(int n, int j);  
+    static void setupStirlingNumberTable(int maxK);
+    static long int getStirlingNumber(int i,int j);
+    static void setupStirlingNumberTableD(int maxK);
+    static long double getStirlingNumberD(int i,int j);
+    static long int fallingFactorial(int n, int j);   
+    static long double logFallingFactorial(int n, int j);  
     static unsigned int* rmultinom(int nTrials, int size, double* probabilities);
     static void rshuffle(std::vector<std::vector<int>* >* toShuffle);
     static void printProgressBar(int percent,std::string label="");
 private:
-    long int ** stirlingNumberMatrix;
-    long double ** stirlingNumberMatrixD;
-    int stirlingNumberMax;
-    bool stirlingNumbersReady;
+    static long int ** stirlingNumberMatrix;
+    static long double ** stirlingNumberMatrixD;
+    static int stirlingNumberMax;
+    static bool stirlingNumbersReady;
 
 };
 

@@ -56,8 +56,7 @@ public:
             this->right->addToFreqTable(ft,checkShared);
         }
     }
-    
-        
+            
     
     virtual bool* getSNPString(const int nTotLineages);
     virtual void addSubtreeToSFS(SFS* sfs,int pop1, int pop2){

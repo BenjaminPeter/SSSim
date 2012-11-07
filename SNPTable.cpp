@@ -104,6 +104,7 @@ vector<double>* SNPTable::getFST(){
             sfs = this->make2DSFS(i,j);
             (*v)[k] = StatCalculator::getFST(sfs);
             ++k; 
+            delete sfs;
         }
     }
     return v;
@@ -120,6 +121,7 @@ vector<double>* SNPTable::getPsi(){
             sfs = this->make2DSFS(i,j);
             (*v)[k] = StatCalculator::getPsi(sfs);
             ++k; 
+            delete sfs;
         }
     }
     return v;
@@ -136,6 +138,7 @@ vector<double>* SNPTable::getDeltaH(){
             sfs = this->make2DSFS(i,j);
             (*v)[k] = StatCalculator::getDeltaH(sfs);
             ++k; 
+            delete sfs;
         }
     }
     return v;
@@ -151,6 +154,7 @@ vector<double>* SNPTable::getHeterozygosity(){
             sfs = this->make1DSFS(i);
             (*v)[k] = StatCalculator::getH(sfs);
             ++k; 
+            delete sfs;
     }
     return v;
 }
