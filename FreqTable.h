@@ -22,7 +22,8 @@ public:
     virtual ~FreqTable();
     string toString();
     int nPops;
-    boost::unordered_map<vector<int>*, double> freqs;
+    boost::unordered_map<vector<int>, int> idMap;
+    vector<double> branchLengths;
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
     void addLine(double length, int* pops, bool checkShared=false);

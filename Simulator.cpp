@@ -10,11 +10,9 @@
 
 class TreeSimulator;
 
-SequenceSimulator* Simulator::seqSim=0;
-int Simulator::replicate =0;
-boost::mutex Simulator::ftMutex;
-
-
+SequenceSimulator* Simulator::seqSim = 0;
+int Simulator::replicate = 0;
+boost::mutex Simulator::ftMutex,Simulator::ft2Mutex, Simulator::sfsMutex;
 
 Simulator::Simulator(long seed) {
     this->ut = new utils(seed);
@@ -40,13 +38,15 @@ Simulator::~Simulator() {
     delete this->seqSim;
 }
 
-void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res) {
+void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int id) {
 
     while (Simulator::replicate > 0) {
+        cout << "starting, replicate = " << Simulator::replicate << "Thread: " << id << endl;
+        Simulator::replicate--;
         TreeSimulator* ts = new TreeSimulator(params);
         Lineage* l = ts->run();
         delete ts;
-        
+
         vector<int*> samples = params->samples;
 
         int pos = 0;
@@ -56,27 +56,40 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res) {
 
         //if (params->outputTree)
         //    f << l->toString() << endl;
-
-        boost::mutex::scoped_lock lock(Simulator::ftMutex);
-        l->addToFreqTable(res->ft);
-        l->addToFreqTable(res->ftShared, true);
-
-        pos = 0;
-        for (int i = 0; i < samples.size() - 1; i++) {
-            for (int j = i + 1; j < samples.size(); j++) {
-                sfs = Simulator::seqSim->create2DSFS(l, i, j);
-                *(res->sumSFS[pos]) += *sfs;
-
-                delete sfs;
-                pos++;
-            }
-        }
-        for (int i = 0; i < samples.size(); i++) {
-            sfs = Simulator::seqSim->create1DSFS(l, i);
-            *(res->sumSFS1d[i]) += *sfs;
-        }
-        lock.unlock();
         
+        cout << "thread " << id << " finished" << endl;
+        
+        
+        boost::mutex::scoped_lock ftlock(Simulator::ftMutex);
+        cout << "thread " << id << " locked" << endl;
+        l->addToFreqTable(res->ft);
+        cout << "thread " << id << " unlocked" << endl;
+        ftlock.unlock();
+        
+        boost::mutex::scoped_lock ft2lock(Simulator::ft2Mutex);
+        l->addToFreqTable(res->ftShared, true);
+        ft2lock.unlock();
+        
+        if (params->outputStats) {
+            boost::mutex::scoped_lock sfslock(Simulator::sfsMutex);
+            pos = 0;
+            for (int i = 0; i < samples.size() - 1; i++) {
+                for (int j = i + 1; j < samples.size(); j++) {
+                    sfs = Simulator::seqSim->create2DSFS(l, i, j);
+                    *(res->sumSFS[pos]) += *sfs;
+
+                    delete sfs;
+                    pos++;
+                }
+            }
+            //for (int i = 0; i < samples.size(); i++) {
+            //   sfs = Simulator::seqSim->create1DSFS(l, i);
+            //    *(res->sumSFS1d[i]) += *sfs;
+            //}
+
+            
+            sfslock.unlock();
+        }
         //tmrca += this->timeSinceStart;
         //nMigrations += this->nMigrationEvents;
         delete l;
@@ -89,13 +102,12 @@ void Simulator::addSequenceSimulator(SequenceSimulator * ss) {
     this->seqSim->ut = this->ut;
 }
 
-
 SimulationResults* Simulator::doSimulations(Parameters* params) {
     vector<int*> samples = params->samples;
 
     int nThreads = boost::thread::hardware_concurrency();
     this->replicate = params->nReplicates;
-    
+
     SimulationResults* res = new SimulationResults();
     res->initialize(params, samples.size(), params->sampleSizes);
     FreqTable* ft = new FreqTable(params->samples.size());
@@ -103,16 +115,16 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     res->ft = ft;
     res->ftShared = ftShared;
 
-    
+
     boost::thread_group tg;
     for (int i = 0; i < nThreads; ++i) {
-        tg.create_thread(boost::bind(&this->getNewGeneTree, params, res));
+        tg.create_thread(boost::bind(&this->getNewGeneTree, params, res, i));
     }
     tg.join_all();
 
-        
-     
- 
+
+
+
     cout << "done!" << endl;
 
 

@@ -30,14 +30,14 @@ FreqTable::~FreqTable() {
 string FreqTable::toString() {
     stringstream ss;
     std::cout <<"tTot:"<<"\t"<<this->tTot<<endl;
-    boost::unordered_map<vector<int>*, double>::iterator iter;
-    for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
+    boost::unordered_map<vector<int>, int>::iterator iter;
+    for (iter = this->idMap.begin(); iter != this->idMap.end(); ++iter) {
 
-        const vector<int>* v = iter->first;
-        double length = iter->second;
+        const vector<int> v = iter->first;
+        double length = this->branchLengths[iter->second];
         if (length > 0) {
             ss << length / this->tTot;
-            for (vector<int>::const_iterator it2 = v->begin(); it2 != v->end(); ++it2) {
+            for (vector<int>::const_iterator it2 = v.begin(); it2 != v.end(); ++it2) {
                 ss << "\t" << (*it2);
             }
             ss << endl;
@@ -54,44 +54,40 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
         for(vector<int>::const_iterator it=vect->begin();it != vect->end(); ++it){
             if(*it>0){
                 nShared++;
+                if(nShared>1)
+                    break;
             }
         }
         if (nShared<2)
             return;
     }
     //cout <<"vect"<<vect[0]<<"\t"<<vect[1]<<endl;
-    boost::unordered_map<vector<int>*,double>::iterator it;
-    bool newEntry=true;
-    for(it = this->freqs.begin(); it != this->freqs.end(); ++it){
-        vector<int>* a= it->first;
-        if ( *a == *vect){
-            this->freqs[vect] += length;
-            newEntry = false;
-            break;
-        }
-    }
-    if (newEntry){
-    //if (this->freqs.find(vect) != this->freqs.end()) {
-       // cout << "found"<<"\t"<<this->freqs[vect];
-//        this->freqs[vect] += length;
-        //cout << "\t"<<this->freqs[vect]<<endl;
-  //  } else {
-        this->freqs.insert(pair<vector<int>*, double >(vect, length));
+    boost::unordered_map<vector<int>,int>::iterator it;
+    
+    if(this->idMap.find(*vect) != this->idMap.end()){
+        //we found it
+        int id = this->idMap[*vect];
+        this->branchLengths[id] += length;
+        this->tTot += length;
+    }else{
+        int id = this->nEntries;
+        this->idMap.insert(pair<vector<int>,int>(*vect,id));
+        this->branchLengths.push_back(length);
         this->nEntries++;
     }
-    this->tTot += length;
+    this->tTot += length;    
 }
 
 /*
  * draws a single SNP from the frequency table
  */
 vector<int>* FreqTable::drawSNP(){
-    boost::unordered_map<vector<int>*,double>::const_iterator iter;
+    boost::unordered_map<vector<int>,int>::const_iterator iter;
     double rn = utils::randomD(this->tTot);
-    for (iter = this->freqs.begin(); iter != this->freqs.end(); ++iter) {
-        rn -= iter->second;
+    for (iter = this->idMap.begin(); iter != this->idMap.end(); ++iter) {
+        rn -= this->branchLengths[iter->second];
         if(rn <0){
-            return iter->first;
+            return new vector<int>(iter->first);
         }
     }    
 }
@@ -123,29 +119,29 @@ SNPTable* FreqTable::drawSNP(double theta){
  */
 SNPTable* FreqTable::drawSNP(int nSNP){
     if (Parameters::verbose>99) cout << "FreqTable::drawSNP:nEntries: "<<this->nEntries<<endl;
-    vector<vector<int>* > snpRows;
+
     vector<vector<int>* >* snpFinal = new vector<vector<int>* >();
-    vector<double > branchLengths;
-    snpRows.reserve(this->nEntries);
     snpFinal->reserve(nSNP);
-    branchLengths.reserve(this->nEntries);
+
     
     
-    boost::unordered_map<vector<int>*, double>::iterator it;
-    for(it = this->freqs.begin(); it!=this->freqs.end(); ++it){
-        snpRows.push_back(it->first);
-        branchLengths.push_back(it->second);
-    }
-    if (Parameters::verbose>99) cout << "copied freqTable: "<<this->nEntries<<endl;
+    boost::unordered_map<vector<int>, int>::iterator it;
+
+    //if (Parameters::verbose>99) cout << "copied freqTable: "<<this->nEntries<<endl;
     
     unsigned int* snp=utils::rmultinom(nSNP,nEntries,&branchLengths[0]);
     if (Parameters::verbose>99) cout << "got SNP pos: "<<this->nEntries<<endl;
     
     
-    for(int i=0; i<this->nEntries;++i){
+    int nSNPDrawn = 0;
+    for(it = this->idMap.begin(); it!= this->idMap.end(); ++it){        
+        int i = it->second;
+        nSNPDrawn+=snp[i];
+        utils::printProgressBar(100*nSNPDrawn/nSNP,"drawing SNP... ");
         for(int j=0; j<snp[i];++j){
-            
-            snpFinal->push_back( snpRows[i]);
+            //vector<int>* v = it->first;
+            vector<int>* newSNP = new vector<int>(it->first);
+            snpFinal->push_back( newSNP);
         }
     }
     if (Parameters::verbose>99) cout << "got SNP: "<<endl;

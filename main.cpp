@@ -120,12 +120,11 @@ int main(int argc, char* argv[]) {
         //printing SFS
         int n = 0;
         for (int i = 0; i < (params->samples.size() - 1); i++) {
-            utils::printProgressBar(n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
+            utils::printProgressBar(100* n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
             for (int j = i + 1; j < params->samples.size(); j++) {
                 char s[100];
                 sprintf(s, "%s_%d_%d.sfs", params->outputPrefix.c_str(), i, j);
                 f.open(s, ios::out);
-
                 f << res->sumSFS[n]->toString();
                 f.close();
                 n++;
@@ -161,6 +160,8 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
+        if(Parameters::verbose>99)
+            cout <<"wrote snps file"<<endl;
 
         //print associated stats
         if (params->outputSNPSharedStats) {
@@ -184,6 +185,8 @@ int main(int argc, char* argv[]) {
             f.close();
             delete vFST, vPsi, vDeltaH, vH;
         }
+        if(Parameters::verbose>99)
+            cout <<"wrote snps stats"<<endl;
 
 
         //print and bootstrap stats to seperate files

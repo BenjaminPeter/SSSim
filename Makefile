@@ -47,7 +47,8 @@ OBJS_sssim =  \
 	$(TARGETDIR_sssim)/utils.o \
 	$(TARGETDIR_sssim)/Lineage.o \
 	$(TARGETDIR_sssim)/StatCalculator.o \
-	$(TARGETDIR_sssim)/Tree.o
+	$(TARGETDIR_sssim)/Tree.o \
+	$(TARGETDIR_sssim)/TreeSimulator.o
 SYSLIBS_sssim = -lm -lgsl -lgslcblas -lboost_thread
 USERLIBS_sssim =  $(SYSLIBS_sssim) 
 DEPLIBS_sssim =    

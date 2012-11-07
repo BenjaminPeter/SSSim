@@ -52,11 +52,11 @@ public:
     virtual ~Simulator();
              
     
-    static boost::mutex ftMutex, queueMutex;
+    static boost::mutex ftMutex,sfsMutex,ft2Mutex;
     
     //running the simulation
     SimulationResults* doSimulations(Parameters* params);
-    static void getNewGeneTree(Parameters* params, SimulationResults* res);
+    static void getNewGeneTree(Parameters* params, SimulationResults* res,int id=0);
 
     
     //set up
