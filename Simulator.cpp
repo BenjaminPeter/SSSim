@@ -57,13 +57,13 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
         //if (params->outputTree)
         //    f << l->toString() << endl;
         
-        cout << "thread " << id << " finished" << endl;
+        //cout << "thread " << id << " finished" << endl;
         
         
         boost::mutex::scoped_lock ftlock(Simulator::ftMutex);
-        cout << "thread " << id << " locked" << endl;
+        //cout << "thread " << id << " locked" << endl;
         l->addToFreqTable(res->ft);
-        cout << "thread " << id << " unlocked" << endl;
+        //cout << "thread " << id << " unlocked" << endl;
         ftlock.unlock();
         
         boost::mutex::scoped_lock ft2lock(Simulator::ft2Mutex);

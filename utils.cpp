@@ -23,14 +23,14 @@ utils::utils(long seed){
 }
 utils::~utils(){
     gsl_rng_free (utils::rng);
-    if (utils::stirlingNumbersReady && utils::stirlingNumberMatrix!=NULL&& utils::stirlingNumberMatrixD!=NULL){
+    /*if (utils::stirlingNumbersReady && utils::stirlingNumberMatrix!=NULL&& utils::stirlingNumberMatrixD!=NULL){
         for (int i=0; i<utils::stirlingNumberMax;i++){
             delete[] utils::stirlingNumberMatrix[i];
             delete[] utils::stirlingNumberMatrixD[i];
         }
         delete[] utils::stirlingNumberMatrix;
-        delete[] utils::stirlingNumberMatrixD;
-    }
+        delete[] utils::stirlingNumberMatrixD;**/
+    //}
 }
 void utils::setupRng(long seed){
     gsl_rng_env_setup();

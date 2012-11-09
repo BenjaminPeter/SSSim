@@ -23,6 +23,7 @@
 #include "IsolationByDistanceExpansion.h"
 #include "Parameters.h"
 #include "SimulationResults.h"
+#include "BootstrapResampler.h"
 #include <string>
 
 #define SEED 0;
@@ -74,16 +75,16 @@ int main(int argc, char* argv[]) {
     ofstream f;
     if (params->outputCommand) {
         sprintf(s, "%s.cmd", params->outputPrefix.c_str());
-        f.open(s, ios::out);        
+        f.open(s, ios::out);
         for (int i = 0; i < argc; i++) {
             f << argv[i] << " ";
         }
         f << endl;
         f.close();
     }
-    
-    
-    
+
+
+
     SimulationResults* res = sim->doSimulations(params);
 
 
@@ -120,7 +121,7 @@ int main(int argc, char* argv[]) {
         //printing SFS
         int n = 0;
         for (int i = 0; i < (params->samples.size() - 1); i++) {
-            utils::printProgressBar(100* n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
+            utils::printProgressBar(100 * n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
             for (int j = i + 1; j < params->samples.size(); j++) {
                 char s[100];
                 sprintf(s, "%s_%d_%d.sfs", params->outputPrefix.c_str(), i, j);
@@ -160,8 +161,8 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
-        if(Parameters::verbose>99)
-            cout <<"wrote snps file"<<endl;
+        if (Parameters::verbose > 99)
+            cout << "wrote snps file" << endl;
 
         //print associated stats
         if (params->outputSNPSharedStats) {
@@ -172,123 +173,45 @@ int main(int argc, char* argv[]) {
             vector<double>* vH = snpt->getHeterozygosity();
             int k = 0;
             f.open(s, ios::out);
+
             for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
                 for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
                     f << k << "\t" << i << "\t" << j << "\t";
                     f << (*vFST)[k] << "\t";
                     f << (*vPsi)[k] << "\t";
                     f << (*vDeltaH)[k] << endl;
+                    
 
                     ++k;
                 }
             }
             f.close();
-            delete vFST, vPsi, vDeltaH, vH;
+            delete vFST;
+            delete vPsi;
+            delete vDeltaH;
+            //delete vH;
         }
-        if(Parameters::verbose>99)
-            cout <<"wrote snps stats"<<endl;
+        if (Parameters::verbose > 99)
+            cout << "wrote snps stats" << endl;
 
 
         //print and bootstrap stats to seperate files
         if (params->bootstrapSNPSharedStats > 0) {
-            ofstream f1, f2, f3, f4; // define separate ofstream for each statistic
+            BootstrapResampler::writeHeader(params);
 
-            sprintf(s, "%s.fst.sbs", params->outputPrefix.c_str());
-            f1.open(s, ios::out);
-            sprintf(s, "%s.psi.sbs", params->outputPrefix.c_str());
-            f2.open(s, ios::out);
-            sprintf(s, "%s.dh.sbs", params->outputPrefix.c_str());
-            f3.open(s, ios::out);
-            sprintf(s, "%s.h.sbs", params->outputPrefix.c_str());
-            f4.open(s, ios::out);
+            //actual resampling, threaded
+            BootstrapResampler::setupResample(params->bootstrapSNPSharedStats, snpt);
 
+            BootstrapResampler::writeFooter();
 
-            //write header
-            int k = 0;
-            for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
-                for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
-                    f1 << "\t" << k;
-                    f2 << "\t" << k;
-                    f3 << "\t" << k;
-                    ++k;
-                }
-            }
-            for (int i = 0; i < Parameters::nSamplesStart; i++) {
-                f4 << "\t" << k;
-            }
-            f1 << endl;
-            f2 << endl;
-            f3 << endl;
-            f4 << endl;
-
-
-            for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
-                for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
-                    f1 << "\t" << i;
-                    f2 << "\t" << i;
-                    f3 << "\t" << i;
-                }
-            }
-            for (int i = 0; i < Parameters::nSamplesStart; i++) {
-                f4 << "\t" << i;
-            }
-            f1 << endl;
-            f2 << endl;
-            f3 << endl;
-            f4 << endl;
-            for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
-                for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
-                    f1 << "\t" << j;
-                    f2 << "\t" << j;
-                    f3 << "\t" << j;
-                }
-            }
-            f1 << endl;
-            f2 << endl;
-            f3 << endl;
-
-            //actual resampling
-            for (int rsmp = 0; rsmp < params->bootstrapSNPSharedStats; ++rsmp) {
-                utils::printProgressBar(100 * rsmp / params->bootstrapSNPSharedStats, "resampling... ");
-                SNPTable* snpt2 = snpt->getBootstrapResample();
-                vector<double>* vFST = snpt2->getFST();
-                vector<double>* vPsi = snpt2->getPsi();
-                vector<double>* vDeltaH = snpt2->getDeltaH();
-                vector<double>* vH = snpt2->getHeterozygosity();
-                delete snpt2;
-                k = 0;
-                for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
-                    for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
-                        f1 << "\t" << (*vFST)[k];
-                        f2 << "\t" << (*vPsi)[k];
-                        f3 << "\t" << (*vDeltaH)[k];
-                        f4 << "\t" << (*vH)[k];
-                        ++k;
-                    }
-                }
-                for (int i = 0; i < Parameters::nSamplesStart; i++) {
-                    f4 << "\t" << (*vH)[k];
-                }
-                f1 << endl;
-                f2 << endl;
-                f3 << endl;
-                f4 << endl;
-                
-                delete vFST;
-                delete vPsi;
-                delete vDeltaH;
-                delete vH;
-            }
-            f1.close();
-            f2.close();
-            f3.close();
-            f4.close();
         }
+        delete snpt;
     }
 
     if (params->outputSNP) {
         //generate & print SNP
-        vector<vector<int>* >*snps = res->simulateSNPN(false)->snp;
+        SNPTable* snpt = res->simulateSNPN(false);
+        vector<vector<int>* >*snps = snpt->snp;
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
         vector<vector<int>* >::const_iterator it1;
         vector<int>::const_iterator it2;
@@ -310,6 +233,7 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
+        delete snpt;
     }
 
     delete res;

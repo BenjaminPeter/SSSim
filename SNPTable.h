@@ -21,7 +21,7 @@ public:
     
     //constructor & ddestructor
     SNPTable();
-    SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops);
+    SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops,bool resample = false);
     virtual ~SNPTable();
     
     //generators    
@@ -40,9 +40,15 @@ public:
     vector<vector<int>* >* snp;
     
 private:
+    vector<double>* heterozygosity,*pi;
+    vector<SFS*> sfs; 
+    bool calcH,calcSFS;
     int nPops;
     int nSNP;
     SNPTable(const SNPTable& orig);
+    void calculateAllSFS();
+    bool isResample;
+    
 };
 
 #endif	/* SNPTABLE_H */

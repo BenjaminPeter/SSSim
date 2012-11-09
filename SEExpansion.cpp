@@ -38,6 +38,7 @@ SEExpansion::~SEExpansion() {
     //delete this->expansionEvents;
    
     delete[] this->arrivalTimes;
+    //delete this->expansionEvents;
 }
 
 
