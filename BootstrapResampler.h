@@ -23,10 +23,11 @@ public:
     static void setupResample(int nResamples, SNPTable* snpt);
     static boost::mutex ofMutex,brMutex;
 
-    static void doResample(SNPTable* snpt,ofstream* f,int id=0);     
-    static ofstream* writeHeader(Parameters* params);
-    static void writeFooter(ofstream* f);
+    static void doResample(SNPTable* snpt ,int id=0);     
+    static void writeHeader(Parameters* params);
+    static void writeFooter();
 private:
+    static ofstream* f;
     static int nResamples,maxResamples;
 
 };

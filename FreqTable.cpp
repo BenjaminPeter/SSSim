@@ -14,12 +14,14 @@
 
 FreqTable::FreqTable(int nPops) {
     this->nPops = nPops;
+    this->nEntries = 0;
 }
 
 FreqTable::FreqTable(const FreqTable& orig) {
 }
 
 FreqTable::~FreqTable() {
+    //delete this->idMap;
     //delete this->lengths;
     //for(vector<int*>::iterator it=this->alleleFreqs.begin(); it != this->alleleFreqs.end(); ++it){
     //     delete[] (*it);
@@ -58,8 +60,10 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
                     break;
             }
         }
-        if (nShared<2)
+        if (nShared<2){
+	    delete vect;
             return;
+	}
     }
     //cout <<"vect"<<vect[0]<<"\t"<<vect[1]<<endl;
     boost::unordered_map<vector<int>,int>::iterator it;
@@ -76,6 +80,7 @@ void FreqTable::addLine(double length, int* pops,bool checkShared) {
         this->nEntries++;
     }
     this->tTot += length;    
+    delete vect;
 }
 
 /*
@@ -144,6 +149,7 @@ SNPTable* FreqTable::drawSNP(int nSNP){
             snpFinal->push_back( newSNP);
         }
     }
+    delete snp;
     if (Parameters::verbose>99) cout << "got SNP: "<<endl;
     utils::rshuffle(snpFinal);
     if (Parameters::verbose>99) cout << "done randomizing: " <<endl;

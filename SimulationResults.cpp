@@ -15,6 +15,27 @@ SimulationResults::SimulationResults(const SimulationResults& orig) {
 }
 
 SimulationResults::~SimulationResults() {
+    delete[] fst,psi,deltaH;
+    delete ft;
+    delete ftShared;
+    for(int i=0; i<sumSFS.size(); ++i){
+        delete sumSFS[i];
+    }
+    for(int i=0; i<sumSFS1d.size(); ++i){
+        delete sumSFS1d[i];
+    }
+
+    for (int i = 0; i < nSamples * (nSamples - 1) / 2; i++) {
+        delete[] this->vFst[i];
+        delete[] this->vPsi[i];
+        delete[] this->vDeltaH[i];
+        }
+    delete[] this->vFst;
+    delete[] this->vPsi;
+    delete[] this->vDeltaH;
+    delete[] this->psi;
+    delete[] this->fst;
+    delete[] this->deltaH;
 }
 
 void SimulationResults::initialize(Parameters* params, int nSamples, int* sampleSizes, bool singleTrees) {

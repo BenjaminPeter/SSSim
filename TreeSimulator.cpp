@@ -38,7 +38,7 @@ Lineage* TreeSimulator::run() {
     this->timeSinceLastCoalEvent = 0;
     this->timeSinceStart = 0;
     this->nMigrationEvents = 0;
-    this->expansionEvents = new vector<pair<double, int> >((*params->ms->getExpansionEvents()));
+    this->expansionEvents = params->ms->getExpansionEvents();
     Event* ev;
     int evc = 0;
     while (true) {

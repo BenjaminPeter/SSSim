@@ -419,6 +419,15 @@ Parameters::Parameters(const Parameters& orig) {
 }
 
 Parameters::~Parameters() {
+    for(int i=0; i<samples.size();++i){
+        delete[] samples[i];
+    }
+    delete[] sampleSizes;
+    for(boost::unordered_map<int,Sample*>::iterator it = sampMapStart.begin();
+            it != sampMapStart.end(); ++it){
+        delete it->second;
+    }
+    delete this->ms;
 }
 
 void Parameters::addSampleStart(int* pos, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {

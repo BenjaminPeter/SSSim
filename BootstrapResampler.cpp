@@ -10,6 +10,10 @@
 
 int BootstrapResampler::nResamples = 0;
 int BootstrapResampler::maxResamples = 0;
+ofstream* BootstrapResampler::f = NULL;
+
+
+boost::mutex BootstrapResampler::ofMutex, BootstrapResampler::brMutex;
 
 BootstrapResampler::BootstrapResampler() {
 }
@@ -31,15 +35,17 @@ void BootstrapResampler::setupResample(int nResamples, SNPTable* snpt) {
 
     boost::thread_group tg;
     for (int i = 0; i < nThreads; ++i) {
-        tg.create_thread(boost::bind(&this->doResample, snpt));
+        tg.create_thread(boost::bind(&doResample, snpt, i));
+        //tg.create_thread(boost::bind(&this->doResample, snpt,i));
     }
     tg.join_all();
     uniqueLock.unlock();
 }
 
-void BootstrapResampler::doResample(SNPTable* snpt, ofstream* f, int id) {
+void BootstrapResampler::doResample(SNPTable* snpt, int id) {
     while (BootstrapResampler::nResamples > 0) {
         //do stuff
+        cout << "starting thread" << id << "nResamples:"<<BootstrapResampler::nResamples<<endl;
         utils::printProgressBar(100 * BootstrapResampler::nResamples / BootstrapResampler::maxResamples, "resampling... ");
         SNPTable* snpt2 = snpt->getBootstrapResample();
         vector<double>* vFST = snpt2->getFST();
@@ -80,9 +86,9 @@ void BootstrapResampler::doResample(SNPTable* snpt, ofstream* f, int id) {
     }
 }
 
-ofstream* BootstrapResampler::writeHeader(Parameters* params) {
+void BootstrapResampler::writeHeader(Parameters* params) {
     char s[200];
-    ofstream* f = new ofstream[4];
+    BootstrapResampler::f = new ofstream[4];
 
     sprintf(s, "%s.fst.sbs", params->outputPrefix.c_str());
     f[0].open(s, ios::out);
@@ -139,12 +145,12 @@ ofstream* BootstrapResampler::writeHeader(Parameters* params) {
     f[2] << endl;
 
 
-    return f;
 }
 
-void BootstrapResampler::writeFooter(ofstream* f){
+void BootstrapResampler::writeFooter() {
     f[0].close();
     f[1].close();
     f[2].close();
     f[3].close();
+    delete[] f;
 }

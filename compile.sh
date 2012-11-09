@@ -1,4 +1,4 @@
 #!/bin/bash
 
-g++ -o sssim *cpp -lm -lgsl -lgslcblas
+g++ -g -o sssim *cpp -lm -lgsl -lgslcblas -lboost_thread
 cp sssim ..

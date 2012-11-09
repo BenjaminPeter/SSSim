@@ -40,9 +40,14 @@ public:
     vector<vector<int>* >* snp;
     
 private:
+    vector<double>* heterozygosity,*pi;
+    vector<SFS*> sfs; 
+    bool calcH,calcSFS;
     int nPops;
     int nSNP;
     SNPTable(const SNPTable& orig);
+    void calculateAllSFS();
+    
 };
 
 #endif	/* SNPTABLE_H */

@@ -25,6 +25,7 @@ all: $(TARGETDIR_sssim)/sssim
 
 ## Target: sssim
 OBJS_sssim =  \
+	$(TARGETDIR_sssim)/BootstrapResampler.o \
 	$(TARGETDIR_sssim)/TerminalLineage.o \
 	$(TARGETDIR_sssim)/SequenceSimulator.o \
 	$(TARGETDIR_sssim)/SEExpansion.o \
@@ -61,6 +62,9 @@ $(TARGETDIR_sssim)/sssim: $(TARGETDIR_sssim) $(OBJS_sssim) $(DEPLIBS_sssim)
 
 
 # Compile source files into .o files
+$(TARGETDIR_sssim)/BootstrapResampler.o: $(TARGETDIR_sssim) BootstrapResampler.cpp
+	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ BootstrapResampler.cpp
+
 $(TARGETDIR_sssim)/TreeSimulator.o: $(TARGETDIR_sssim) TreeSimulator.cpp
 	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ TreeSimulator.cpp
 
@@ -163,6 +167,7 @@ clean:
 		$(TARGETDIR_sssim)/StatCalculator.o \
 		$(TARGETDIR_sssim)/Tree.o \
 		$(TARGETDIR_sssim)/TreeSimulator.o
+		$(TARGETDIR_sssim)/BootstrapResampler.o
 	$(CCADMIN)
 	rm -f -r $(TARGETDIR_sssim)
 
