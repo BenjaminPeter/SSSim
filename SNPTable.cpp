@@ -14,9 +14,11 @@ SNPTable::SNPTable() {
     this->snp = new vector<vector<int>* >();
     this->calcH = false;
     this->heterozygosity = NULL;
+    this->pi = NULL;
+    this->isResample = false;
 }
 
-SNPTable::SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops) {
+SNPTable::SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops, bool isResample) {
     this->snp = snp;
     //cout <<snp->size()<<endl;//\t"<<(*snp)[0]->size()<<endl;
 
@@ -26,18 +28,23 @@ SNPTable::SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops) {
     this->calcH = false;
     this->calcSFS = false;
     this->heterozygosity = NULL;
+    this->pi = NULL;
+
+    this->isResample = isResample;
 }
 
 SNPTable::SNPTable(const SNPTable& orig) {
 }
 
 SNPTable::~SNPTable() {
-    for(int i=0; i<this->snp->size();++i)
-        delete this->snp->at(i);
+    if (!isResample) { //only delete SNP if this isn't a resample
+        for (int i = 0; i<this->snp->size(); ++i)
+            delete this->snp->at(i);
+    }
     delete this->snp;
     //delete this->heterozygosity;
     delete this->pi;
-        
+
     //delete this->heterozygosity;
 }
 
@@ -62,7 +69,7 @@ SNPTable* SNPTable::getBootstrapResample() {
         }
     }
     utils::rshuffle(snpResample);
-    SNPTable* st = new SNPTable(snpResample, nSNP, this->nPops);
+    SNPTable* st = new SNPTable(snpResample, nSNP, this->nPops,true);
     delete[] snp;
     return st;
 }
@@ -150,7 +157,7 @@ vector<double>* SNPTable::getFST() {
             ++k;
         }
     }
-    delete[] n;
+    //delete[] n;
     return fst;
 }
 
@@ -199,7 +206,7 @@ vector<double>* SNPTable::getPsi() {
             ++k;
         }
     }
-    delete[] n;
+    //delete[] n;
     return psi;
 }
 
@@ -255,7 +262,7 @@ vector<double>* SNPTable::getHeterozygosity() {
     this->pi = pi;
     this->calcH = true;
     return h;
-    delete[] n;
+    //delete[] n;
 
 
 }

@@ -45,7 +45,7 @@ void BootstrapResampler::setupResample(int nResamples, SNPTable* snpt) {
 void BootstrapResampler::doResample(SNPTable* snpt, int id) {
     while (BootstrapResampler::nResamples > 0) {
         //do stuff
-        cout << "starting thread" << id << "nResamples:"<<BootstrapResampler::nResamples<<endl;
+        //cout << "starting thread" << id << "nResamples:"<<BootstrapResampler::nResamples<<endl;
         utils::printProgressBar(100 * BootstrapResampler::nResamples / BootstrapResampler::maxResamples, "resampling... ");
         SNPTable* snpt2 = snpt->getBootstrapResample();
         vector<double>* vFST = snpt2->getFST();
@@ -54,9 +54,9 @@ void BootstrapResampler::doResample(SNPTable* snpt, int id) {
         vector<double>* vH = snpt2->getHeterozygosity();
         delete snpt2;
 
-        cout << "finished " << id << endl;
+        //cout << "finished " << id << endl;
         boost::mutex::scoped_lock lock(ofMutex);
-        cout << "locked " << id << endl;
+        //cout << "locked " << id << endl;
         int k = 0;
         for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
             for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
@@ -73,14 +73,14 @@ void BootstrapResampler::doResample(SNPTable* snpt, int id) {
         f[1] << endl;
         f[2] << endl;
         f[3] << endl;
-        cout << "unlocked " << id << endl;
+        //cout << "unlocked " << id << endl;
         lock.unlock();
 
 
         delete vFST;
         delete vPsi;
         delete vDeltaH;
-        delete vH;
+        //delete vH;
         BootstrapResampler::nResamples--;
 
     }

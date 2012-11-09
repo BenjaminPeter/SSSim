@@ -1,7 +1,7 @@
 ## -*- Makefile -*-
 ##
 ## User: peterb
-## Time: Oct 17, 2012 11:33:32 AM
+## Time: Nov 9, 2012 11:16:58 AM
 ## Makefile created by Oracle Solaris Studio.
 ##
 ## This file is generated automatically.
@@ -11,22 +11,20 @@
 #### Compiler and tool definitions shared by all build targets #####
 CCC = g++
 CXX = g++
-BASICOPTS = -O -s
+BASICOPTS = -g
 CCFLAGS = $(BASICOPTS)
 CXXFLAGS = $(BASICOPTS)
 CCADMIN = 
-CCFLAGS_sssim =
-CPPFLAGS_sssim = 
+
 
 # Define the target directories.
 TARGETDIR_sssim=GNU-amd64-Linux
 
 
-all: $(TARGETDIR_sssim)/sssim
+all: $(TARGETDIR_sssim)/sssimd
 
 ## Target: sssim
 OBJS_sssim =  \
-	$(TARGETDIR_sssim)/BootstrapResampler.o \
 	$(TARGETDIR_sssim)/TerminalLineage.o \
 	$(TARGETDIR_sssim)/SequenceSimulator.o \
 	$(TARGETDIR_sssim)/SEExpansion.o \
@@ -41,6 +39,7 @@ OBJS_sssim =  \
 	$(TARGETDIR_sssim)/Parameters.o \
 	$(TARGETDIR_sssim)/Sample.o \
 	$(TARGETDIR_sssim)/FreqTable.o \
+	$(TARGETDIR_sssim)/TreeSimulator.o \
 	$(TARGETDIR_sssim)/Coords.o \
 	$(TARGETDIR_sssim)/SimulationResults.o \
 	$(TARGETDIR_sssim)/main.o \
@@ -50,25 +49,19 @@ OBJS_sssim =  \
 	$(TARGETDIR_sssim)/Lineage.o \
 	$(TARGETDIR_sssim)/StatCalculator.o \
 	$(TARGETDIR_sssim)/Tree.o \
-	$(TARGETDIR_sssim)/TreeSimulator.o
-SYSLIBS_sssim = -lm -lgsl -lgslcblas -lboost_thread
-USERLIBS_sssim =  $(SYSLIBS_sssim) 
-DEPLIBS_sssim =    
+	$(TARGETDIR_sssim)/BootstrapResampler.o
+SYSLIBS_sssim = -lm -lgsl -lgslcblas -lboost_thread 
+USERLIBS_sssim = $(SYSLIBS_sssim) 
+DEPLIBS_sssim =  
 LDLIBS_sssim = $(USERLIBS_sssim)
 
 
 # Link or archive
-$(TARGETDIR_sssim)/sssim: $(TARGETDIR_sssim) $(OBJS_sssim) $(DEPLIBS_sssim)
+$(TARGETDIR_sssim)/sssimd: $(TARGETDIR_sssim) $(OBJS_sssim) $(DEPLIBS_sssim)
 	$(LINK.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ $(OBJS_sssim) $(LDLIBS_sssim)
 
 
 # Compile source files into .o files
-$(TARGETDIR_sssim)/BootstrapResampler.o: $(TARGETDIR_sssim) BootstrapResampler.cpp
-	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ BootstrapResampler.cpp
-
-$(TARGETDIR_sssim)/TreeSimulator.o: $(TARGETDIR_sssim) TreeSimulator.cpp
-	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ TreeSimulator.cpp
-
 $(TARGETDIR_sssim)/TerminalLineage.o: $(TARGETDIR_sssim) TerminalLineage.cpp
 	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ TerminalLineage.cpp
 
@@ -111,6 +104,9 @@ $(TARGETDIR_sssim)/Sample.o: $(TARGETDIR_sssim) Sample.cpp
 $(TARGETDIR_sssim)/FreqTable.o: $(TARGETDIR_sssim) FreqTable.cpp
 	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ FreqTable.cpp
 
+$(TARGETDIR_sssim)/TreeSimulator.o: $(TARGETDIR_sssim) TreeSimulator.cpp
+	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ TreeSimulator.cpp
+
 $(TARGETDIR_sssim)/Coords.o: $(TARGETDIR_sssim) Coords.cpp
 	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ Coords.cpp
 
@@ -138,12 +134,15 @@ $(TARGETDIR_sssim)/StatCalculator.o: $(TARGETDIR_sssim) StatCalculator.cpp
 $(TARGETDIR_sssim)/Tree.o: $(TARGETDIR_sssim) Tree.cpp
 	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ Tree.cpp
 
+$(TARGETDIR_sssim)/BootstrapResampler.o: $(TARGETDIR_sssim) BootstrapResampler.cpp
+	$(COMPILE.cc) $(CCFLAGS_sssim) $(CPPFLAGS_sssim) -o $@ BootstrapResampler.cpp
+
 
 
 #### Clean target deletes all generated files ####
 clean:
 	rm -f \
-		$(TARGETDIR_sssim)/sssim \
+		$(TARGETDIR_sssim)/sssimd \
 		$(TARGETDIR_sssim)/TerminalLineage.o \
 		$(TARGETDIR_sssim)/SequenceSimulator.o \
 		$(TARGETDIR_sssim)/SEExpansion.o \
@@ -158,6 +157,7 @@ clean:
 		$(TARGETDIR_sssim)/Parameters.o \
 		$(TARGETDIR_sssim)/Sample.o \
 		$(TARGETDIR_sssim)/FreqTable.o \
+		$(TARGETDIR_sssim)/TreeSimulator.o \
 		$(TARGETDIR_sssim)/Coords.o \
 		$(TARGETDIR_sssim)/SimulationResults.o \
 		$(TARGETDIR_sssim)/main.o \
@@ -167,7 +167,6 @@ clean:
 		$(TARGETDIR_sssim)/Lineage.o \
 		$(TARGETDIR_sssim)/StatCalculator.o \
 		$(TARGETDIR_sssim)/Tree.o \
-		$(TARGETDIR_sssim)/TreeSimulator.o
 		$(TARGETDIR_sssim)/BootstrapResampler.o
 	$(CCADMIN)
 	rm -f -r $(TARGETDIR_sssim)

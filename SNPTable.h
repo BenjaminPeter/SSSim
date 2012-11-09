@@ -21,7 +21,7 @@ public:
     
     //constructor & ddestructor
     SNPTable();
-    SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops);
+    SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops,bool resample = false);
     virtual ~SNPTable();
     
     //generators    
@@ -47,6 +47,7 @@ private:
     int nSNP;
     SNPTable(const SNPTable& orig);
     void calculateAllSFS();
+    bool isResample;
     
 };
 

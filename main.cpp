@@ -75,16 +75,16 @@ int main(int argc, char* argv[]) {
     ofstream f;
     if (params->outputCommand) {
         sprintf(s, "%s.cmd", params->outputPrefix.c_str());
-        f.open(s, ios::out);        
+        f.open(s, ios::out);
         for (int i = 0; i < argc; i++) {
             f << argv[i] << " ";
         }
         f << endl;
         f.close();
     }
-    
-    
-    
+
+
+
     SimulationResults* res = sim->doSimulations(params);
 
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
         //printing SFS
         int n = 0;
         for (int i = 0; i < (params->samples.size() - 1); i++) {
-            utils::printProgressBar(100* n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
+            utils::printProgressBar(100 * n / params->samples.size() / (params->samples.size() - 1)*2, "printing sfs ");
             for (int j = i + 1; j < params->samples.size(); j++) {
                 char s[100];
                 sprintf(s, "%s_%d_%d.sfs", params->outputPrefix.c_str(), i, j);
@@ -161,8 +161,8 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
-        if(Parameters::verbose>99)
-            cout <<"wrote snps file"<<endl;
+        if (Parameters::verbose > 99)
+            cout << "wrote snps file" << endl;
 
         //print associated stats
         if (params->outputSNPSharedStats) {
@@ -173,24 +173,26 @@ int main(int argc, char* argv[]) {
             vector<double>* vH = snpt->getHeterozygosity();
             int k = 0;
             f.open(s, ios::out);
+
             for (int i = 0; i < Parameters::nSamplesStart - 1; i++) {
                 for (int j = i + 1; j < Parameters::nSamplesStart; j++) {
                     f << k << "\t" << i << "\t" << j << "\t";
                     f << (*vFST)[k] << "\t";
                     f << (*vPsi)[k] << "\t";
                     f << (*vDeltaH)[k] << endl;
+                    
 
                     ++k;
                 }
             }
             f.close();
             delete vFST;
-	    delete vPsi;
-	    delete vDeltaH;
-	    //delete vH;
+            delete vPsi;
+            delete vDeltaH;
+            //delete vH;
         }
-        if(Parameters::verbose>99)
-            cout <<"wrote snps stats"<<endl;
+        if (Parameters::verbose > 99)
+            cout << "wrote snps stats" << endl;
 
 
         //print and bootstrap stats to seperate files
@@ -198,8 +200,8 @@ int main(int argc, char* argv[]) {
             BootstrapResampler::writeHeader(params);
 
             //actual resampling, threaded
-            BootstrapResampler::setupResample(params->bootstrapSNPSharedStats,snpt);
-            
+            BootstrapResampler::setupResample(params->bootstrapSNPSharedStats, snpt);
+
             BootstrapResampler::writeFooter();
 
         }
@@ -208,7 +210,7 @@ int main(int argc, char* argv[]) {
 
     if (params->outputSNP) {
         //generate & print SNP
-	SNPTable* snpt = res->simulateSNPN(false);
+        SNPTable* snpt = res->simulateSNPN(false);
         vector<vector<int>* >*snps = snpt->snp;
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
         vector<vector<int>* >::const_iterator it1;
@@ -231,7 +233,7 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
-	delete snpt;
+        delete snpt;
     }
 
     delete res;
