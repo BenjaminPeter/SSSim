@@ -16,7 +16,8 @@ boost::mutex Simulator::ftMutex, Simulator::ft2Mutex, Simulator::sfsMutex;
 boost::mutex Simulator::counterMutex;
 
 Simulator::Simulator(long seed) {
-    this->ut = new utils(seed);
+    utils::setupRng(seed);
+    //this->ut = new utils(seed);
     this->migrationScheme = 0;
 }
 
@@ -24,7 +25,7 @@ Simulator::Simulator(const Simulator& orig) {
 }
 
 Simulator::~Simulator() {
-    delete this->ut;
+    //delete this->ut;
 
     //delete all lineages in all samples, then delete all samples
     boost::unordered_map<int, Sample*>::iterator it;
@@ -104,7 +105,6 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
 
 void Simulator::addSequenceSimulator(SequenceSimulator * ss) {
     this->seqSim = ss;
-    this->seqSim->ut = this->ut;
 }
 
 SimulationResults* Simulator::doSimulations(Parameters* params) {

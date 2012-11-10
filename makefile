@@ -105,7 +105,7 @@ $(TARGETDIR)/SNPTable.o: SNPTable.cpp SNPTable.h SFS.h Parameters.h utils.h Stat
 $(TARGETDIR)/SimulationResults.o: SimulationResults.cpp SimulationResults.h Parameters.h FreqTable.h SFS.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SimulationResults.cpp
 
-$(TARGETDIR)/SequenceSimulator.o: SequenceSimulator.cpp SequenceSimulator.h utils.h Lineage.h SFS.h
+$(TARGETDIR)/SequenceSimulator.o: SequenceSimulator.cpp SequenceSimulator.h utils.h Lineage.h SFS.h Parameters.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SequenceSimulator.cpp
 
 $(TARGETDIR)/StatCalculator.o: StatCalculator.cpp StatCalculator.h SFS.h

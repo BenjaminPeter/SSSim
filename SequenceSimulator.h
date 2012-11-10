@@ -11,21 +11,15 @@
 #include "utils.h"
 #include "Lineage.h"
 #include "SFS.h"
+#include "Parameters.h"
 
 class SequenceSimulator {
 public:
-    utils * ut;
     SequenceSimulator();
     
     virtual ~SequenceSimulator();
 
-    double getTheta() const {
-        return theta;
-    }
 
-    void setTheta(double theta) {
-        this->theta = theta;
-    }
     
     bool** createSequenceMatrix(Lineage* l);
     SFS* create1DSFS(Lineage* l,int pop);
@@ -34,7 +28,6 @@ public:
 
 private:
     SequenceSimulator(const SequenceSimulator& orig);
-    double theta;
 
 };
 

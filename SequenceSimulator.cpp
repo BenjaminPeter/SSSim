@@ -19,7 +19,6 @@ public:
 };
 
 SequenceSimulator::SequenceSimulator() {
-    this->theta=.020;
 }
 
 SequenceSimulator::SequenceSimulator(const SequenceSimulator& orig) {
@@ -79,7 +78,7 @@ bool** SequenceSimulator::createSequenceMatrix(Lineage* l){
     for(int i=0;i<nChildren;i++){
         dataSet[i]=new bool[MAXSNP];
     }
-    l->addSubtreeSNP(dataSet,sPos,nSNP,nChildren,theta);
+    l->addSubtreeSNP(dataSet,sPos,nSNP,nChildren,Parameters::theta);
     //l->getSNPString(l->childIds.size());
     
     /*cur=l;

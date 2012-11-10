@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
     Parameters* params = new Parameters(argc, argv);
 
     Simulator* sim = new Simulator(params->seed);
+    sim->setMigrationScheme(params->ms);
 
     if (!sim->migrationSchemeReady()) {
         cout << "width is" << sim->migrationScheme->getWidth() << endl;

@@ -9,6 +9,7 @@
 #define	MIGRATIONSCHEME_H
 #include <vector>
 #include <stdio.h>
+#include <iostream>
 #include <algorithm>
 
 using namespace std;
@@ -33,7 +34,8 @@ public:
         }
         return this->expansionEvents;
     }
-    virtual bool isInitialized(void)=0;
+    virtual bool isInitialized(void){
+    cerr << "x"<<std::endl;};
     virtual double getPopSize(const int x, const int y, const double t){
         return this->getPopSize(this->coords2d1d(x,y),t);
     }

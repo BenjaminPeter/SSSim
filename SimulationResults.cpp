@@ -15,7 +15,9 @@ SimulationResults::SimulationResults(const SimulationResults& orig) {
 }
 
 SimulationResults::~SimulationResults() {
-    delete[] fst,psi,deltaH;
+    delete[] fst;
+    delete[] psi;
+    delete[] deltaH;
     delete ft;
     delete ftShared;
     for(int i=0; i<sumSFS.size(); ++i){
@@ -41,7 +43,7 @@ SimulationResults::~SimulationResults() {
 void SimulationResults::initialize(Parameters* params, int nSamples, int* sampleSizes, bool singleTrees) {
     int pos = 0;
     this->nSamples = nSamples;
-    this->theta = params->ss->getTheta();
+    this->theta = params->theta;
     this->nSNP=params->nSNP;
     //initialize
     for (int i = 0; i < nSamples - 1; i++) {

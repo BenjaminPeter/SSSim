@@ -18,6 +18,7 @@
 //#include "Coords.h"
 #include "utils.h"
 #include "MigrationScheme.h"
+#include "SEExpansion.h"
 #include "SequenceSimulator.h"
 #include "Parameters.h"
 #include "SimulationResults.h"
@@ -35,7 +36,6 @@ public:
     int nLineages,nSamples;
     boost::unordered_map<int,Sample*> sampMap;
     MigrationScheme * migrationScheme;
-    utils* ut;
     static SequenceSimulator* seqSim;
     static int replicate;
     
@@ -59,8 +59,8 @@ public:
         //this->expansionEvents=ms->getExpansionEvents();
         int k=this->migrationScheme->getExpansionK();
         if (k>0){
-            this->ut->setupStirlingNumberTableD(k);
-            this->ut->setupStirlingNumberTable(k);
+            utils::setupStirlingNumberTableD(k);
+            utils::setupStirlingNumberTable(k);
             
         }
         //cout << "stirling number"<<this->ut->getStirlingNumber(5,2)<<endl;

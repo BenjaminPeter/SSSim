@@ -64,6 +64,7 @@ public:
     static int nSamplesStart;
     void printHelp();
     static int seed;
+    static double theta;
 private:
 
 };

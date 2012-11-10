@@ -18,6 +18,7 @@ int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
 bool Parameters::mPropagulePool = false;
 int Parameters::seed = 0;
+double Parameters::theta = -1;
 
 void Parameters::printHelp() {
     cout << "Usage and options: /sssim <number of trees>" << endl;
@@ -86,7 +87,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     Parameters::verbose = 0;
     this->nSNP = 0;
-    ss->setTheta(-1);
+    
 
 
     //cout <<" "<< nReplicates <<endl;
@@ -98,13 +99,13 @@ Parameters::Parameters(int argc, char* argv[]) {
         if (string(argv[i]) == "-t" || string(argv[i]) == "--theta") {
             if (this->nSNP > 0)
                 cerr << "Warning: Setting theta and N at the same time" << endl;
-            ss->setTheta(atof(argv[i + 1]));
+            this->theta = atof(argv[i + 1]);
             i += 1;
         }
 
         //set number of SNP
         if (string(argv[i]) == "-N") {
-            if (ss->getTheta() > 0)
+            if (this->theta > 0)
                 cerr << "Warning: Setting theta and N at the same time" << endl;
             //cout <<argv[i+1]<<endl;
             this->nSNP = atoi(argv[i + 1]);
