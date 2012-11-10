@@ -76,8 +76,8 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
         if (params->outputStats) {
             boost::mutex::scoped_lock sfslock(Simulator::sfsMutex);
             pos = 0;
-            for (int i = 0; i < samples.size() - 1; i++) {
-                for (int j = i + 1; j < samples.size(); j++) {
+            for (unsigned int i = 0; i < samples.size() - 1; i++) {
+                for (unsigned int j = i + 1; j < samples.size(); j++) {
                     sfs = Simulator::seqSim->create2DSFS(l, i, j);
                     *(res->sumSFS[pos]) += *sfs;
 

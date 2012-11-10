@@ -1,11 +1,19 @@
 CXX = g++
-CXXFLAGS = -O 
+CXXFLAGSRELEASE = -O3 -ffast-math -march=native
+CXXFLAGSDEBUG = -g -Wall
 COMPILEFLAGS = -c
 LIBFLAGS = -lm -lgsl -lgslcblas -lboost_thread
 TARGETDIR=maketest
 EXENAME=sssim
 
+CXXFLAGS = $(CXXFLAGSRELEASE)
+
+
 all: $(TARGETDIR)/$(EXENAME)
+
+debug: $(TARGETDIR)/$(EXENAME)
+
+debug : CXXFLAGS = $(CXXFLAGSDEBUG)
 
 $(TARGETDIR):
 		mkdir -p $(TARGETDIR)

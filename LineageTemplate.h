@@ -31,6 +31,7 @@ public:
     string toString(){
         stringstream ss;
         ss <<this->startPop <<"\t"<<startX<<"\t"<<startY<<endl;
+        return ss.str();
     }
 private:
     LineageTemplate(const LineageTemplate& orig);
