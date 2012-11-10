@@ -8,14 +8,15 @@
 #ifndef SNPTABLE_H
 #define	SNPTABLE_H
 
-class FreqTable;
 
 #include <vector>
-#include "FreqTable.h"
 #include "SFS.h"
+#include "utils.h"
+#include "StatCalculator.h"
 
 using namespace std;
 
+class Parameters;
 class SNPTable {
 public:
     

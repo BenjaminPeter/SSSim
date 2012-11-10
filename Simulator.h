@@ -13,30 +13,23 @@
 #include <vector>
 #include <sstream>
 #include <math.h>
-#include "SFS.h"
+#include <boost/bind.hpp>
+
 //#include "Coords.h"
-#include "Sample.h"
-#include "Event.h"
-#include "Lineage.h"
-#include "InternalLineage.h"
-#include "TerminalLineage.h"
-#include "LineageTemplate.h"
 #include "utils.h"
 #include "MigrationScheme.h"
 #include "SequenceSimulator.h"
 #include "Parameters.h"
-#include "StatCalculator.h"
 #include "SimulationResults.h"
 #include "TreeSimulator.h"
-#include <boost/bind.hpp>
+#include "StatCalculator.h"
+
 
 #include <stdio.h>
 
 using namespace std;
 
 class Parameters;
-class SimulationResults;
-class TreeSimulator;
 class Simulator {
 public:
     int nLineages,nSamples;
@@ -52,7 +45,7 @@ public:
     virtual ~Simulator();
              
     
-    static boost::mutex ftMutex,sfsMutex,ft2Mutex;
+    static boost::mutex ftMutex,sfsMutex,ft2Mutex,counterMutex;
     
     //running the simulation
     SimulationResults* doSimulations(Parameters* params);

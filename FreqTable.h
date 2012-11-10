@@ -14,7 +14,6 @@
 #include "SNPTable.h"
 
 
-class SNPTable;
 using namespace std;
 class FreqTable {
 public:

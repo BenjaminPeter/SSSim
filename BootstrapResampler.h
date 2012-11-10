@@ -21,7 +21,7 @@ public:
     BootstrapResampler(const BootstrapResampler& orig);
     virtual ~BootstrapResampler();
     static void setupResample(int nResamples, SNPTable* snpt);
-    static boost::mutex ofMutex,brMutex;
+    static boost::mutex ofMutex,brMutex,counterMutex;
 
     static void doResample(SNPTable* snpt ,int id=0);     
     static void writeHeader(Parameters* params);

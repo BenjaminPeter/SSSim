@@ -12,7 +12,8 @@ class TreeSimulator;
 
 SequenceSimulator* Simulator::seqSim = 0;
 int Simulator::replicate = 0;
-boost::mutex Simulator::ftMutex,Simulator::ft2Mutex, Simulator::sfsMutex;
+boost::mutex Simulator::ftMutex, Simulator::ft2Mutex, Simulator::sfsMutex;
+boost::mutex Simulator::counterMutex;
 
 Simulator::Simulator(long seed) {
     this->ut = new utils(seed);
@@ -42,7 +43,9 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
 
     while (Simulator::replicate > 0) {
         cout << "starting, replicate = " << Simulator::replicate << "Thread: " << id << endl;
+        boost::mutex::scoped_lock ctrlock(Simulator::counterMutex);
         Simulator::replicate--;
+        ctrlock.unlock();
         TreeSimulator* ts = new TreeSimulator(params);
         Lineage* l = ts->run();
         delete ts;
@@ -56,20 +59,20 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
 
         //if (params->outputTree)
         //    f << l->toString() << endl;
-        
+
         //cout << "thread " << id << " finished" << endl;
-        
-        
+
+
         boost::mutex::scoped_lock ftlock(Simulator::ftMutex);
         //cout << "thread " << id << " locked" << endl;
         l->addToFreqTable(res->ft);
         //cout << "thread " << id << " unlocked" << endl;
         ftlock.unlock();
-        
+
         boost::mutex::scoped_lock ft2lock(Simulator::ft2Mutex);
         l->addToFreqTable(res->ftShared, true);
         ft2lock.unlock();
-        
+
         if (params->outputStats) {
             boost::mutex::scoped_lock sfslock(Simulator::sfsMutex);
             pos = 0;
@@ -82,12 +85,14 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
                     pos++;
                 }
             }
-            //for (int i = 0; i < samples.size(); i++) {
-            //   sfs = Simulator::seqSim->create1DSFS(l, i);
-            //    *(res->sumSFS1d[i]) += *sfs;
-            //}
+            for (int i = 0; i < samples.size(); i++) {
+                sfs = Simulator::seqSim->create1DSFS(l, i);
+                *(res->sumSFS1d[i]) += *sfs;
+                delete sfs;
+            }
 
-            
+
+
             sfslock.unlock();
         }
         //tmrca += this->timeSinceStart;
@@ -107,7 +112,9 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
 
     int nThreads = boost::thread::hardware_concurrency();
     this->replicate = params->nReplicates;
-
+    this->setMigrationScheme(params->ms);
+    this->addSequenceSimulator(params->ss);
+    
     SimulationResults* res = new SimulationResults();
     res->initialize(params, samples.size(), params->sampleSizes);
     FreqTable* ft = new FreqTable(params->samples.size());

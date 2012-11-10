@@ -11,6 +11,7 @@
 #include <string>
 #include <sstream>
 
+
 class LineageTemplate:public Lineage {
 public:
     LineageTemplate(int idd,int startX,int startY, int startPop) {

@@ -14,13 +14,17 @@
 #include <fstream>
 #include <boost/unordered_map.hpp>
 #include "Sample.h"
-#include "Simulator.h"
 #include "MigrationScheme.h"
 #include "IsolationByDistance.h"
 #include "IsolationByDistanceExpansion.h"
 #include "SEExpansion.h"
 #include "SEExpansionDiffK.h"
-class Simulator;
+#include "SequenceSimulator.h"
+#include "Lineage.h"
+#include "LineageTemplate.h"
+
+
+class SequenceSimulator;
 class Parameters {
 public:
     Parameters(int argc, char* argv[]);
@@ -31,7 +35,7 @@ public:
 
     MigrationScheme* ms; //defines how migration is handled
     SequenceSimulator* ss; //simulates a sequence from a tree
-    Simulator* sim; //the simulator class, that does the simulating
+    //Simulator* sim; //the simulator class, that does the simulating
     std::vector<int*> samples; //each entry has three ints, being the 
     bool calcDeltaH, calcFST, calcPsi;
     //(x,y) coords and the number of lineages samples
@@ -59,6 +63,7 @@ public:
     static int nLineagesStart;
     static int nSamplesStart;
     void printHelp();
+    static int seed;
 private:
 
 };

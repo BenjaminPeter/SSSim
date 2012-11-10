@@ -14,6 +14,7 @@ ofstream* BootstrapResampler::f = NULL;
 
 
 boost::mutex BootstrapResampler::ofMutex, BootstrapResampler::brMutex;
+boost::mutex BootstrapResampler::counterMutex;
 
 BootstrapResampler::BootstrapResampler() {
 }
@@ -44,6 +45,9 @@ void BootstrapResampler::setupResample(int nResamples, SNPTable* snpt) {
 
 void BootstrapResampler::doResample(SNPTable* snpt, int id) {
     while (BootstrapResampler::nResamples > 0) {
+        boost::mutex::scoped_lock ctrlock(BootstrapResampler::counterMutex);
+        BootstrapResampler::nResamples--;
+        ctrlock.unlock();
         //do stuff
         //cout << "starting thread" << id << "nResamples:"<<BootstrapResampler::nResamples<<endl;
         utils::printProgressBar(100 * BootstrapResampler::nResamples / BootstrapResampler::maxResamples, "resampling... ");
@@ -81,7 +85,8 @@ void BootstrapResampler::doResample(SNPTable* snpt, int id) {
         delete vPsi;
         delete vDeltaH;
         //delete vH;
-        BootstrapResampler::nResamples--;
+        
+        
 
     }
 }

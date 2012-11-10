@@ -9,51 +9,23 @@
 
 
 #include <cstdlib>
-
-#include "Simulator.h"
-#include "IsolationByDistance.h"
-#include "SEExpansion.h"
-#include "SequenceSimulator.h"
-#include "StatCalculator.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include "Sample.h"
-#include "IsolationByDistanceExpansion.h"
+
+#include "Simulator.h"
 #include "Parameters.h"
 #include "SimulationResults.h"
 #include "BootstrapResampler.h"
+#include "SNPTable.h"
 #include <string>
 
 #define SEED 0;
 
 using namespace std;
 
-IsolationByDistance * ibdTest() {
-    IsolationByDistance * ibd = new IsolationByDistance();
-    ibd->setCarCapUniform(1.);
-    ibd->setMigrationRatesUniform(5, 5, 5, 5);
-    ibd->setExpansionK(20);
-    ibd->setWidth(3);
-    ibd->setHeight(3);
-    return ibd;
-}
 
-SEExpansion * seeTest() {
-    SEExpansion * see = new SEExpansion();
-    see->setCarCapUniform(1.);
-    see->setMigrationRatesUniform(5, 5, 5, 5);
-    see->setStartPos(0, 0);
-    see->setTLag(0.5);
-    see->setTStart(3.);
-    see->setExpansionK(0);
-    see->setWidth(1);
-    see->setHeight(5);
-    see->setupArrivalTimes();
-
-    return see;
-}
 
 /*
  * 
@@ -62,10 +34,7 @@ int main(int argc, char* argv[]) {
     char s[100];
     Parameters* params = new Parameters(argc, argv);
 
-
-
-
-    Simulator* sim = params->sim;
+    Simulator* sim = new Simulator(params->seed);
 
     if (!sim->migrationSchemeReady()) {
         cout << "width is" << sim->migrationScheme->getWidth() << endl;

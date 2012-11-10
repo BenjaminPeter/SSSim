@@ -7,8 +7,8 @@
 
 #ifndef TERMINALLINEAGE_H
 #define	TERMINALLINEAGE_H
+#include "TerminalLineage.h"
 #include "Lineage.h"
-#include "LineageTemplate.h"
 
 class TerminalLineage:public Lineage {
 public:

@@ -14,7 +14,6 @@
 #include <iostream>
 #include <algorithm>
 #include "SFS.h"
-#include "utils.h"
 #include "FreqTable.h"
 //
 using namespace std;

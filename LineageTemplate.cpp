@@ -6,6 +6,7 @@
  */
 
 #include "LineageTemplate.h"
+#include "Lineage.h"
 
 
 LineageTemplate::LineageTemplate(const LineageTemplate& orig) {

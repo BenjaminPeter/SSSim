@@ -10,25 +10,26 @@
 
 #include <vector>
 #include "Lineage.h"
-#include "InternalLineage.h"
-#include "LineageTemplate.h"
-#include "TerminalLineage.h"
 //#include "Coords.h"
 #include "utils.h"
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "Lineage.h"
+#include "TerminalLineage.h"
+#include "InternalLineage.h"
 using namespace std;
+
 class Sample {
 public:
     //static int ns;
     Sample(int x, int y, vector<Lineage*> lineages);
     Sample(int* pos, vector<Lineage*> lineages);
-    Sample(const Sample& orig,int nPops);    
+    Sample(const Sample& orig, int nPops);
     //Sample(Coords* pos, vector<Lineage*> lineages);
 
     virtual ~Sample();
-    void merge2lineages(int l1,int l2, double curTime);
+    void merge2lineages(int l1, int l2, double curTime);
     void merge2randomLineages(double curTime);
     Lineage* getRandomLineageForMigration();
     Lineage* getRandomLineage();
@@ -38,12 +39,15 @@ public:
     utils* ut;
     int getX();
     int getY();
-    int getNlineages(){return this->nLineages;}
+
+    int getNlineages() {
+        return this->nLineages;
+    }
     //Coords* getCoords(){return this->coords;}
     void deleteAllLineages();
 private:
-    
-    int x,y,nLineages;
+
+    int x, y, nLineages;
     vector<Lineage*> lineages;
     //Coords* coords;
 

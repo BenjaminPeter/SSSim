@@ -8,13 +8,12 @@
 #ifndef TREESIMULATOR_H
 #define	TREESIMULATOR_H
 
+#include "boost/unordered_map.hpp"
 #include "Parameters.h"
 #include "SimulationResults.h"
 #include "Lineage.h"
-#include "boost/unordered_map.hpp"
 #include "Event.h"
 
-class Parameters;
 class TreeSimulator {
 public:
     TreeSimulator(Parameters* params);

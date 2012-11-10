@@ -8,7 +8,6 @@
 
 #include "Parameters.h"
 
-#define SEED 0
 
 using namespace std;
 
@@ -18,6 +17,7 @@ int Parameters::nLineagesStart = 0;
 int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
 bool Parameters::mPropagulePool = false;
+int Parameters::seed = 0;
 
 void Parameters::printHelp() {
     cout << "Usage and options: /sssim <number of trees>" << endl;
@@ -63,10 +63,9 @@ Parameters::Parameters(int argc, char* argv[]) {
     }
     cout << endl;
 
+    this->seed = 0;
     this->mPropagulePool = false;
     this->outputPrefix = "out_";
-    this->ss = new SequenceSimulator();
-    this->sim = new Simulator(SEED);
     this->nReplicates = atoi(argv[1]);
     this->outputFT = false;
     this->outputSFS = false;
@@ -387,8 +386,8 @@ Parameters::Parameters(int argc, char* argv[]) {
         i++;
 
     }
-    sim->setMigrationScheme(ms);
-    sim->addSequenceSimulator(ss);
+    //sim->setMigrationScheme(ms);
+    //sim->addSequenceSimulator(ss);
 
     this->sampleSizes = new int[samples.size()];
     i = 0;
