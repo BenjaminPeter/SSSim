@@ -29,13 +29,12 @@ void BootstrapResampler::setupResample(int nResamples, SNPTable* snpt) {
     //make sure only one resampler is active at a time
     boost::mutex::scoped_lock uniqueLock(brMutex);
 
-    int nThreads = boost::thread::hardware_concurrency();
     BootstrapResampler::nResamples = nResamples;
     BootstrapResampler::maxResamples = nResamples;
 
 
     boost::thread_group tg;
-    for (int i = 0; i < nThreads; ++i) {
+    for (int i = 0; i < Parameters::nThreads; ++i) {
         tg.create_thread(boost::bind(&doResample, snpt, i));
         //tg.create_thread(boost::bind(&this->doResample, snpt,i));
     }

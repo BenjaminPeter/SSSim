@@ -110,7 +110,6 @@ void Simulator::addSequenceSimulator(SequenceSimulator * ss) {
 SimulationResults* Simulator::doSimulations(Parameters* params) {
     vector<int*> samples = params->samples;
 
-    int nThreads = boost::thread::hardware_concurrency();
     this->replicate = params->nReplicates;
     this->setMigrationScheme(params->ms);
     this->addSequenceSimulator(params->ss);
@@ -124,7 +123,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
 
 
     boost::thread_group tg;
-    for (int i = 0; i < nThreads; ++i) {
+    for (int i = 0; i < Parameters::nThreads; ++i) {
         tg.create_thread(boost::bind(&this->getNewGeneTree, params, res, i));
     }
     tg.join_all();
