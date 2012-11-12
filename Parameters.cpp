@@ -123,7 +123,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         }
         //force number of threads to be lower than max hardware
         if (string(argv[i]) == "--threads") {
-            Parameters::nThreads = min(Parameters::nThreads,atoi(arvg[i + 1]));
+            Parameters::nThreads = min(Parameters::nThreads,atoi(argv[i + 1]));
             i += 1;
         }
         if (string(argv[i]) == "-o") {
