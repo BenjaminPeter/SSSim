@@ -101,6 +101,7 @@ double utils::nhpp(double rMax, double(*rejFunction)(const double) , bool isCons
         nRejections++;
     }
     fprintf(stderr,"utils::nhpp: could not get next event for PP(rmax=%f)",rMax);
+    return -1.0;
     throw 10;
 }
 
