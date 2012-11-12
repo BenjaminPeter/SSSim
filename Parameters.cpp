@@ -18,6 +18,7 @@ int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
 bool Parameters::mPropagulePool = false;
 int Parameters::seed = 0;
+int Parameters::nThreads = boost::thread::hardware_concurrency();
 double Parameters::theta = -1;
 
 void Parameters::printHelp() {
@@ -28,6 +29,7 @@ void Parameters::printHelp() {
     cout << "\t-h" << "\tshows this help dialog" << endl;
     cout << "\t--help" << "\tsame as -h" << endl;
     cout << "\t--verbose\t" << "debug level, the higher, the more detailed debug messages will be displayed" << endl;
+    cout << "\t--threads\t" << "max number of threads to use" << endl;
     cout << "\t--mpp\t" << "use migrant pool propagatin" << endl;
     cout << endl;
 
@@ -118,6 +120,11 @@ Parameters::Parameters(int argc, char* argv[]) {
         if (string(argv[i]) == "-h" || string(argv[i]) == "--help") {
             this->printHelp();
             return;
+        }
+        //force number of threads to be lower than max hardware
+        if (string(argv[i]) == "--threads") {
+            Parameters::nThreads = min(Parameters::nThreads,atoi(arvg[i + 1]));
+            i += 1;
         }
         if (string(argv[i]) == "-o") {
             this->outputPrefix = argv[i + 1];

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/unordered_map.hpp>
+#include <boost/thread.hpp>
 #include "Sample.h"
 #include "MigrationScheme.h"
 #include "IsolationByDistance.h"
@@ -62,6 +63,7 @@ public:
             bool outputLoci=false, stringstream* ssOutputLoci=NULL);
     static int nLineagesStart;
     static int nSamplesStart;
+    static int nThreads;
     void printHelp();
     static int seed;
     static double theta;
