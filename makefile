@@ -10,6 +10,7 @@ CXXFLAGS = $(CXXFLAGSRELEASE)
 
 
 all: $(TARGETDIR)/$(EXENAME)
+	git commit -a
 
 debug: $(TARGETDIR)/$(EXENAME)
 
