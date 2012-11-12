@@ -91,7 +91,7 @@ double utils::nhpp(double rMax, double(*rejFunction)(const double) , bool isCons
         return gsl_ran_exponential(utils::rng,1./rMax);
                 
     int nRejections=0;
-    int maxRejections=10000;
+    int maxRejections=100000;
     double rve,rvu;
     while (nRejections<maxRejections){
         rve     =       gsl_ran_exponential(utils::rng,1./rMax);
