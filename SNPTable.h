@@ -13,6 +13,7 @@
 #include "SFS.h"
 #include "utils.h"
 #include "StatCalculator.h"
+#include "SNP.h"
 
 using namespace std;
 
@@ -22,7 +23,7 @@ public:
     
     //constructor & ddestructor
     SNPTable();
-    SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops,bool resample = false);
+    SNPTable(vector<SNP* >* snp, int nSNP, int nPops,bool resample = false);
     virtual ~SNPTable();
     
     //generators    
@@ -38,7 +39,7 @@ public:
     //get SFS
     SFS* make2DSFS(int pop1, int pop2);
     SFS* make1DSFS(int pop);
-    vector<vector<int>* >* snp;
+    vector<SNP* >* snp;
     
 private:
     vector<double>* heterozygosity,*pi;

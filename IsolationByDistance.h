@@ -29,9 +29,9 @@ public:
     //------------------------------------------
 
     
-    virtual vector<pair<double,int> >* getExpansionEvents();
-    virtual double getPopSize(const int pos, const double t);
-    virtual double getMigrationRate(const int direction, const int pos, const double t);
+    virtual vector<ExpansionEvent >* getExpansionEvents();
+    virtual double getPopSize(const Coords pos, const double t);
+    virtual double getMigrationRate(const int direction, const Coords pos, const double t);
     virtual bool isInitialized();
 
     double getK() const {

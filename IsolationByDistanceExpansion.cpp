@@ -40,15 +40,13 @@ void IsolationByDistanceExpansion::setCarCapUniform(double cc){
     this->k=cc;
 }
 
-double IsolationByDistanceExpansion::getPopSize(const int pos, const double t){
+double IsolationByDistanceExpansion::getPopSize(const Coords pos, const double t){
     return this->k;
 }
 
-double IsolationByDistanceExpansion::getMigrationRate(const int direction, const int pos, const double t){
-    int* arr=this->coords1d2d(pos);
-    int x=arr[0];
-    int y=arr[1];
-    delete[] arr;
+double IsolationByDistanceExpansion::getMigrationRate(const int direction, const Coords pos, const double t){
+    int x=pos.first;
+    int y=pos.second;
     switch (direction){
         case NORTH://north
             if (y>=this->height-1)

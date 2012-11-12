@@ -12,13 +12,14 @@
 using namespace std;
 
 int Parameters::verbose = 0;
-boost::unordered_map<int, Sample*> Parameters::sampMapStart = boost::unordered_map<int, Sample*>();
+SampleList Parameters::sampMapStart = SampleList();
 int Parameters::nLineagesStart = 0;
 int Parameters::nSamplesStart = 0;
 int* Parameters::sampleSizes = NULL;
 bool Parameters::mPropagulePool = false;
 int Parameters::seed = 0;
 int Parameters::nThreads = boost::thread::hardware_concurrency();
+bool Parameters::memoryEfficient = true;
 double Parameters::theta = -1;
 
 void Parameters::printHelp() {
@@ -89,7 +90,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     Parameters::verbose = 0;
     this->nSNP = 0;
-    
+
 
 
     //cout <<" "<< nReplicates <<endl;
@@ -113,7 +114,20 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->nSNP = atoi(argv[i + 1]);
             i += 1;
         }
+        //*****************************************************************************        
+        //*******     performance options                                             ********
+        //***************************************************************************** 
 
+        //force number of threads to be lower than max hardware
+        if (string(argv[i]) == "--threads") {
+            Parameters::nThreads = min(Parameters::nThreads, atoi(argv[i + 1]));
+            i += 1;
+        }
+        
+        //use more memory efficient, but slower implementation
+        if (string(argv[i]) == "--waste-memory") {
+            Parameters::memoryEfficient = false;
+        }
         //*****************************************************************************        
         //*******     output options                                             ********
         //***************************************************************************** 
@@ -121,11 +135,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->printHelp();
             return;
         }
-        //force number of threads to be lower than max hardware
-        if (string(argv[i]) == "--threads") {
-            Parameters::nThreads = min(Parameters::nThreads,atoi(argv[i + 1]));
-            i += 1;
-        }
+
         if (string(argv[i]) == "-o") {
             this->outputPrefix = argv[i + 1];
             //cout << this->outputPrefix << endl;
@@ -426,12 +436,12 @@ Parameters::Parameters(const Parameters& orig) {
 }
 
 Parameters::~Parameters() {
-    for(int i=0; i<samples.size();++i){
+    for (int i = 0; i < samples.size(); ++i) {
         delete[] samples[i];
     }
     delete[] sampleSizes;
-    for(boost::unordered_map<int,Sample*>::iterator it = sampMapStart.begin();
-            it != sampMapStart.end(); ++it){
+    for (SampleList::iterator it = sampMapStart.begin();
+            it != sampMapStart.end(); ++it) {
         delete it->second;
     }
     delete this->ms;
@@ -442,7 +452,8 @@ void Parameters::addSampleStart(int* pos, int nNewLineages, bool outputLoci, str
 }
 
 void Parameters::addSampleStart(int x, int y, int nNewLineages, bool outputLoci, stringstream* sOutputLoci) {
-    int pos = ms->coords2d1d(x, y);
+    //int pos = ms->coords2d1d(x, y);
+    Coords pos = Coords(x, y);
     if (ms->getArrivalTime(pos) == 0) {
         cerr << "Error: sample (" << x << "," << y << ") outside the colonized area,   ";
         cerr << "ArrivalTime:" << ms->getArrivalTime(pos) << endl;
@@ -462,7 +473,7 @@ void Parameters::addSampleStart(int x, int y, int nNewLineages, bool outputLoci,
     Sample* newSample = new Sample(x, y, newLineages);
     this->nLineagesStart += nNewLineages;
     this->nSamplesStart++;
-    Parameters::sampMapStart.insert(pair<int, Sample*>(pos, newSample));
+    Parameters::sampMapStart.insert(pair<Coords, Sample*>(pos, newSample));
 
 }
 

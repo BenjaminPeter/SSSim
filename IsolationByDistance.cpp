@@ -29,9 +29,9 @@ IsolationByDistance::~IsolationByDistance() {
 //double** IsolationByDistance::getCarCapMatrix(double time){}
 
 
-vector<pair<double,int> >* IsolationByDistance::getExpansionEvents(){
+vector<ExpansionEvent >* IsolationByDistance::getExpansionEvents(){
     
-    return new vector<pair<double,int> >(0);
+    return new vector<ExpansionEvent>();
     /*v->push_back(pair<double,int>(0.02,0));
     v->push_back(pair<double,int>(0.2,4));
     v->push_back(pair<double,int>(10,3));
@@ -67,7 +67,7 @@ void IsolationByDistance::setCarCapUniform(double cc){
     this->k=cc;
 }
 
-double IsolationByDistance::getPopSize(const int pos, const double t){
+double IsolationByDistance::getPopSize(const Coords pos, const double t){
     /* int* arr=this->coords1d2d(pos);
     int x=arr[0];
     int y=arr[1];
@@ -80,11 +80,11 @@ double IsolationByDistance::getPopSize(const int pos, const double t){
     return this->k;
 }
 
-double IsolationByDistance::getMigrationRate(const int direction, const int pos, const double t){
-    int* arr=this->coords1d2d(pos);
-    int x=arr[0];
-    int y=arr[1];
-    delete[] arr;
+double IsolationByDistance::getMigrationRate(const int direction, const Coords pos, const double t){
+
+    int x=pos.first;
+    int y=pos.second;
+
     switch (direction){
         case NORTH://north
             if (y>=this->height-1)

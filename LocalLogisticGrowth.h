@@ -8,6 +8,7 @@
 #ifndef LOCALLOGISTICGROWTH_H
 #define	LOCALLOGISTICGROWTH_H
 #include <vector>
+#include "MigrationScheme.h"
 using namespace std;
 
 class LocalLogisticGrowth {
@@ -18,7 +19,7 @@ public:
     
     int*** getMigrationMatrix(double time);
     int** getCarCapMatrix(double time);
-    vector<pair<double,int> >* getExpansionEvents();    
+    vector<ExpansionEvent>* getExpansionEvents();    
 private:
 
 };

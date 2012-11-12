@@ -26,11 +26,11 @@ public:
 private:
     Parameters* params;
     void copySampStartToSamp();
-    boost::unordered_map<int, Sample*> sampMap;
+    SampleList sampMap;
     int nSamples, nLineages;
     double timeSinceLastCoalEvent, timeSinceStart;
     int nMigrationEvents;
-    vector<pair<double, int> >* expansionEvents;
+    vector<ExpansionEvent>* expansionEvents;
 
     //next event
     Event* getNextEvent();
@@ -41,7 +41,7 @@ private:
     
     void removeSample(int x, int y);
     //adding events
-    void addExpansionEvent(pair<double, int>* ev);
+    void addExpansionEvent(ExpansionEvent* ev);
     void addCoalEvent(Event* ev);
     void addMigrationEvent(Event* ev);
     void terminate();

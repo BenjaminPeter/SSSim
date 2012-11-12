@@ -19,9 +19,9 @@ public:
     virtual void setMigrationRatesUniform(double awayNS,double backNS, double awayEW, 
                                   double backEW);
     virtual void setCarCapUniform(double cc);
-    virtual double getPopSize(const int pos, const double t);
+    virtual double getPopSize(const Coords pos, const double t);
 
-    virtual double getMigrationRate(const int direction, const int pos, const double t);
+    virtual double getMigrationRate(const int direction, const Coords pos, const double t);
     virtual bool isInitialized();
     
     int getXStart() const {

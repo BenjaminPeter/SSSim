@@ -20,13 +20,13 @@ TreeSimulator::~TreeSimulator() {
 
 void TreeSimulator::copySampStartToSamp() {
     Sample * sample;
-    int pos;
-    boost::unordered_map<int, Sample*>::const_iterator it;
+    Coords pos;
+    SampleList::const_iterator it;
     this->sampMap.clear();
     for (it = Parameters::sampMapStart.begin(); it != Parameters::sampMapStart.end(); ++it) {
         sample = new Sample(*it->second, Parameters::nSamplesStart);
         pos = it->first;
-        this->sampMap.insert(pair<int, Sample*>(pos, sample));
+        this->sampMap.insert(pair<Coords, Sample*>(pos, sample));
     }
     this->nSamples = Parameters::nSamplesStart;
     this->nLineages = Parameters::nLineagesStart;
@@ -59,7 +59,7 @@ Lineage* TreeSimulator::run() {
         throw 10;
     }
     delete this->expansionEvents;
-    boost::unordered_map<int, Sample*>::iterator it = this->sampMap.begin();
+    boost::unordered_map<Coords, Sample*>::iterator it = this->sampMap.begin();
     Lineage* l = it->second->getRandomLineageForMigration();
     delete (it->second);
     this->sampMap.erase(it);
@@ -80,17 +80,17 @@ Event* TreeSimulator::getNextEvent() {
         cout << "propMig:" << evMig->toString(); //<<evMig->time<<endl;
     }
     if (this->expansionEvents->size() > 0) {
-        pair<double, int>* expansion = &this->expansionEvents->back();
+        ExpansionEvent* expansion = &this->expansionEvents->back();
 
         if (Parameters::verbose > 999)
-            cout << "propExp:" << expansion->first - this->timeSinceStart << "/" << expansion->second << endl;
+            cout << "propExp:" << expansion->second - this->timeSinceStart << "/" << expansion->first << endl;
 
-        if (expansion->first < this->timeSinceStart + evCoal->time && expansion->first < this->timeSinceStart + evMig->time) {
+        if (expansion->second < this->timeSinceStart + evCoal->time && expansion->second < this->timeSinceStart + evMig->time) {
             this->addExpansionEvent(expansion);
             this->expansionEvents->pop_back();
             while (this->expansionEvents->size() > 0) {
                 expansion = &this->expansionEvents->back();
-                if (expansion->first - this->timeSinceStart > 0.0001) {
+                if (expansion->second - this->timeSinceStart > 0.0001) {
                     break;
                 }
                 this->addExpansionEvent(expansion);
@@ -132,9 +132,10 @@ Event* TreeSimulator::getNextCoalEvent() {
 }
 
 double TreeSimulator::coalRejFunction(const double t) {
-    boost::unordered_map<int, Sample*>::const_iterator iter;
+    SampleList::const_iterator iter;
     Sample* sample;
-    int nl, pos;
+    int nl;
+    Coords pos;
     double pSize, lambdaT = 0.0;
 
     for (iter = this->sampMap.begin(); iter != this->sampMap.end(); ++iter) {
@@ -153,9 +154,10 @@ double TreeSimulator::coalRejFunction(const double t) {
 }
 
 Event* TreeSimulator::whichCoalEvent(double t) {
-    boost::unordered_map<int, Sample*>::const_iterator iter;
+    SampleList::const_iterator iter;
     Sample*sample;
-    int nl, pos;
+    int nl;
+    Coords pos;
     double lambdaT = 0.0;
     double pSize, tEffective = t + this->timeSinceStart;
 
@@ -198,9 +200,10 @@ Event* TreeSimulator::getNextMigEvent() {
 }
 
 double TreeSimulator::migRejFunction(const double t) {
-    boost::unordered_map<int, Sample*>::const_iterator iter;
+    SampleList::const_iterator iter;
     Sample*sample;
-    int nl, pos;
+    int nl;
+    Coords pos;
     double pSize, lambdaT = 0.0;
     double mNorth, mSouth, mEast, mWest;
 
@@ -221,9 +224,10 @@ double TreeSimulator::migRejFunction(const double t) {
 }
 
 Event* TreeSimulator::whichMigEvent(double t) {
-    boost::unordered_map<int, Sample*>::const_iterator iter;
+    SampleList::const_iterator iter;
     Sample*sample;
-    int nl, pos;
+    int nl;
+    Coords pos;
     double lambdaT = 0.0;
     double mNorth, mSouth, mEast, mWest, pSize;
     Event* ev;
@@ -312,7 +316,7 @@ void TreeSimulator::addMigrationEvent(Event* ev) {
             break;
     }
     Lineage * migLineage = curSample->getRandomLineageForMigration();
-    int newCoords = this->params->ms->coords2d1d(newX, newY);
+    Coords newCoords = Coords(newX,newY);
     if (this->sampMap.count(newCoords) == 1) {
         Sample* newSample = this->sampMap[newCoords];
         newSample->addLineage(migLineage);
@@ -320,7 +324,7 @@ void TreeSimulator::addMigrationEvent(Event* ev) {
         vector<Lineage*> newLineages;
         newLineages.push_back(migLineage);
         Sample* newSample = new Sample(newX, newY, newLineages);
-        this->sampMap.insert(pair<int, Sample*>(newCoords, newSample));
+        this->sampMap.insert(pair<Coords, Sample*>(newCoords, newSample));
         this->nSamples += 1;
     }
     this->timeSinceLastCoalEvent += ev->time;
@@ -332,7 +336,8 @@ void TreeSimulator::addMigrationEvent(Event* ev) {
 }
 
 void TreeSimulator::removeSample(int x, int y) {
-    int pos = this->params->ms->coords2d1d(x, y);
+    Coords pos = Coords(x,y);
+    //int pos = this->params->ms->coords2d1d(x, y);
     Sample* a = this->sampMap[pos];
     delete a;
     this->sampMap.erase(pos);
@@ -349,25 +354,25 @@ void TreeSimulator::addCoalEvent(Event* ev) {
     delete ev;
 }
 
-void TreeSimulator::addExpansionEvent(pair<double, int>* ev) {
+void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
 
-    int pos = ev->second;
-    int* arr = this->params->ms->coords1d2d(pos);
-    int x = arr[0];
-    int y = arr[1];
-    delete[] arr;
+    Coords pos = ev->first;
+    //int* arr = this->params->ms->coords1d2d(pos);
+    int x = pos.first;
+    int y = pos.second;
+    //delete[] arr;
     if (Parameters::verbose > 499) {
         cout << "[" << ev->first << "]:Expansion in deme (" << x << "," << y << ")" << endl;
     }
 
-    int k = this->params->ms->getExpansionK(x, y);
+    int k = this->params->ms->getExpansionK(pos);
     double pDir[4], mRate[4], rTot = 0, randomNumber;
     Lineage * lineage;
 
 
-    this->timeSinceStart = ev->first;
-    if (this->sampMap.count(ev->second) == 1) {
-        Sample * sample = this->sampMap[ev->second];
+    this->timeSinceStart = ev->second;
+    if (this->sampMap.count(ev->first) == 1) {
+        Sample * sample = this->sampMap[ev->first];
 
         //if there is a founding propagule size set, check if we need to perform
         // additional coalescent events
@@ -409,16 +414,16 @@ void TreeSimulator::addExpansionEvent(pair<double, int>* ev) {
         }
         int h = this->params->ms->getHeight();
         //get population sizes/migration rates of surrounding demes:
-        pDir[0] = this->params->ms->getPopSize(pos + 1, ev->first);
-        pDir[1] = this->params->ms->getPopSize(pos - 1, ev->first);
-        pDir[2] = this->params->ms->getPopSize(pos + h, ev->first);
-        pDir[3] = this->params->ms->getPopSize(pos - h, ev->first);
+        pDir[0] = this->params->ms->getPopSize(Coords(pos.first,pos.second + 1), timeSinceStart);
+        pDir[1] = this->params->ms->getPopSize(Coords(pos.first,pos.second - 1), timeSinceStart);
+        pDir[2] = this->params->ms->getPopSize(Coords(pos.first + 1,pos.second), timeSinceStart);
+        pDir[3] = this->params->ms->getPopSize(Coords(pos.first - 1,pos.second), timeSinceStart);
 
 
-        mRate[0] = this->params->ms->getMigrationRate(0, pos, ev->first);
-        mRate[1] = this->params->ms->getMigrationRate(1, pos, ev->first);
-        mRate[2] = this->params->ms->getMigrationRate(2, pos, ev->first);
-        mRate[3] = this->params->ms->getMigrationRate(3, pos, ev->first);
+        mRate[0] = this->params->ms->getMigrationRate(0, pos, timeSinceStart);
+        mRate[1] = this->params->ms->getMigrationRate(1, pos, timeSinceStart);
+        mRate[2] = this->params->ms->getMigrationRate(2, pos, timeSinceStart);
+        mRate[3] = this->params->ms->getMigrationRate(3, pos, timeSinceStart);
 
         for (int i = 0; i < 4; i++) {
             rTot += pDir[i] * mRate[i];
@@ -482,7 +487,7 @@ string TreeSimulator::toString() {
     ss << buffer;
     sprintf(buffer, "contains %d lineages in %d samples: \n", this->nLineages, this->nSamples);
     ss << buffer;
-    boost::unordered_map<int, Sample*>::const_iterator iter;
+    SampleList::const_iterator iter;
     Sample* sample;
     for (iter = this->sampMap.begin(); iter != this->sampMap.end(); ++iter) {
         sample = iter->second;

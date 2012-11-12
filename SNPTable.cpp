@@ -11,14 +11,14 @@
 SNPTable::SNPTable() {
     this->nPops = 0;
     this->nSNP = 0;
-    this->snp = new vector<vector<int>* >();
+    this->snp = new vector<SNP*>();
     this->calcH = false;
     this->heterozygosity = NULL;
     this->pi = NULL;
     this->isResample = false;
 }
 
-SNPTable::SNPTable(vector<vector<int>* >* snp, int nSNP, int nPops, bool isResample) {
+SNPTable::SNPTable(vector<SNP*>* snp, int nSNP, int nPops, bool isResample) {
     this->snp = snp;
     //cout <<snp->size()<<endl;//\t"<<(*snp)[0]->size()<<endl;
 
@@ -53,7 +53,7 @@ SNPTable::~SNPTable() {
 //generators
 
 SNPTable* SNPTable::getBootstrapResample() {
-    vector<vector<int>* >* snpResample = new vector<vector<int>* >();
+    vector<SNP*>* snpResample = new vector<SNP*>();
     snpResample->reserve(nSNP);
 
 
@@ -92,9 +92,9 @@ SFS* SNPTable::make2DSFS(int pop1, int pop2) {
     int p2Size = Parameters::sampleSizes[pop2];
     SFS* sfs = new SFS(p1Size, p2Size);
 
-    vector<vector<int>* >::const_iterator it;
+    vector<SNP*>::const_iterator it;
     for (it = this->snp->begin(); it != this->snp->end(); ++it) {
-        vector<int>* curEntry = (*it);
+        SNP* curEntry = (*it);
         sfs->addToEntry((*curEntry)[pop1], (*curEntry)[pop2], 1.0);
     }
     return sfs;
@@ -105,9 +105,9 @@ SFS* SNPTable::make1DSFS(int pop1) {
     int p1Size = Parameters::sampleSizes[pop1];
     SFS* sfs = new SFS(p1Size);
 
-    vector<vector<int>* >::const_iterator it;
+    vector<SNP*>::const_iterator it;
     for (it = this->snp->begin(); it != this->snp->end(); ++it) {
-        vector<int>* curEntry = (*it);
+        SNP* curEntry = (*it);
         sfs->addToEntry((*curEntry)[pop1], 1.0);
     }
     return sfs;
@@ -268,7 +268,7 @@ vector<double>* SNPTable::getHeterozygosity() {
 }
 
 void SNPTable::calculateAllSFS() {
-    vector<vector<int>* >::iterator it;
+    vector<SNP* >::iterator it;
     int* n = Parameters::sampleSizes;
     int nComp = this->nPops * (this->nPops - 1) / 2;
     sfs.reserve(nComp);

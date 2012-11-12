@@ -25,8 +25,6 @@
 
 using namespace std;
 
-
-
 /*
  * 
  */
@@ -108,9 +106,9 @@ int main(int argc, char* argv[]) {
     //generate & print shared SNP
     if (params->outputSNPShared) {
         SNPTable* snpt = res->simulateSNPN(true);
-        vector<vector<int>* >* snps = snpt->snp;
+        vector<SNP* >* snps = snpt->snp;
         sprintf(s, "%s.snps", params->outputPrefix.c_str());
-        vector<vector<int>* >::const_iterator it1;
+        vector<SNP*>::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -119,7 +117,8 @@ int main(int argc, char* argv[]) {
         //
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
+            vector<int>* curSNP = (*it1);
+            for (it2 = curSNP->begin(); it2 != curSNP->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {
@@ -150,7 +149,7 @@ int main(int argc, char* argv[]) {
                     f << (*vFST)[k] << "\t";
                     f << (*vPsi)[k] << "\t";
                     f << (*vDeltaH)[k] << endl;
-                    
+
 
                     ++k;
                 }
@@ -181,9 +180,9 @@ int main(int argc, char* argv[]) {
     if (params->outputSNP) {
         //generate & print SNP
         SNPTable* snpt = res->simulateSNPN(false);
-        vector<vector<int>* >*snps = snpt->snp;
+        vector<SNP*>*snps = snpt->snp;
         sprintf(s, "%s.snp", params->outputPrefix.c_str());
-        vector<vector<int>* >::const_iterator it1;
+        vector<SNP*>::const_iterator it1;
         vector<int>::const_iterator it2;
         f.open(s, ios::out);
 
@@ -191,7 +190,8 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            for (it2 = (*it1)->begin(); it2 != (*it1)->end(); ++it2) {
+            vector<int>* curSNP = (*it1);//.GetFreqs();
+            for (it2 = curSNP->begin(); it2 != curSNP->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
                 } else {

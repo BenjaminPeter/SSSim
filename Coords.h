@@ -7,33 +7,14 @@
 
 #ifndef COORDS_H
 #define	COORDS_H
+#include <iostream>
 
-class Coords{
-public:
-    Coords(int x, int y){
-        this->x=x;
-        this->y=y;
-    }
-    int x,y;
-    bool operator==(const Coords &other) const {
-        return this->x==other.x && this->y==other.y;
-    }
-    bool operator!=(const Coords &other) const {
-        return !(*this == other);
-    }
-    bool operator<(const Coords& other) const{
-        if (this->x==other.x){
-            return this->y<other.y;
-        }
-        return this->x<other.x;
-    }
-    bool operator>(const Coords& other) const{
-        if (this->x==other.x){
-            return this->y>other.y;
-        }
-        return this->x>other.x;
-    }
-};
+typedef std::pair<int, int> Coords;
+inline std::ostream& operator<<(std::ostream& os, const Coords& c) {
+   return os << "(" << c.first << "," << c.second << ")";
+}
+
 
 #endif	/* COORDS_H */
+
 

@@ -11,59 +11,92 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include "Coords.h"
 
 using namespace std;
+typedef pair<Coords, double> ExpansionEvent;
+
 class MigrationScheme {
 public:
-    MigrationScheme(){
-        this->expansionEvents=0;
+
+    //constructors & destructors
+
+    MigrationScheme() {
+        this->expansionEvents = 0;
     }
-    virtual ~MigrationScheme(){
+
+    virtual ~MigrationScheme() {
         //delete this->expansionEvents;
     }
-    static bool sorter (const pair<double,int>& x, const pair<double,int>& y) { return x.first>y.first; }
-    //virtual double*** getMigrationMatrix(double time)=0;
-    //virtual double** getCarCapMatrix(double time)=0;
-    static const int NORTH=0;
-    static const int SOUTH=1;
-    static const int EAST=2;
-    static const int WEST=3;
-    virtual vector<pair<double,int> >* getExpansionEvents(){
-        if (this->expansionEvents==NULL){
-            return new vector<pair<double,int> >();
+
+
+
+
+    //migration directions
+    static const int NORTH = 0;
+    static const int SOUTH = 1;
+    static const int EAST = 2;
+    static const int WEST = 3;
+
+    static bool sorter(const ExpansionEvent& x, const ExpansionEvent& y) {
+        return x.second > y.second;
+    }
+
+    virtual vector<ExpansionEvent >* getExpansionEvents() {
+        if (this->expansionEvents == NULL) {
+            return new vector<ExpansionEvent > ();
         }
         return this->expansionEvents;
     }
-    virtual bool isInitialized(void){
-    cerr << "x"<<std::endl;};
-    virtual double getPopSize(const int x, const int y, const double t){
-        return this->getPopSize(this->coords2d1d(x,y),t);
-    }
-    virtual double getPopSize(const int pos, const double t)=0;
 
-    virtual double getMigrationRate(const int direction, const int x, 
-                                    const int y, const double t){
-        return this->getMigrationRate(direction,this->coords2d1d(x,y),t);
+    virtual bool isInitialized(void) {
+        cerr << "x" << std::endl;
     };
-    virtual double getMigrationRate(const int direction, const int pos, 
-                                    const double t)=0;
-    //virtual double getArrivalTime(const int x, const int y){
-    //    return 1000000000;
-    //}
-    
-    virtual double getArrivalTime(const int pos){
+
+    int c1d(Coords c) {
+        return c.first * this->height + c.second;
+    }
+    //getters for population size and migration rate
+
+    /*virtual double getPopSize(const int x, const int y, const double t) {
+        return this->getPopSize(this->coords2d1d(x, y), t);
+    }*/
+    virtual double getPopSize(const Coords pos, const double t) = 0;
+
+    /*virtual double getMigrationRate(const int direction, const int x,
+            const int y, const double t) {
+        return this->getMigrationRate(direction, this->coords2d1d(x, y), t);
+    };*/
+    virtual double getMigrationRate(const int direction, const Coords pos,
+            const double t) = 0;
+
+    //by default, arrival happened a very long time ago
+
+    virtual double getArrivalTime(const Coords pos) {
         return 10000000000;
     }
-    int* coords1d2d(int x){
-        int* arr = new int[2]; 
-        arr[0]=x/this->height; 
-        arr[1]=x%this->height;
-        //printf("%d=[%d*%d+%d]\n",x,arr[0],this->height,arr[1]);
-        return arr;
-    }
-    int coords2d1d(int x,int y){return x*this->height+y;}
-    int coords2d1d(int* arr){return arr[0]*this->height+arr[1];}
-    
+
+
+    //conversion from 1 to 2d
+
+    /*    int* coords1d2d(int x) {
+            int* arr = new int[2];
+            arr[0] = x / this->height;
+            arr[1] = x % this->height;
+            //printf("%d=[%d*%d+%d]\n",x,arr[0],this->height,arr[1]);
+            return arr;
+        }
+
+        int coords2d1d(int x, int y) {
+            return x * this->height + y;
+        }
+
+        int coords2d1d(int* arr) {
+            return arr[0] * this->height + arr[1];
+        }*/
+
+    //getters and setters for habitat shape
+
     int getHeight() const {
         return height;
     }
@@ -83,8 +116,8 @@ public:
     virtual int getExpansionK() const {
         return expansionK;
     }
-    
-    virtual int getExpansionK(int x, int y) const{
+
+    virtual int getExpansionK(Coords pos) const {
         return expansionK;
     }
 
@@ -92,10 +125,11 @@ public:
         this->expansionK = expansionK;
     }
 
+
 protected:
-    int width,height,expansionK;
-    vector<pair<double,int> >* expansionEvents;
+    int width, height, expansionK;
+    vector<ExpansionEvent>* expansionEvents;
 };
 
-#endif	/* MIGRATIONSCHEME_H */
+#endif /*MIGRATIONSCHEME_H */
 

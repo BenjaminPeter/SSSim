@@ -11,6 +11,7 @@
 #include "MigrationScheme.h"
 #include <iostream>
 #include <sstream>
+
 using namespace std;
 class SEExpansion : public MigrationScheme {
 public:
@@ -19,10 +20,10 @@ public:
 
     virtual ~SEExpansion();   
     
-    virtual vector<pair<double,int> >* getExpansionEvents(); //key is time when event happens,
+    virtual vector<ExpansionEvent>* getExpansionEvents(); //key is time when event happens,
     virtual bool isInitialized(void);
-    virtual double getPopSize(const int pos, const double t);
-    virtual double getMigrationRate(const int direction, const int pos,
+    virtual double getPopSize(const Coords pos, const double t);
+    virtual double getMigrationRate(const int direction, const Coords pos,
                                     const double t);
     
     void setStartPos(int* startPos);
@@ -33,7 +34,7 @@ public:
     void setMigrationRatesUniform(double north, double south, double east,
                                   double west);
     //double getArrivalTime(const int x, const int y);
-    double getArrivalTime(const int pos);
+    virtual double getArrivalTime(const Coords pos);
     void setupArrivalTimes();
     string toString(){
         cout << "SEExpansion:\twidth\theight\ttStart\ttLag\tk\tstartX\tstartY\teK"<<endl;
@@ -56,7 +57,7 @@ protected:
     int startX,startY;
     
     double* mRate;
-    double* arrivalTimes;
+    vector<double> arrivalTimes;
 
 };
 

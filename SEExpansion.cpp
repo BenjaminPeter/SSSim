@@ -37,21 +37,20 @@ SEExpansion::~SEExpansion() {
     delete[] this->mRate;
     //delete this->expansionEvents;
    
-    delete[] this->arrivalTimes;
+    //delete this->arrivalTimes;
     //delete this->expansionEvents;
 }
 
 
-vector<pair<double,int> >* SEExpansion::getExpansionEvents(){
-    vector<pair<double,int> >* evVect = new vector<pair<double,int> >(0);
+vector<ExpansionEvent>* SEExpansion::getExpansionEvents(){
+    vector<ExpansionEvent>* evVect = new vector<ExpansionEvent>();
     double tArrival=0;
-    int coord1d=0;
     for (int i=0; i<this->width;i++){
         for (int j=0; j<this->height;j++){
-            tArrival=this->getArrivalTime(i*this->height+j);
+            tArrival=this->getArrivalTime(Coords(i,j));
             if (tArrival>0){
-                coord1d=this->coords2d1d(i,j);
-                pair<double,int> p = pair<double,int>(tArrival,coord1d);
+                //coord1d=this->coords2d1d(i,j);
+                ExpansionEvent p = ExpansionEvent(Coords(i,j),tArrival);
                 evVect->push_back(p);
             }
         }
@@ -110,36 +109,33 @@ bool SEExpansion::isInitialized(){
 
 
 
-    double SEExpansion::getPopSize(const int pos, const double t){            
+    double SEExpansion::getPopSize(const Coords pos, const double t){            
         if (t<this->getArrivalTime(pos)&t>=0)
             return this->k;
         return 0;        
     }
     
-double SEExpansion::getMigrationRate(const int direction, const int pos, 
+double SEExpansion::getMigrationRate(const int direction, const Coords pos, 
                                      const double t){
-    int* arr=this->coords1d2d(pos);
-
-    int x=arr[0];
-    int y=arr[1];
-    delete[] arr;
+    int x = pos.first;
+    int y = pos.second;
     if (t>this->getArrivalTime(pos))
         return 0;
     switch (direction){
         case NORTH://north
-            if (y>=this->height-1||t>this->getArrivalTime(pos+1))
+            if (y>=this->height-1||t>this->getArrivalTime(Coords(x,y+1)))
                 return 0;              
             break;
         case SOUTH://south
-            if (y<=0||t>this->getArrivalTime(pos-1))
+            if (y<=0||t>this->getArrivalTime(Coords(x,y-1)))
                 return 0;
             break;
         case EAST://east
-            if (x>=this->width-1||t>this->getArrivalTime(pos+this->height))
+            if (x>=this->width-1||t>this->getArrivalTime(Coords(x+1,y)))
                 return 0;
             break;
         case WEST://west
-            if (x<=0||t>this->getArrivalTime(pos-this->height))
+            if (x<=0||t>this->getArrivalTime(Coords(x-1,y)))
                 return 0;
             break;
     }
@@ -176,10 +172,10 @@ void SEExpansion::setMigrationRatesUniform(double north, double south, double ea
     this->mRate[WEST]=west;
 }
 
-double SEExpansion::getArrivalTime(const int pos){
-    if( pos>=this->width*this->height) return 0;
-    if( pos<0) return 0;
-    return this->arrivalTimes[pos];
+double SEExpansion::getArrivalTime(const Coords pos){
+    if( pos.first > this->width || pos.second > this->height) return 0;
+    if( pos.first<0 || pos.second<0) return 0;
+    return this->arrivalTimes[c1d(pos)];
 }
 
 //double SEExpansion::getArrivalTime(const int x, const int y){
@@ -201,12 +197,12 @@ double SEExpansion::calcArrivalTime(int x, int y){
 
 
 void SEExpansion::setupArrivalTimes(void){
-    int h=this->height;
-    this->arrivalTimes=new double[this->width*this->height];
+    this->arrivalTimes.reserve(width*height);
+    //this->arrivalTimes=new double[this->width*this->height];
     for (int i=0;i<this->width;i++){
         //this->arrivalTimes[i]=new double[this->height];
         for (int j=0;j<this->height;j++){
-            this->arrivalTimes[i*h+j]=this->calcArrivalTime(i,j);        
+            this->arrivalTimes.push_back(this->calcArrivalTime(i,j));        
         }
     }
 }

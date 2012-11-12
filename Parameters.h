@@ -24,6 +24,7 @@
 #include "Lineage.h"
 #include "LineageTemplate.h"
 
+typedef boost::unordered_map<Coords, Sample*> SampleList;
 
 class SequenceSimulator;
 class Parameters {
@@ -32,7 +33,7 @@ public:
     Parameters();
     Parameters(const Parameters& orig);
     virtual ~Parameters();
-    static boost::unordered_map<int,Sample*> sampMapStart;
+    static boost::unordered_map<Coords,Sample*> sampMapStart;
 
     MigrationScheme* ms; //defines how migration is handled
     SequenceSimulator* ss; //simulates a sequence from a tree
@@ -67,6 +68,7 @@ public:
     void printHelp();
     static int seed;
     static double theta;
+    static bool memoryEfficient;
 private:
 
 };

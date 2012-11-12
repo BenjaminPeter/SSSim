@@ -12,6 +12,7 @@
 #include <boost/unordered_map.hpp>
 #include "utils.h"
 #include "SNPTable.h"
+#include "SNP.h"
 
 
 using namespace std;
@@ -21,12 +22,12 @@ public:
     virtual ~FreqTable();
     string toString();
     int nPops;
-    boost::unordered_map<vector<int>, int> idMap;
+    boost::unordered_map<SNP, int> idMap;
     vector<double> branchLengths;
     //vector<double> lengths;
     //vector<int*> alleleFreqs;
     void addLine(double length, int* pops, bool checkShared=false);
-    vector<int>* drawSNP();
+    SNP* drawSNP();
     SNPTable* drawSNP(int nSNP);
     SNPTable* drawSNP(double theta);
 

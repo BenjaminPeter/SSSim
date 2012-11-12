@@ -1,9 +1,9 @@
 CXX = g++
 CXXFLAGSRELEASE = -O3 -ffast-math -march=native
-CXXFLAGSDEBUG = -g -Wall
+CXXFLAGSDEBUG = -g 
 COMPILEFLAGS = -c
 LIBFLAGS = -lm -lgsl -lgslcblas -lboost_thread
-TARGETDIR=maketest
+TARGETDIR=opt
 EXENAME=sssim
 
 CXXFLAGS = $(CXXFLAGSRELEASE)
@@ -16,6 +16,14 @@ all: $(TARGETDIR)/$(EXENAME)
 debug: $(TARGETDIR)/$(EXENAME)
 
 debug : CXXFLAGS = $(CXXFLAGSDEBUG)
+	
+debug : TARGETDIR=debug
+
+profile: $(TARGETDIR)/$(EXENAME)
+
+profile: CXXFLAGS = $(CXXFLAGSDEBUG) -pg
+	
+profile: TARGETDIR=profile
 
 $(TARGETDIR):
 		mkdir -p $(TARGETDIR)
@@ -45,24 +53,24 @@ TARGETOBJ = \
 	$(TARGETDIR)/StatCalculator.o \
 	$(TARGETDIR)/utils.o \
 	$(TARGETDIR)/Tree.o \
-	$(TARGETDIR)/Coords.o \
+	$(TARGETDIR)/SNP.o \
 
 $(TARGETDIR)/$(EXENAME): $(TARGETDIR) $(TARGETOBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $(TARGETOBJ) $(LIBFLAGS)
 
-$(TARGETDIR)/main.o: main.cpp Simulator.h Parameters.h SimulationResults.h BootstrapResampler.h SNPTable.h
+$(TARGETDIR)/main.o: main.cpp Simulator.h Parameters.h SimulationResults.h BootstrapResampler.h SNPTable.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ main.cpp
 
-$(TARGETDIR)/Simulator.o: Simulator.cpp Simulator.h utils.h MigrationScheme.h SequenceSimulator.h Parameters.h SimulationResults.h TreeSimulator.h StatCalculator.h
+$(TARGETDIR)/Simulator.o: Simulator.cpp Simulator.h utils.h MigrationScheme.h SequenceSimulator.h Parameters.h SimulationResults.h TreeSimulator.h StatCalculator.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Simulator.cpp
 	
-$(TARGETDIR)/TreeSimulator.o: TreeSimulator.cpp TreeSimulator.h Parameters.h SimulationResults.h Lineage.h Event.h
+$(TARGETDIR)/TreeSimulator.o: TreeSimulator.cpp TreeSimulator.h Parameters.h SimulationResults.h Lineage.h Event.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ TreeSimulator.cpp
 
-$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h
+$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Parameters.cpp
 
-$(TARGETDIR)/Sample.o: Sample.cpp Sample.h Lineage.h utils.h TerminalLineage.h InternalLineage.h
+$(TARGETDIR)/Sample.o: Sample.cpp Sample.h Lineage.h utils.h TerminalLineage.h InternalLineage.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Sample.cpp
 
 $(TARGETDIR)/Event.o: Event.cpp Event.h Sample.h
@@ -119,8 +127,9 @@ $(TARGETDIR)/utils.o: utils.cpp utils.h
 $(TARGETDIR)/Tree.o: Tree.cpp Tree.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Tree.cpp
 
-$(TARGETDIR)/Coords.o: Coords.cpp Coords.h
-	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Coords.cpp
+
+$(TARGETDIR)/SNP.o: SNP.cpp SNP.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SNP.cpp
 
 $(TARGETDIR)/BootstrapResampler.o: BootstrapResampler.cpp BootstrapResampler.h SNPTable.h Parameters.h utils.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ BootstrapResampler.cpp
