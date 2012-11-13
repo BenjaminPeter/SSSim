@@ -56,6 +56,9 @@ public:
     int c1d(Coords c) {
         return c.first * this->height + c.second;
     }
+    int c1d(int x, int y) {
+        return x * this->height + y;
+    }
     //getters for population size and migration rate
 
     /*virtual double getPopSize(const int x, const int y, const double t) {

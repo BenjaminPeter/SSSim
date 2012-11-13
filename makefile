@@ -3,27 +3,33 @@ CXXFLAGSRELEASE = -O3 -ffast-math -march=native
 CXXFLAGSDEBUG = -g 
 COMPILEFLAGS = -c
 LIBFLAGS = -lm -lgsl -lgslcblas -lboost_thread
-TARGETDIR=opt
+TARGETDIR=maketest
 EXENAME=sssim
 
 CXXFLAGS = $(CXXFLAGSRELEASE)
 
 
-all: $(TARGETDIR)/$(EXENAME)
-	git commit -a
-	git push
 
+
+all: $(TARGETDIR)/$(EXENAME)
+
+push: $(TARGETDIR)/$(EXENAME)
+		git commit -a
+		git push
+
+#------------ debug ---------------
 debug: $(TARGETDIR)/$(EXENAME)
 
 debug : CXXFLAGS = $(CXXFLAGSDEBUG)
-	
-debug : TARGETDIR=debug
 
+#------------ profile ---------------
 profile: $(TARGETDIR)/$(EXENAME)
 
 profile: CXXFLAGS = $(CXXFLAGSDEBUG) -pg
-	
-profile: TARGETDIR=profile
+
+
+#------------ everything ---------------
+compile: $(TARGETDIR)/$(EXENAME)
 
 $(TARGETDIR):
 		mkdir -p $(TARGETDIR)

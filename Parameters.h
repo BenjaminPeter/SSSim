@@ -33,7 +33,8 @@ public:
     Parameters();
     Parameters(const Parameters& orig);
     virtual ~Parameters();
-    static boost::unordered_map<Coords,Sample*> sampMapStart;
+    static SampleList sampMapStart;
+    
 
     MigrationScheme* ms; //defines how migration is handled
     SequenceSimulator* ss; //simulates a sequence from a tree
