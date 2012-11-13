@@ -90,7 +90,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     bool doRandomSample = false;
     int rsPar1, rsPar2;
-    
+
     Parameters::verbose = 0;
     this->nSNP = 0;
 
@@ -134,7 +134,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
         //rng seed
         if (string(argv[i]) == "--seed") {
-            Parameters::seed = atoi(argv[i+1]);
+            Parameters::seed = atoi(argv[i + 1]);
             i += 1;
         }
         //*****************************************************************************        
@@ -240,7 +240,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             rsPar1 = atoi(argv[i + 1]);
             rsPar2 = atoi(argv[i + 2]);
             doRandomSample = true;
-            
+
             i += 2;
         }
 
@@ -445,14 +445,15 @@ Parameters::Parameters(int argc, char* argv[]) {
     //sim->setMigrationScheme(ms);
     //sim->addSequenceSimulator(ss);
 
-    
+
     //has to be done afterwards because of rng init
     utils::setupRng(this->seed);
-    this->generateRandomSample(rsPar1, rsPar2);
-    
-    
-    
-    
+    if (doRandomSample)
+        this->generateRandomSample(rsPar1, rsPar2);
+
+
+
+
 
     this->ms->addBarriersToMigrationScheme();
 
