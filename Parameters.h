@@ -26,10 +26,12 @@
 #include "Barrier.h"
 #include "IsolationByDistanceBarrier.h"
 #include "SEExpansionBarrier.h"
+#include "utils.h"
 
 typedef boost::unordered_map<Coords, Sample*> SampleList;
 
 class SequenceSimulator;
+
 class Parameters {
 public:
     Parameters(int argc, char* argv[]);
@@ -37,20 +39,21 @@ public:
     Parameters(const Parameters& orig);
     virtual ~Parameters();
     static SampleList sampMapStart;
-    
+
 
     MigrationScheme* ms; //defines how migration is handled
     SequenceSimulator* ss; //simulates a sequence from a tree
     //Simulator* sim; //the simulator class, that does the simulating
-    std::vector<int*> samples; //each entry has three ints, being the 
+    std::vector<int*> samples; //each entry has three ints, being the
+    //(x,y) coords and the number of lineages samples
+
     std::vector<Barrier*> barriers; // barriers in the habitat
     bool calcDeltaH, calcFST, calcPsi;
-    //(x,y) coords and the number of lineages samples
-    int nReplicates;//how many trees should be sampled?    
+    int nReplicates; //how many trees should be sampled?    
     static int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
-    bool outputSFS,outputFT,outputSNP,outputSNPShared,outputStats,outputStatsJK;
-    bool outputTree,outputCommand;
+    bool outputSFS, outputFT, outputSNP, outputSNPShared, outputStats, outputStatsJK;
+    bool outputTree, outputCommand;
     bool outputSNPStats, outputSNPSharedStats;
     int bootstrapSNPStats, bootstrapSNPSharedStats;
     static int verbose; //verbosity level:
@@ -63,10 +66,10 @@ public:
     static bool mPropagulePool;
     bool outputLoci;
     int nSNP; //how many SNP should be sampled
-    
-    void addSampleStart(int * pos,int nNewLineages,bool outputLoci=false, stringstream* ssOutputLoci=NULL);
+
+    void addSampleStart(int * pos, int nNewLineages, bool outputLoci = false, stringstream* ssOutputLoci = NULL);
     void addSampleStart(int x, int y, int nNewLineages,
-            bool outputLoci=false, stringstream* ssOutputLoci=NULL);
+            bool outputLoci = false, stringstream* ssOutputLoci = NULL);
     static int nLineagesStart;
     static int nSamplesStart;
     static int nThreads;
@@ -75,6 +78,7 @@ public:
     static double theta;
     static bool memoryEfficient;
 private:
+    void generateRandomSample(int nSamples, int sampSize);
 
 };
 

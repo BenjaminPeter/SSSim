@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     char s[100];
     Parameters* params = new Parameters(argc, argv);
 
-    Simulator* sim = new Simulator(params->seed);
+    Simulator* sim = new Simulator();
     sim->setMigrationScheme(params->ms);
 
     if (!sim->migrationSchemeReady()) {
@@ -206,7 +206,7 @@ int main(int argc, char* argv[]) {
         delete snpt;
     }
 
-    delete res;
+    //delete res;
     delete sim;
     delete params;
     return 0;

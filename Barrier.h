@@ -18,6 +18,7 @@ public:
     Coords bottomleft, topright; //coords of bottom left and top right corner
     double k; //population size
     double mBoundary, mInside;
+    bool isInside(Coords c);
 private:        
     double tStart,tEnd; //time of arrival/end of barrier;
 

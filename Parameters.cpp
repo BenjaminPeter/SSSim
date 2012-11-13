@@ -88,6 +88,9 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     this->outputTree = false;
 
+    bool doRandomSample = false;
+    int rsPar1, rsPar2;
+    
     Parameters::verbose = 0;
     this->nSNP = 0;
 
@@ -127,6 +130,12 @@ Parameters::Parameters(int argc, char* argv[]) {
         //use more memory efficient, but slower implementation
         if (string(argv[i]) == "--waste-memory") {
             Parameters::memoryEfficient = false;
+        }
+
+        //rng seed
+        if (string(argv[i]) == "--seed") {
+            Parameters::seed = atoi(argv[i+1]);
+            i += 1;
         }
         //*****************************************************************************        
         //*******     output options                                             ********
@@ -205,7 +214,7 @@ Parameters::Parameters(int argc, char* argv[]) {
         if (string(argv[i]) == "-b") {
             Coords bottomleft = Coords(atoi(argv[i + 1]), atoi(argv[i + 2]));
             Coords topright = Coords(atoi(argv[i + 3]), atoi(argv[i + 4]));
-            double k = atof(argv[i+5]);
+            double k = atof(argv[i + 5]);
             double mInside = atof(argv[i + 6]);
             double mBoundary = atof(argv[i + 7]);
             this->barriers.push_back(new Barrier(bottomleft, topright, k, mInside, mBoundary));
@@ -224,6 +233,15 @@ Parameters::Parameters(int argc, char* argv[]) {
             newSample[2] = atoi(argv[i + 3]);
             samples.push_back(newSample);
             i += 3;
+        }
+
+        //add n random samples
+        if (string(argv[i]) == "--srandom") {
+            rsPar1 = atoi(argv[i + 1]);
+            rsPar2 = atoi(argv[i + 2]);
+            doRandomSample = true;
+            
+            i += 2;
         }
 
         //add sequence of samples with -s x,ystart,yend,n [offset]
@@ -428,8 +446,16 @@ Parameters::Parameters(int argc, char* argv[]) {
     //sim->addSequenceSimulator(ss);
 
     
-    this->ms->addBarriersToMigrationScheme();
+    //has to be done afterwards because of rng init
+    utils::setupRng(this->seed);
+    this->generateRandomSample(rsPar1, rsPar2);
     
+    
+    
+    
+
+    this->ms->addBarriersToMigrationScheme();
+
     this->sampleSizes = new int[samples.size()];
     i = 0;
 
@@ -509,3 +535,55 @@ void Parameters::addSampleStart(int x, int y, int nNewLineages, bool outputLoci,
 
 }
 
+void Parameters::generateRandomSample(int nSamples, int sampSize) {
+    if (this->ms == NULL) {
+        cerr << "migration scheme has to be set first" << endl;
+        throw 10;
+    }
+
+    int height = this->ms->getHeight();
+    int width = this->ms->getWidth();
+
+    int nSuccessfulSamples = 0, nUnsuccessfulSamples = 0;
+    //int propX, propY;
+    Coords prop;
+    vector<Coords> vCoords;
+    vector<Coords>::iterator it;
+    bool isAccepted = true;
+
+
+    while (nSuccessfulSamples < nSamples) {
+        prop = Coords(utils::random1(width), utils::random1(height));
+
+        for (vector<Barrier*>::iterator itb = this->barriers.begin();
+                itb != this->barriers.end(); ++itb) {
+            isAccepted = !(*itb)->isInside(prop);
+        }
+
+        for (it = vCoords.begin(); it != vCoords.end(); ++it) {
+            if ((*it) - prop == 0) {
+                isAccepted = false;
+            }
+        }
+        if (isAccepted) {
+            vCoords.push_back(prop);
+            cout << "accepted " << prop << sampSize << endl;
+            nSuccessfulSamples++;
+        } else {
+            nUnsuccessfulSamples++;
+        }
+
+        if (nUnsuccessfulSamples > 1000) {
+            cerr << "couldn't generate random sample" << endl;
+        }
+    }
+
+
+    for (it = vCoords.begin(); it != vCoords.end(); ++it) {
+        int* arr = new int[3];
+        arr[0] = (*it).first;
+        arr[1] = (*it).second;
+        arr[2] = sampSize;
+        this->samples.push_back(arr);
+    }
+}

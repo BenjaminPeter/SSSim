@@ -15,8 +15,8 @@ int Simulator::replicate = 0;
 boost::mutex Simulator::ftMutex, Simulator::ft2Mutex, Simulator::sfsMutex;
 boost::mutex Simulator::counterMutex;
 
-Simulator::Simulator(long seed) {
-    utils::setupRng(seed);
+Simulator::Simulator() {
+    //utils::setupRng(seed);
     //this->ut = new utils(seed);
     this->migrationScheme = 0;
 }

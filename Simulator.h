@@ -40,7 +40,7 @@ public:
     static int replicate;
     
     //constructors
-    Simulator(long seed=0);
+    Simulator();
     Simulator(const Simulator& orig);
     virtual ~Simulator();
              

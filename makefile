@@ -76,7 +76,7 @@ $(TARGETDIR)/Simulator.o: Simulator.cpp Simulator.h utils.h MigrationScheme.h Se
 $(TARGETDIR)/TreeSimulator.o: TreeSimulator.cpp TreeSimulator.h Parameters.h SimulationResults.h Lineage.h Event.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ TreeSimulator.cpp
 
-$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h Coords.h
+$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h Coords.h utils.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Parameters.cpp
 
 $(TARGETDIR)/Sample.o: Sample.cpp Sample.h Lineage.h utils.h TerminalLineage.h InternalLineage.h Coords.h
