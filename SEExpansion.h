@@ -30,8 +30,8 @@ public:
     void setStartPos(int x,int y);
     void setTLag(double tLag);
     void setTStart(double tStart);
-    void setCarCapUniform(double cc);
-    void setMigrationRatesUniform(double north, double south, double east,
+    virtual void setCarCapUniform(double cc);
+    virtual void setMigrationRatesUniform(double north, double south, double east,
                                   double west);
     //double getArrivalTime(const int x, const int y);
     virtual double getArrivalTime(const Coords pos);
@@ -48,6 +48,11 @@ public:
         cout << this->startY << "\t";
         cout << this->expansionK << endl;
         return "";
+    }
+    
+    
+    virtual void addBarriersToMigrationScheme(){
+        cerr << "use IsolationByDistanceBarrier instead" << endl;
     }
 protected:   
     double calcArrivalTime(const int x,const int y);

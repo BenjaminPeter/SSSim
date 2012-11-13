@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include "Coords.h"
+#include "Barrier.h"
 
 using namespace std;
 typedef pair<Coords, double> ExpansionEvent;
@@ -56,6 +57,7 @@ public:
     int c1d(Coords c) {
         return c.first * this->height + c.second;
     }
+
     int c1d(int x, int y) {
         return x * this->height + y;
     }
@@ -129,9 +131,20 @@ public:
     }
 
 
+    //barriers
+    virtual void addBarriersToMigrationScheme() = 0;
+
+    virtual bool inBounds(Coords c){
+        return (0 <= c.first && c.first < width && 0 <= c.second && c.second < height);
+    }
 protected:
     int width, height, expansionK;
     vector<ExpansionEvent>* expansionEvents;
+    vector<Barrier*> barriers;
+
+    virtual void newBarrier(Barrier* b) {
+        this->barriers.push_back(b);
+    }
 };
 
 #endif /*MIGRATIONSCHEME_H */

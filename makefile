@@ -60,6 +60,9 @@ TARGETOBJ = \
 	$(TARGETDIR)/utils.o \
 	$(TARGETDIR)/Tree.o \
 	$(TARGETDIR)/SNP.o \
+	$(TARGETDIR)/Barrier.o \
+	$(TARGETDIR)/SEExpansionBarrier.o \
+	$(TARGETDIR)/IsolationByDistanceBarrier.o \
 
 $(TARGETDIR)/$(EXENAME): $(TARGETDIR) $(TARGETOBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $(TARGETOBJ) $(LIBFLAGS)
@@ -97,6 +100,9 @@ $(TARGETDIR)/InternalLineage.o: InternalLineage.cpp InternalLineage.h Lineage.h 
 $(TARGETDIR)/SEExpansion.o: SEExpansion.cpp SEExpansion.h MigrationScheme.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansion.cpp
 
+$(TARGETDIR)/SEExpansionBarrier.o: SEExpansionBarrier.cpp SEExpansionBarrier.h MigrationScheme.h SEExpansion.h Barrier.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansionBarrier.cpp
+
 $(TARGETDIR)/SEExpansionDiffK.o: SEExpansionDiffK.cpp SEExpansionDiffK.h SEExpansion.h MigrationScheme.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansionDiffK.cpp
 
@@ -105,6 +111,9 @@ $(TARGETDIR)/IsolationByDistance.o: IsolationByDistance.cpp IsolationByDistance.
 
 $(TARGETDIR)/IsolationByDistanceExpansion.o: IsolationByDistanceExpansion.cpp IsolationByDistanceExpansion.h IsolationByDistance.h MigrationScheme.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ IsolationByDistanceExpansion.cpp
+
+$(TARGETDIR)/IsolationByDistanceBarrier.o: IsolationByDistanceBarrier.cpp IsolationByDistanceBarrier.h IsolationByDistance.h MigrationScheme.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ IsolationByDistanceBarrier.cpp
 
 $(TARGETDIR)/LocalLogisticGrowth.o: LocalLogisticGrowth.cpp LocalLogisticGrowth.h MigrationScheme.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ LocalLogisticGrowth.cpp
@@ -139,6 +148,9 @@ $(TARGETDIR)/SNP.o: SNP.cpp SNP.h
 
 $(TARGETDIR)/BootstrapResampler.o: BootstrapResampler.cpp BootstrapResampler.h SNPTable.h Parameters.h utils.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ BootstrapResampler.cpp
+
+$(TARGETDIR)/Barrier.o: Barrier.cpp Barrier.h Coords.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Barrier.cpp
 
 clean:
 	rm -rf $(TARGETDIR)/*.o $(TARGETDIR)/$(EXENAME)

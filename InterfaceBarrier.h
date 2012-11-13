@@ -19,7 +19,6 @@ public:
     }
     virtual void addBarriersToMigrationScheme()=0;
 private:
-    int nBarriers;
     vector<Barrier*> barriers;
 };
 

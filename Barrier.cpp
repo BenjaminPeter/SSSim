@@ -8,9 +8,10 @@
 #include "Barrier.h"
 #include "Coords.h"
 
-Barrier::Barrier(Coords bottomleft, Coords topright,double mBoundary, double mInside) {
+Barrier::Barrier(Coords bottomleft, Coords topright, double popSize, double mBoundary, double mInside) {
     this->bottomleft = bottomleft;
     this->topright = topright;
+    this->k = popSize;
     this->mBoundary = mBoundary;
     this->mInside = mInside;
 }

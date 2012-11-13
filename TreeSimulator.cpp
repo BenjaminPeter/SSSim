@@ -55,6 +55,7 @@ Lineage* TreeSimulator::run() {
         this->addEvent(ev);
     }
     if (this->sampMap.size() != 1) {
+        cout << this->toString() <<endl;
         cerr << "error. sampMap size is " << this->sampMap.size() << ",should be 1";
         throw 10;
     }

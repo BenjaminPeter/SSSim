@@ -12,7 +12,7 @@
 
 class Barrier {
 public:
-    Barrier(Coords bottomleft, Coords topright, double mBoundary=0, double mInside=0);
+    Barrier(Coords bottomleft, Coords topright, double popSize=0, double mBoundary=0, double mInside=0);
     Barrier(const Barrier& orig);
     virtual ~Barrier();
     Coords bottomleft, topright; //coords of bottom left and top right corner

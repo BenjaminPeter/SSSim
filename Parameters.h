@@ -23,6 +23,9 @@
 #include "SequenceSimulator.h"
 #include "Lineage.h"
 #include "LineageTemplate.h"
+#include "Barrier.h"
+#include "IsolationByDistanceBarrier.h"
+#include "SEExpansionBarrier.h"
 
 typedef boost::unordered_map<Coords, Sample*> SampleList;
 
@@ -40,6 +43,7 @@ public:
     SequenceSimulator* ss; //simulates a sequence from a tree
     //Simulator* sim; //the simulator class, that does the simulating
     std::vector<int*> samples; //each entry has three ints, being the 
+    std::vector<Barrier*> barriers; // barriers in the habitat
     bool calcDeltaH, calcFST, calcPsi;
     //(x,y) coords and the number of lineages samples
     int nReplicates;//how many trees should be sampled?    

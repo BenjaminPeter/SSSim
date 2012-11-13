@@ -123,7 +123,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             Parameters::nThreads = min(Parameters::nThreads, atoi(argv[i + 1]));
             i += 1;
         }
-        
+
         //use more memory efficient, but slower implementation
         if (string(argv[i]) == "--waste-memory") {
             Parameters::memoryEfficient = false;
@@ -198,6 +198,18 @@ Parameters::Parameters(int argc, char* argv[]) {
         //***************************************************************************** 
         if (string(argv[i]) == "--mpp") {
             this->mPropagulePool = true;
+        }
+        //*****************************************************************************        
+        //*******     add barrier                                              ********
+        //***************************************************************************** 
+        if (string(argv[i]) == "-b") {
+            Coords bottomleft = Coords(atoi(argv[i + 1]), atoi(argv[i + 2]));
+            Coords topright = Coords(atoi(argv[i + 3]), atoi(argv[i + 4]));
+            double k = atof(argv[i+5]);
+            double mInside = atof(argv[i + 6]);
+            double mBoundary = atof(argv[i + 7]);
+            this->barriers.push_back(new Barrier(bottomleft, topright, k, mInside, mBoundary));
+            i += 7;
         }
 
 
@@ -293,7 +305,11 @@ Parameters::Parameters(int argc, char* argv[]) {
             int height = atoi(argv[i + 2]);
             double k = atof(argv[i + 3]);
             double m = atof(argv[i + 4]);
-            IsolationByDistance * ibd = new IsolationByDistance();
+            IsolationByDistance * ibd;
+            if (Parameters::barriers.size() == 0)
+                ibd = new IsolationByDistance();
+            else
+                ibd = new IsolationByDistanceBarrier();
             ibd->setCarCapUniform(k);
             ibd->setMigrationRatesUniform(m, m, m, m);
             ibd->setWidth(width);
@@ -344,17 +360,21 @@ Parameters::Parameters(int argc, char* argv[]) {
             y = atoi(argv[i + 7]);
             double t0 = atof(argv[i + 8]);
             double tLag = atof(argv[i + 9]);
+            SEExpansion * see;
+            if (Parameters::barriers.size() == 0)
+                see = new SEExpansion();
+            else
+                see = new SEExpansionBarrier();
 
-            SEExpansion * see = new SEExpansion();
+            see->setWidth(width);
+            see->setHeight(height);
             see->setCarCapUniform(k);
             see->setMigrationRatesUniform(m, m, m, m);
             see->setStartPos(x, y);
             see->setTLag(tLag);
-            see->setCarCapUniform(k);
             see->setTStart(t0);
             see->setExpansionK(ek);
-            see->setWidth(width);
-            see->setHeight(height);
+
             see->setupArrivalTimes();
             //cout <<see->toString()<<endl;
             this->ms = see;
@@ -407,14 +427,20 @@ Parameters::Parameters(int argc, char* argv[]) {
     //sim->setMigrationScheme(ms);
     //sim->addSequenceSimulator(ss);
 
+    
+    this->ms->addBarriersToMigrationScheme();
+    
     this->sampleSizes = new int[samples.size()];
     i = 0;
 
     char s[100];
     ofstream f;
 
-    sprintf(s, "%s.loc", this->outputPrefix.c_str());
-    f.open(s, ios::out);
+    if (this->outputLoci) {
+        sprintf(s, "%s.loc", this->outputPrefix.c_str());
+        f.open(s, ios::out);
+    }
+
     for (vector<int*>::iterator it = samples.begin(); it != samples.end(); ++it) {
         x = (*it)[0];
         y = (*it)[1];
@@ -426,7 +452,13 @@ Parameters::Parameters(int argc, char* argv[]) {
         this->addSampleStart(x, y, n);
         i++;
     }
-    f.close();
+    if (this->outputLoci) {
+        f.close();
+    }
+
+    if (Parameters::barriers.size() > 0) {
+
+    }
 }
 
 Parameters::Parameters() {
