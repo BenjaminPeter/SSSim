@@ -19,10 +19,10 @@ IsolationByDistanceBarrier::~IsolationByDistanceBarrier() {
 }
 
 void IsolationByDistanceBarrier::setMigrationRatesUniform(double north, double south, double east,
-        double west){
-    this->mRates.reserve(width*height);
-    for (int i = 0; i<this->width; ++i){
-        for(int j=0; j<this->height; ++j){
+        double west) {
+    this->mRates.reserve(width * height);
+    for (int i = 0; i<this->width; ++i) {
+        for (int j = 0; j<this->height; ++j) {
             double* arr = new double[4];
             arr[NORTH] = north;
             arr[SOUTH] = south;
@@ -31,20 +31,35 @@ void IsolationByDistanceBarrier::setMigrationRatesUniform(double north, double s
             this->mRates.push_back(arr);
         }
     }
+    //boundaries
+    for (int i = 0; i<this->width; ++i) {
+        this->mRates[c1d(i, this->height - 1)][NORTH] = 0;
+        this->mRates[c1d(i, 0)][SOUTH] = 0;
+    }
+    for (int i = 0; i<this->height; ++i) {
+        this->mRates[c1d(0, i)][WEST] = 0;
+        this->mRates[c1d(this->width - 1, i)][EAST] = 0;
+    }
 }
-void IsolationByDistanceBarrier::setCarCapUniform(double cc){
-    this->popSizes.reserve(width*height);
-    for (int i = 0; i<this->width; ++i){
-        for(int j=0; j<this->height; ++j){
+
+void IsolationByDistanceBarrier::setCarCapUniform(double cc) {
+    this->popSizes.reserve(width * height);
+    for (int i = 0; i<this->width; ++i) {
+        for (int j = 0; j<this->height; ++j) {
             this->popSizes.push_back(cc);
         }
     }
 }
 
-double IsolationByDistanceBarrier::getPopSize(const Coords pos, const double t){
+double IsolationByDistanceBarrier::getPopSize(const Coords pos, const double t) {
+    if (!this->inBounds(pos))
+        return 0;
     return this->popSizes[c1d(pos)];
 }
-double IsolationByDistanceBarrier::getMigrationRate(const int direction, const Coords pos, const double t){
+
+double IsolationByDistanceBarrier::getMigrationRate(const int direction, const Coords pos, const double t) {
+    if (!this->inBounds(pos))
+        return 0;
     return this->mRates[c1d(pos)][direction];
 }
 

@@ -328,10 +328,11 @@ Parameters::Parameters(int argc, char* argv[]) {
                 ibd = new IsolationByDistance();
             else
                 ibd = new IsolationByDistanceBarrier();
-            ibd->setCarCapUniform(k);
-            ibd->setMigrationRatesUniform(m, m, m, m);
             ibd->setWidth(width);
             ibd->setHeight(height);
+            ibd->setCarCapUniform(k);
+            ibd->setMigrationRatesUniform(m, m, m, m);
+
             this->ms = ibd;
 
             i += 4;
@@ -457,6 +458,29 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     this->ms->addBarriersToMigrationScheme();
 
+
+    Coords c;
+    vector<int*>::iterator its = this->samples.begin();
+    while (its != this->samples.end()) {
+        bool removeSample = false;
+
+        for (vector<Barrier*>::iterator itb = this->barriers.begin();
+                itb != this->barriers.end(); ++itb) {
+            c = Coords((*its)[0], (*its)[1]);
+
+            if ((*itb)->isInside(c)) {
+                removeSample = true;
+                break;
+            }
+        }
+
+        if (removeSample) {
+            cout << "removed sample " << Coords((*its)[0], (*its)[1]) << "because of barrier" << endl;
+            its = this->samples.erase(its);
+        } else {
+            ++its;
+        }
+    }
     this->sampleSizes = new int[samples.size()];
     i = 0;
 

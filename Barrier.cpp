@@ -23,5 +23,5 @@ Barrier::~Barrier() {
 }
 
 bool Barrier::isInside(Coords c){
-    return bottomleft.first <= c.first && bottomleft.second <= c.first && c.first < topright.first && c.second < topright.second;
+    return bottomleft.first <= c.first && bottomleft.second <= c.first && c.first <= topright.first && c.second <= topright.second;
 }

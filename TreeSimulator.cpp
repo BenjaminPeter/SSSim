@@ -127,6 +127,9 @@ Event* TreeSimulator::getNextCoalEvent() {
         cout << "getNextCoalEvent::rMax:" << rMax << endl;
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_coalRejFunction, this->timeSinceStart, false);
+    if (tEvent == -1.0){
+        tEvent = 0;
+    }
     if (Parameters::verbose > 1999)
         cout << "getNextCoalEvent::tEvent:" << tEvent << endl;
     return this->whichCoalEvent(tEvent);
@@ -187,6 +190,7 @@ Event* TreeSimulator::whichCoalEvent(double t) {
         if (randomNumber <= 0) {//the event!
             return new Event(1, sample, tEffective - this->timeSinceStart);
         }
+
     }
     fprintf(stdout, "Error: invalid coalescent event\n");
     throw 10;
