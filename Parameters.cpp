@@ -58,7 +58,7 @@ void Parameters::printHelp() {
     cout << endl;
     cout << "\t\t<mandatory arguments in angle brackets>" << endl;
     cout << "\t\t[optional arguments in square brackets]" << endl;
-    exit;
+    throw 1;
 }
 
 Parameters::Parameters(int argc, char* argv[]) {
@@ -600,6 +600,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize) {
 
         if (nUnsuccessfulSamples > 1000) {
             cerr << "couldn't generate random sample" << endl;
+            throw 1;
         }
     }
 

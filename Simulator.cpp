@@ -43,7 +43,6 @@ Simulator::~Simulator() {
 void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int id) {
 
     while (Simulator::replicate > 0) {
-        cout << "starting, replicate = " << Simulator::replicate << "Thread: " << id << endl;
         boost::mutex::scoped_lock ctrlock(Simulator::counterMutex);
         Simulator::replicate--;
         ctrlock.unlock();
