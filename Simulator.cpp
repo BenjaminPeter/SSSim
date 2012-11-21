@@ -13,7 +13,8 @@ class TreeSimulator;
 SequenceSimulator* Simulator::seqSim = 0;
 int Simulator::replicate = 0;
 boost::mutex Simulator::ftMutex, Simulator::ft2Mutex, Simulator::sfsMutex;
-boost::mutex Simulator::counterMutex;
+boost::mutex Simulator::counterMutex, Simulator::oCoalMutex;
+ofstream Simulator::fCoal;
 
 Simulator::Simulator() {
     //utils::setupRng(seed);
@@ -44,6 +45,7 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
 
     while (Simulator::replicate > 0) {
         boost::mutex::scoped_lock ctrlock(Simulator::counterMutex);
+        int treeId = Simulator::replicate;
         Simulator::replicate--;
         ctrlock.unlock();
 
@@ -51,14 +53,22 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
         LCV lcv = ts->run(Simulator::replicate);
         Lineage* l = lcv.l;
 
+        if (Parameters::outputCoal) {
+            boost::mutex::scoped_lock oCoalLock(Simulator::oCoalMutex);
+            for (int i = 0; i < lcv.c.size(); ++i) {
+                Simulator::fCoal << treeId << "\t";
+                Simulator::fCoal << lcv.c[i].t << "\t";
+                Simulator::fCoal << lcv.c[i].x << "\t";
+                Simulator::fCoal << lcv.c[i].y << "\t";
+                Simulator::fCoal << lcv.c[i].nDescendants << endl;
+            }
+
+            oCoalLock.unlock();
+        }
+
         delete ts;
 
-        
-        for (vector<Event*>::iterator it = lcv.c.begin();
-                it != lcv.c.end();++it){
-            
-        }
-        
+
         vector<int*> samples = params->samples;
 
         int pos = 0;
@@ -130,6 +140,14 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     res->ftShared = ftShared;
 
 
+    //stuff for coal output
+    if (Parameters::outputCoal) {
+        char s[100];
+        sprintf(s, "%s.coal", params->outputPrefix.c_str());
+        Simulator::fCoal.open(s, ios::out);
+    }
+
+
     boost::thread_group tg;
     for (int i = 0; i < Parameters::nThreads; ++i) {
         tg.create_thread(boost::bind(&this->getNewGeneTree, params, res, i));
@@ -137,10 +155,10 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     tg.join_all();
 
 
-
-
-    cout << "done!" << endl;
-
+    //close stream for coal output
+    if (Parameters::outputCoal) {
+        Simulator::fCoal.close();
+    }
 
     if (params->outputStats) {
         int pos = 0;

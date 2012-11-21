@@ -29,8 +29,8 @@ public:
     //Sample(Coords* pos, vector<Lineage*> lineages);
 
     virtual ~Sample();
-    void merge2lineages(int l1, int l2, double curTime);
-    void merge2randomLineages(double curTime);
+    int merge2lineages(int l1, int l2, double curTime);
+    int merge2randomLineages(double curTime);
     Lineage* getRandomLineageForMigration();
     Lineage* getRandomLineage();
     void addLineage(Lineage* lineage);

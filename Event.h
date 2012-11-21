@@ -27,6 +27,5 @@ private:
 };
 
 
-
 #endif	/* EVENT_H */
 

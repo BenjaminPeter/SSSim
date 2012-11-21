@@ -55,14 +55,43 @@ void SEExpansionBarrier::setCarCapUniform(double cc) {
 double SEExpansionBarrier::getPopSize(const Coords pos, const double t) {
     if (!this->inBounds(pos))
         return 0;
-    //cout << pos << c1d(pos) << this->popSizes.size() << endl;
-    return this->popSizes[c1d(pos)];
+
+    if (t<this->getArrivalTime(pos) & t >= 0)
+        //cout << pos << c1d(pos) << this->popSizes.size() << endl;
+        return this->popSizes[c1d(pos)];
+
+
+    return 0;
 }
 
 double SEExpansionBarrier::getMigrationRate(const int direction, const Coords pos, const double t) {
     if (!this->inBounds(pos))
         return 0;
+
+    int x = pos.first;
+    int y = pos.second;
+    if (t>this->getArrivalTime(pos))
+        return 0;
+    switch (direction) {
+        case NORTH://north
+            if (y >= this->height - 1 || t>this->getArrivalTime(Coords(x, y + 1)))
+                return 0;
+            break;
+        case SOUTH://south
+            if (y <= 0 || t>this->getArrivalTime(Coords(x, y - 1)))
+                return 0;
+            break;
+        case EAST://east
+            if (x >= this->width - 1 || t>this->getArrivalTime(Coords(x + 1, y)))
+                return 0;
+            break;
+        case WEST://west
+            if (x <= 0 || t>this->getArrivalTime(Coords(x - 1, y)))
+                return 0;
+            break;
+    }
     return this->mRates[c1d(pos)][direction];
+
 }
 
 void SEExpansionBarrier::addBarriersToMigrationScheme() {

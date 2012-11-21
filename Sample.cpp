@@ -51,14 +51,16 @@ int Sample::getX() {
 int Sample::getY() {
     return this->y;
 }
-void Sample::merge2lineages(int l1,int l2, double curTime){
+
+//returns number of children of coal event
+int Sample::merge2lineages(int l1,int l2, double curTime){
     //cout <<"merge"<<endl;
     Lineage* tmpl1 = this->lineages[l1];
     this->lineages[l1] = this->lineages[this->nLineages-1];
     Lineage* tmpl2 = this->lineages[l2];
     this->lineages[l2] = this->lineages[this->nLineages-2];
     
-    
+
     Lineage* newLineage=new InternalLineage(curTime,tmpl1,tmpl2);
     tmpl1->setParent(newLineage);
     tmpl2->setParent(newLineage);
@@ -71,6 +73,7 @@ void Sample::merge2lineages(int l1,int l2, double curTime){
         cout<<"ERROR in Sample merging\n";
         throw 0;
     }
+    return newLineage->getNChildren();
 }
 void Sample::deleteAllLineages(){
     for(vector<Lineage*>::iterator it=this->lineages.begin();it!=this->lineages.end();it++){
@@ -78,10 +81,11 @@ void Sample::deleteAllLineages(){
     }    
     this->lineages.clear();    
 }
-void Sample::merge2randomLineages(double curTime){
+int Sample::merge2randomLineages(double curTime){
     int*lids=utils::random2(this->nLineages);
-    this->merge2lineages(lids[0],lids[1],curTime);
+    int nChildren =this->merge2lineages(lids[0],lids[1],curTime);
     delete[] lids;
+    return nChildren;
 }
 
 Lineage* Sample::getRandomLineage(){

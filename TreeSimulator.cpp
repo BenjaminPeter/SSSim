@@ -68,6 +68,7 @@ LCV TreeSimulator::run(int id) {
     this->sampMap.erase(it);
 
     LCV lcv;
+    //lcv.c = NULL;
     lcv.l = l;
     if (Parameters::outputCoal) {
         lcv.c = this->coalEvents;
@@ -363,16 +364,21 @@ void TreeSimulator::removeSample(int x, int y) {
 void TreeSimulator::addCoalEvent(Event* ev) {
     this->timeSinceStart += ev->time;
     Sample * curSample = ev->sample;
-    curSample->merge2randomLineages(this->timeSinceStart);
+    int nChildren = curSample->merge2randomLineages(this->timeSinceStart);
 
     this->nLineages--;
     this->timeSinceLastCoalEvent = 0;
     if (Parameters::outputCoal) {
-        ev->time += this->timeSinceStart;
-        this->coalEvents.push_back(ev);
-    } else {
-        delete ev;
+        coalEvent ce;
+        ce.t = ev->time + this->timeSinceStart;
+        ce.x = curSample->getX();
+        ce.y = curSample->getY();
+        ce.nDescendants = nChildren;
+
+        this->coalEvents.push_back(ce);
     }
+    delete ev;
+
 }
 
 void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
@@ -384,6 +390,15 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
     //delete[] arr;
     if (Parameters::verbose > 499) {
         cout << "[" << ev->second << "]:Expansion in deme (" << x << "," << y << ")" << endl;
+    }
+    if (Parameters::outputCoal) {
+        coalEvent ce;
+        ce.t = ev->second;
+        ce.x = x;
+        ce.y = y;
+        ce.nDescendants = -1;
+
+        this->coalEvents.push_back(ce);
     }
 
     int k = this->params->ms->getExpansionK(pos);

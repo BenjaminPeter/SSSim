@@ -47,6 +47,7 @@ public:
     
     static boost::mutex ftMutex,sfsMutex,ft2Mutex,counterMutex;
     
+    
     //running the simulation
     SimulationResults* doSimulations(Parameters* params);
     static void getNewGeneTree(Parameters* params, SimulationResults* res,int id=0);
@@ -72,6 +73,9 @@ public:
 
 
 private:       
+    //writing coal output file
+    static boost::mutex oCoalMutex;
+    static ofstream fCoal;
 
 };
 

@@ -14,9 +14,16 @@
 #include "Lineage.h"
 #include "Event.h"
 
+
+struct coalEvent{
+    double t;
+    int x;
+    int y;
+    int nDescendants;
+};
 struct LCV {
     Lineage* l;
-    vector<Event*> c;
+    vector<coalEvent> c;
 };
 
 class TreeSimulator {
@@ -36,7 +43,7 @@ private:
     double timeSinceLastCoalEvent, timeSinceStart;
     int nMigrationEvents;
     vector<ExpansionEvent>* expansionEvents;
-    vector<Event*> coalEvents;
+    vector<coalEvent> coalEvents;
 
     //next event
     Event* getNextEvent();
