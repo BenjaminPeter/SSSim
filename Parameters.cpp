@@ -21,6 +21,8 @@ int Parameters::seed = 0;
 int Parameters::nThreads = boost::thread::hardware_concurrency();
 bool Parameters::memoryEfficient = true;
 double Parameters::theta = -1;
+bool Parameters::outputCoal = false;
+std::vector<Barrier*> Parameters::barriers;
 
 void Parameters::printHelp() {
     cout << "Usage and options: /sssim <number of trees>" << endl;
@@ -87,6 +89,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     this->outputCommand = false;
 
     this->outputTree = false;
+    this->outputCoal = false;
 
     bool doRandomSample = false;
     int rsPar1, rsPar2;
@@ -153,6 +156,11 @@ Parameters::Parameters(int argc, char* argv[]) {
         if (string(argv[i]) == "--ocmd") {
             this->outputCommand = true;
         }
+        
+        if (string(argv[i]) == "--ocoal") {
+            this->outputCoal = true;
+        }
+        
         if (string(argv[i]) == "--verbose") {
             Parameters::verbose = atoi(argv[i + 1]);
             i += 1;
@@ -394,10 +402,9 @@ Parameters::Parameters(int argc, char* argv[]) {
             see->setTStart(t0);
             see->setExpansionK(ek);
 
-            see->setupArrivalTimes();
+            //see->setupArrivalTimes();
             //cout <<see->toString()<<endl;
             this->ms = see;
-
             i += 9;
         }
 
@@ -432,7 +439,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             see->setExpansionK(ek);
             see->setWidth(width);
             see->setHeight(height);
-            see->setupArrivalTimes();
+            //see->setupArrivalTimes();
             see->setCentralArea(centralArea);
             see->setCentralK(ekCentral);
             //cout <<see->toString()<<endl;
@@ -455,9 +462,8 @@ Parameters::Parameters(int argc, char* argv[]) {
 
 
 
-
     this->ms->addBarriersToMigrationScheme();
-
+    this->ms->init();
 
     Coords c;
     vector<int*>::iterator its = this->samples.begin();
@@ -507,9 +513,8 @@ Parameters::Parameters(int argc, char* argv[]) {
         f.close();
     }
 
-    if (Parameters::barriers.size() > 0) {
 
-    }
+
 }
 
 Parameters::Parameters() {

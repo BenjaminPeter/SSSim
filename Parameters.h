@@ -47,13 +47,14 @@ public:
     std::vector<int*> samples; //each entry has three ints, being the
     //(x,y) coords and the number of lineages samples
 
-    std::vector<Barrier*> barriers; // barriers in the habitat
+    static std::vector<Barrier*> barriers; // barriers in the habitat
     bool calcDeltaH, calcFST, calcPsi;
     int nReplicates; //how many trees should be sampled?    
     static int* sampleSizes; //calculated from samples, just the sample sizes.
     string outputPrefix;
     bool outputSFS, outputFT, outputSNP, outputSNPShared, outputStats, outputStatsJK;
     bool outputTree, outputCommand;
+    static bool outputCoal;
     bool outputSNPStats, outputSNPSharedStats;
     int bootstrapSNPStats, bootstrapSNPSharedStats;
     static int verbose; //verbosity level:

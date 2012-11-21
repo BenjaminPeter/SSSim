@@ -32,13 +32,15 @@ void TreeSimulator::copySampStartToSamp() {
     this->nLineages = Parameters::nLineagesStart;
 }
 
-Lineage* TreeSimulator::run() {
+LCV TreeSimulator::run(int id) {
 
     this->copySampStartToSamp();
     this->timeSinceLastCoalEvent = 0;
     this->timeSinceStart = 0;
     this->nMigrationEvents = 0;
     this->expansionEvents = params->ms->getExpansionEvents();
+
+
     Event* ev;
     int evc = 0;
     while (true) {
@@ -55,7 +57,7 @@ Lineage* TreeSimulator::run() {
         this->addEvent(ev);
     }
     if (this->sampMap.size() != 1) {
-        cout << this->toString() <<endl;
+        cout << this->toString() << endl;
         cerr << "error. sampMap size is " << this->sampMap.size() << ",should be 1";
         throw 10;
     }
@@ -65,7 +67,12 @@ Lineage* TreeSimulator::run() {
     delete (it->second);
     this->sampMap.erase(it);
 
-    return l;
+    LCV lcv;
+    lcv.l = l;
+    if (Parameters::outputCoal) {
+        lcv.c = this->coalEvents;
+    }
+    return lcv;
 }
 
 Event* TreeSimulator::getNextEvent() {
@@ -80,6 +87,10 @@ Event* TreeSimulator::getNextEvent() {
         cout << "propCoal:" << evCoal->toString();
         cout << "propMig:" << evMig->toString(); //<<evMig->time<<endl;
     }
+    if (Parameters::verbose > 1999) {
+        cout << this->toString() << endl;
+    }
+
     if (this->expansionEvents->size() > 0) {
         ExpansionEvent* expansion = &this->expansionEvents->back();
 
@@ -127,7 +138,7 @@ Event* TreeSimulator::getNextCoalEvent() {
         cout << "getNextCoalEvent::rMax:" << rMax << endl;
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_coalRejFunction, this->timeSinceStart, false);
-    if (tEvent == -1.0){
+    if (tEvent == -1.0) {
         tEvent = 0;
     }
     if (Parameters::verbose > 1999)
@@ -147,7 +158,7 @@ double TreeSimulator::coalRejFunction(const double t) {
         sample = iter->second;
         nl = sample->getNlineages();
         pSize = this->params->ms->getPopSize(pos, t);
-        if (Parameters::verbose > 1999) {
+        if (Parameters::verbose > 2999) {
             cout << "coalRejFunction:: [" << pos << "\t" << nl << "\t" << pSize << "]" << endl;
         }
 
@@ -321,7 +332,7 @@ void TreeSimulator::addMigrationEvent(Event* ev) {
             break;
     }
     Lineage * migLineage = curSample->getRandomLineageForMigration();
-    Coords newCoords = Coords(newX,newY);
+    Coords newCoords = Coords(newX, newY);
     if (this->sampMap.count(newCoords) == 1) {
         Sample* newSample = this->sampMap[newCoords];
         newSample->addLineage(migLineage);
@@ -341,7 +352,7 @@ void TreeSimulator::addMigrationEvent(Event* ev) {
 }
 
 void TreeSimulator::removeSample(int x, int y) {
-    Coords pos = Coords(x,y);
+    Coords pos = Coords(x, y);
     //int pos = this->params->ms->coords2d1d(x, y);
     Sample* a = this->sampMap[pos];
     delete a;
@@ -356,7 +367,12 @@ void TreeSimulator::addCoalEvent(Event* ev) {
 
     this->nLineages--;
     this->timeSinceLastCoalEvent = 0;
-    delete ev;
+    if (Parameters::outputCoal) {
+        ev->time += this->timeSinceStart;
+        this->coalEvents.push_back(ev);
+    } else {
+        delete ev;
+    }
 }
 
 void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
@@ -367,7 +383,7 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
     int y = pos.second;
     //delete[] arr;
     if (Parameters::verbose > 499) {
-        cout << "[" << ev->first << "]:Expansion in deme (" << x << "," << y << ")" << endl;
+        cout << "[" << ev->second << "]:Expansion in deme (" << x << "," << y << ")" << endl;
     }
 
     int k = this->params->ms->getExpansionK(pos);
@@ -384,7 +400,7 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
 
         if (k > 0 && sample->getNlineages() > 1) {
             int nAncLineages = 1;
-            double pNAncLineages, logPNAncLineages;
+            double logPNAncLineages; //pNAncLineages, 
             randomNumber = utils::randomD(1);
 
             //if there are more lineages than k, reduce to k...
@@ -419,10 +435,10 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
         }
         int h = this->params->ms->getHeight();
         //get population sizes/migration rates of surrounding demes:
-        pDir[0] = this->params->ms->getPopSize(Coords(pos.first,pos.second + 1), timeSinceStart);
-        pDir[1] = this->params->ms->getPopSize(Coords(pos.first,pos.second - 1), timeSinceStart);
-        pDir[2] = this->params->ms->getPopSize(Coords(pos.first + 1,pos.second), timeSinceStart);
-        pDir[3] = this->params->ms->getPopSize(Coords(pos.first - 1,pos.second), timeSinceStart);
+        pDir[0] = this->params->ms->getPopSize(Coords(pos.first, pos.second + 1), timeSinceStart);
+        pDir[1] = this->params->ms->getPopSize(Coords(pos.first, pos.second - 1), timeSinceStart);
+        pDir[2] = this->params->ms->getPopSize(Coords(pos.first + 1, pos.second), timeSinceStart);
+        pDir[3] = this->params->ms->getPopSize(Coords(pos.first - 1, pos.second), timeSinceStart);
 
 
         mRate[0] = this->params->ms->getMigrationRate(0, pos, timeSinceStart);
@@ -444,7 +460,7 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
             for (int i = 0; i < 4; i++) {
                 randomNumber -= pDir[i] * mRate[i];
                 if (randomNumber < 0) {
-                    if (Parameters::verbose > 999) {
+                    if (Parameters::verbose > 499) {
                         cout << "Deme(" << x << "," << y << "); ppMigration: direction" << i << endl;
                     }
                     direction = i;

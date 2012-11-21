@@ -50,6 +50,8 @@ public:
         return this->expansionEvents;
     }
 
+    virtual void init()=0;
+    
     virtual bool isInitialized(void) {
         cerr << "x" << std::endl;
     };

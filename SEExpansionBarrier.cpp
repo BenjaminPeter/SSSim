@@ -66,6 +66,7 @@ double SEExpansionBarrier::getMigrationRate(const int direction, const Coords po
 }
 
 void SEExpansionBarrier::addBarriersToMigrationScheme() {
+    this->barriers = Parameters::barriers;
     cout << "adding barriers" << endl;
     for (vector<Barrier*>::iterator it = barriers.begin(); it != barriers.end(); ++it) {
         if (Parameters::verbose > 100)
@@ -77,6 +78,32 @@ void SEExpansionBarrier::addBarriersToMigrationScheme() {
                 this->mRates[c1d(i, j)][SOUTH] = (*it)->mInside;
                 this->mRates[c1d(i, j)][EAST] = (*it)->mInside;
                 this->mRates[c1d(i, j)][WEST] = (*it)->mInside;
+                this->arrivalTimes[c1d(i, j)] == 0;
+            }
+        }
+        //bottom & top boundary
+        for (int i = (*it)->bottomleft.first; i <= (*it)->topright.first; ++i) {
+            if ((*it)->bottomleft.second > 0) {
+                this->mRates[c1d(i, (*it)->bottomleft.second - 1)][NORTH] = (*it)->mBoundary;
+                cout << "set m[NORTH] to zero at" << Coords(i, (*it)->bottomleft.second - 1) << endl;
+            }
+
+            if ((*it)->topright.second < (this->height - 1)) {
+                this->mRates[c1d(i, (*it)->topright.second + 1)][SOUTH] = (*it)->mBoundary;
+                cout << "set m[SOUTH] to zero at" << Coords(i, (*it)->topright.second + 1) << endl;
+            }
+        }
+
+        //left & right boundary
+        for (int i = (*it)->bottomleft.second; i <= (*it)->topright.second; ++i) {
+            if ((*it)->bottomleft.first > 0) {
+                this->mRates[c1d((*it)->bottomleft.first - 1, i)][EAST] = (*it)->mBoundary;
+                cout << "set m[EAST] to zero at" << Coords((*it)->bottomleft.first - 1, i) << endl;
+            }
+
+            if ((*it)->topright.first < (this->width - 1)) {
+                this->mRates[c1d((*it)->topright.first + 1, i)][WEST] = (*it)->mBoundary;
+                cout << "set m[WEST] to zero at" << Coords((*it)->topright.first + 1, i) << endl;
             }
         }
     }

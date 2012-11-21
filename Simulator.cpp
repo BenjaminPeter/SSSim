@@ -46,10 +46,19 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
         boost::mutex::scoped_lock ctrlock(Simulator::counterMutex);
         Simulator::replicate--;
         ctrlock.unlock();
+
         TreeSimulator* ts = new TreeSimulator(params);
-        Lineage* l = ts->run();
+        LCV lcv = ts->run(Simulator::replicate);
+        Lineage* l = lcv.l;
+
         delete ts;
 
+        
+        for (vector<Event*>::iterator it = lcv.c.begin();
+                it != lcv.c.end();++it){
+            
+        }
+        
         vector<int*> samples = params->samples;
 
         int pos = 0;
@@ -98,7 +107,7 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
         //tmrca += this->timeSinceStart;
         //nMigrations += this->nMigrationEvents;
         delete l;
-        utils::printProgressBar(100 * Simulator::replicate / params->nReplicates, "computing trees");
+        utils::printProgressBar(100 - 100 * Simulator::replicate / params->nReplicates, "computing trees");
     }
 }
 
@@ -112,7 +121,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     this->replicate = params->nReplicates;
     this->setMigrationScheme(params->ms);
     this->addSequenceSimulator(params->ss);
-    
+
     SimulationResults* res = new SimulationResults();
     res->initialize(params, samples.size(), params->sampleSizes);
     FreqTable* ft = new FreqTable(params->samples.size());

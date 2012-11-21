@@ -14,15 +14,20 @@
 #include "Lineage.h"
 #include "Event.h"
 
+struct LCV {
+    Lineage* l;
+    vector<Event*> c;
+};
+
 class TreeSimulator {
 public:
     TreeSimulator(Parameters* params);
     TreeSimulator(const TreeSimulator& orig);
     virtual ~TreeSimulator();
-    Lineage* run();
+    LCV run(int id = 0);
     string toString();
-    
-    
+
+
 private:
     Parameters* params;
     void copySampStartToSamp();
@@ -31,6 +36,7 @@ private:
     double timeSinceLastCoalEvent, timeSinceStart;
     int nMigrationEvents;
     vector<ExpansionEvent>* expansionEvents;
+    vector<Event*> coalEvents;
 
     //next event
     Event* getNextEvent();
@@ -38,7 +44,7 @@ private:
     Event* getNextCoalEvent();
     Event* getNextMigEvent();
 
-    
+
     void removeSample(int x, int y);
     //adding events
     void addExpansionEvent(ExpansionEvent* ev);

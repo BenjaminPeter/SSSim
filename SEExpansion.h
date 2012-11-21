@@ -11,6 +11,8 @@
 #include "MigrationScheme.h"
 #include <iostream>
 #include <sstream>
+#include <set>
+#include <list>
 
 using namespace std;
 class SEExpansion : public MigrationScheme {
@@ -50,12 +52,12 @@ public:
         return "";
     }
     
-    
+    virtual void init();
     virtual void addBarriersToMigrationScheme(){
         cerr << "use IsolationByDistanceBarrier instead" << endl;
     }
 protected:   
-    double calcArrivalTime(const int x,const int y);
+    void calcArrivalTime(const int x,const int y, int xDir=1, int yDir=1);
     
     SEExpansion(const SEExpansion& orig);
     double tStart,tLag,k;
@@ -63,6 +65,9 @@ protected:
     
     double* mRate;
     vector<double> arrivalTimes;
+private:
+    void dCheckPos(Coords curPos, Coords newPos, double mult, vector<bool> &visited,
+            vector<Coords> &unvisited);
 
 };
 

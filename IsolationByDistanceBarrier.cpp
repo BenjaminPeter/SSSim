@@ -64,6 +64,7 @@ double IsolationByDistanceBarrier::getMigrationRate(const int direction, const C
 }
 
 void IsolationByDistanceBarrier::addBarriersToMigrationScheme() {
+    this->barriers = Parameters::barriers;
     for (vector<Barrier*>::iterator it = barriers.begin(); it != barriers.end(); ++it) {
         if (Parameters::verbose > 100)
             cout << "added barrier" << endl;

@@ -45,6 +45,7 @@ public:
     virtual void addBarriersToMigrationScheme(){
         cerr << "use IsolationByDistanceBarrier instead" << endl;
     }
+    virtual void init(){}
 protected:
     //double*** mRates;
     double* mRate;
