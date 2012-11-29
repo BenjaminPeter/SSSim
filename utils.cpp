@@ -133,6 +133,7 @@ double utils::nhpp2(void* obj, double rMax, double (*rejFunction)(void* obj, con
         nRejections++;
     }
     fprintf(stderr,"utils::nhpp2: could not get next event for PP(rmax=%f)\n",rMax);
+    return -1.0;
     throw 10;    
 }
 

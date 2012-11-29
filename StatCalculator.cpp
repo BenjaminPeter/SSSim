@@ -63,7 +63,7 @@ double StatCalculator::getPsi(SFS* sfs) {
         for (int j = 1; j <= sfs->getSize2(); ++j) {
             double entry = sfs->getEntry(i, j);
             psi += entry* (i - j);
-            if (i != sfs->getSize1() || j != sfs->getSize2())
+            if (i != sfs->getSize1() && j != sfs->getSize2())
                 all += entry;
         }
     }

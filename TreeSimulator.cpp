@@ -140,7 +140,7 @@ Event* TreeSimulator::getNextCoalEvent() {
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_coalRejFunction, this->timeSinceStart, false);
     if (tEvent == -1.0) {
-        tEvent = 0;
+        return new Event(0,0,1e15);
     }
     if (Parameters::verbose > 1999)
         cout << "getNextCoalEvent::tEvent:" << tEvent << endl;
@@ -213,6 +213,9 @@ Event* TreeSimulator::getNextMigEvent() {
     double tEvent;
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_migRejFunction, this->timeSinceStart, false);
+        if (tEvent == -1.0) {
+        return new Event(0,0,1e15);
+    }
     return this->whichMigEvent(tEvent);
 }
 
