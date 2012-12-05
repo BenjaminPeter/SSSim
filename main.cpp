@@ -104,17 +104,19 @@ int main(int argc, char* argv[]) {
 
 
     //generate & print shared SNP
-    if (params->outputSNPShared) {
+    if (params->outputSNPShared || params->outputSNPSharedStats) {
         SNPTable* snpt = res->simulateSNPN(true);
         vector<SNP* >* snps = snpt->snp;
         sprintf(s, "%s.snps", params->outputPrefix.c_str());
         vector<SNP*>::const_iterator it1;
         vector<int>::const_iterator it2;
+	if(params->outputSNPShared)
         f.open(s, ios::out);
 
         int i;
         bool firstCol;
         //
+	if(params->outputSNPShared){
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
             vector<int>* curSNP = (*it1);
@@ -130,8 +132,10 @@ int main(int argc, char* argv[]) {
             f << endl;
         }
         f.close();
+
         if (Parameters::verbose > 99)
             cout << "wrote snps file" << endl;
+	}
 
         //print associated stats
         if (params->outputSNPSharedStats) {
