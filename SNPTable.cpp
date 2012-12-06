@@ -190,7 +190,7 @@ vector<double>* SNPTable::getPsi() {
             for (int s = 0; s<this->nSNP; ++s) {
 
                 if (this->snp->at(s)->at(i) > 0 && this->snp->at(s)->at(j) > 0) { //not zero
-                    if (this->snp->at(s)->at(i) < n[i] || this->snp->at(s)->at(j) < n[j]) { //not fixed
+                    if (this->snp->at(s)->at(i) < n[i] && this->snp->at(s)->at(j) < n[j]) { //not fixed
 
                         diff += (this->snp->at(s)->at(i) - this->snp->at(s)->at(j));
                         nPresent++;
