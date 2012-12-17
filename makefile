@@ -38,6 +38,7 @@ TARGETOBJ = \
 	$(TARGETDIR)/main.o \
 	$(TARGETDIR)/Simulator.o \
 	$(TARGETDIR)/TreeSimulator.o \
+	$(TARGETDIR)/IslandSimulator.o \
 	$(TARGETDIR)/Parameters.o \
 	$(TARGETDIR)/Sample.o \
 	$(TARGETDIR)/Event.o \
@@ -63,6 +64,8 @@ TARGETOBJ = \
 	$(TARGETDIR)/Barrier.o \
 	$(TARGETDIR)/SEExpansionBarrier.o \
 	$(TARGETDIR)/IsolationByDistanceBarrier.o \
+	$(TARGETDIR)/SEExpansionMultiOrigin.o \
+	$(TARGETDIR)/StartPos.o \
 
 $(TARGETDIR)/$(EXENAME): $(TARGETDIR) $(TARGETOBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $(TARGETOBJ) $(LIBFLAGS)
@@ -76,7 +79,10 @@ $(TARGETDIR)/Simulator.o: Simulator.cpp Simulator.h utils.h MigrationScheme.h Se
 $(TARGETDIR)/TreeSimulator.o: TreeSimulator.cpp TreeSimulator.h Parameters.h SimulationResults.h Lineage.h Event.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ TreeSimulator.cpp
 
-$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h Coords.h utils.h
+$(TARGETDIR)/IslandSimulator.o: IslandSimulator.cpp IslandSimulator.h TreeSimulator.h Parameters.h SimulationResults.h Lineage.h Event.h Coords.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ IslandSimulator.cpp
+
+$(TARGETDIR)/Parameters.o: Parameters.cpp Parameters.h Sample.h MigrationScheme.h IsolationByDistance.h IsolationByDistanceExpansion.h SEExpansion.h SEExpansionDiffK.h SequenceSimulator.h LineageTemplate.h Lineage.h Coords.h utils.h StartPos.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Parameters.cpp
 
 $(TARGETDIR)/Sample.o: Sample.cpp Sample.h Lineage.h utils.h TerminalLineage.h InternalLineage.h Coords.h
@@ -97,13 +103,16 @@ $(TARGETDIR)/LineageTemplate.o: LineageTemplate.cpp LineageTemplate.h Lineage.h
 $(TARGETDIR)/InternalLineage.o: InternalLineage.cpp InternalLineage.h Lineage.h SFS.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ InternalLineage.cpp
 
-$(TARGETDIR)/SEExpansion.o: SEExpansion.cpp SEExpansion.h MigrationScheme.h
+$(TARGETDIR)/SEExpansion.o: SEExpansion.cpp SEExpansion.h MigrationScheme.h StartPos.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansion.cpp
 
-$(TARGETDIR)/SEExpansionBarrier.o: SEExpansionBarrier.cpp SEExpansionBarrier.h MigrationScheme.h SEExpansion.h Barrier.h
+$(TARGETDIR)/SEExpansionBarrier.o: SEExpansionBarrier.cpp SEExpansionBarrier.h MigrationScheme.h SEExpansion.h Barrier.h StartPos.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansionBarrier.cpp
 
-$(TARGETDIR)/SEExpansionDiffK.o: SEExpansionDiffK.cpp SEExpansionDiffK.h SEExpansion.h MigrationScheme.h
+$(TARGETDIR)/SEExpansionMultiOrigin.o: SEExpansionMultiOrigin.cpp SEExpansionMultiOrigin.h SEExpansionBarrier.h MigrationScheme.h SEExpansion.h Barrier.h StartPos.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansionMultiOrigin.cpp
+
+$(TARGETDIR)/SEExpansionDiffK.o: SEExpansionDiffK.cpp SEExpansionDiffK.h SEExpansion.h MigrationScheme.h StartPos.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ SEExpansionDiffK.cpp
 
 $(TARGETDIR)/IsolationByDistance.o: IsolationByDistance.cpp IsolationByDistance.h MigrationScheme.h
@@ -115,7 +124,7 @@ $(TARGETDIR)/IsolationByDistanceExpansion.o: IsolationByDistanceExpansion.cpp Is
 $(TARGETDIR)/IsolationByDistanceBarrier.o: IsolationByDistanceBarrier.cpp IsolationByDistanceBarrier.h IsolationByDistance.h MigrationScheme.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ IsolationByDistanceBarrier.cpp
 
-$(TARGETDIR)/LocalLogisticGrowth.o: LocalLogisticGrowth.cpp LocalLogisticGrowth.h MigrationScheme.h
+$(TARGETDIR)/LocalLogisticGrowth.o: LocalLogisticGrowth.cpp LocalLogisticGrowth.h MigrationScheme.h StartPos.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ LocalLogisticGrowth.cpp
 
 $(TARGETDIR)/SFS.o: SFS.cpp SFS.h
@@ -151,6 +160,9 @@ $(TARGETDIR)/BootstrapResampler.o: BootstrapResampler.cpp BootstrapResampler.h S
 
 $(TARGETDIR)/Barrier.o: Barrier.cpp Barrier.h Coords.h
 	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ Barrier.cpp
+
+$(TARGETDIR)/StartPos.o: StartPos.cpp StartPos.h
+	$(CXX) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ StartPos.cpp
 
 clean:
 	rm -rf $(TARGETDIR)/*.o $(TARGETDIR)/$(EXENAME)

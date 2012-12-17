@@ -14,7 +14,6 @@ IsolationByDistanceExpansion::IsolationByDistanceExpansion() {
     this->mRate=new double[4];
     this->width=-1;
     this->height=-1;
-    this->expansionK=20;
     this->xStart=-1;
     this->yStart=-1;
 }

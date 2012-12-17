@@ -6,6 +6,7 @@
  */
 
 #include "TreeSimulator.h"
+#include "IslandSimulator.h"
 
 TreeSimulator::TreeSimulator(Parameters* params) {
     this->params = params;
@@ -13,6 +14,9 @@ TreeSimulator::TreeSimulator(Parameters* params) {
 }
 
 TreeSimulator::TreeSimulator(const TreeSimulator& orig) {
+}
+
+TreeSimulator::TreeSimulator() {
 }
 
 TreeSimulator::~TreeSimulator() {
@@ -57,9 +61,15 @@ LCV TreeSimulator::run(int id) {
         this->addEvent(ev);
     }
     if (this->sampMap.size() != 1) {
-        cout << this->toString() << endl;
-        cerr << "error. sampMap size is " << this->sampMap.size() << ",should be 1";
-        throw 10;
+        if (this->finalSamples.size() > 0) {
+            IslandSimulator is = IslandSimulator(this);
+            return is.runIsland();
+            
+        } else {
+            cout << this->toString() << endl;
+            cerr << "error. sampMap size is " << this->sampMap.size() << ",should be 1";
+            throw 10;
+        }
     }
     delete this->expansionEvents;
     boost::unordered_map<Coords, Sample*>::iterator it = this->sampMap.begin();
@@ -96,14 +106,14 @@ Event* TreeSimulator::getNextEvent() {
         ExpansionEvent* expansion = &this->expansionEvents->back();
 
         if (Parameters::verbose > 999)
-            cout << "propExp:" << expansion->second - this->timeSinceStart << "/" << expansion->first << endl;
+            cout << "propExp:" << expansion->time - this->timeSinceStart << "/" << expansion->coords << endl;
 
-        if (expansion->second < this->timeSinceStart + evCoal->time && expansion->second < this->timeSinceStart + evMig->time) {
+        if (expansion->time < this->timeSinceStart + evCoal->time && expansion->time < this->timeSinceStart + evMig->time) {
             this->addExpansionEvent(expansion);
             this->expansionEvents->pop_back();
             while (this->expansionEvents->size() > 0) {
                 expansion = &this->expansionEvents->back();
-                if (expansion->second - this->timeSinceStart > 0.0001) {
+                if (expansion->time - this->timeSinceStart > 0.0001) {
                     break;
                 }
                 this->addExpansionEvent(expansion);
@@ -140,7 +150,7 @@ Event* TreeSimulator::getNextCoalEvent() {
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_coalRejFunction, this->timeSinceStart, false);
     if (tEvent == -1.0) {
-        return new Event(0,0,1e15);
+        return new Event(0, 0, 1e15);
     }
     if (Parameters::verbose > 1999)
         cout << "getNextCoalEvent::tEvent:" << tEvent << endl;
@@ -213,8 +223,8 @@ Event* TreeSimulator::getNextMigEvent() {
     double tEvent;
 
     tEvent = utils::nhpp2((void*) this, rMax, &TreeSimulator::wrapper_migRejFunction, this->timeSinceStart, false);
-        if (tEvent == -1.0) {
-        return new Event(0,0,1e15);
+    if (tEvent == -1.0) {
+        return new Event(0, 0, 1e15);
     }
     return this->whichMigEvent(tEvent);
 }
@@ -385,18 +395,31 @@ void TreeSimulator::addCoalEvent(Event* ev) {
 }
 
 void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
+    if (ev->k == -200) { //hacky case for moving everybody to the same deme
+        Sample* sample = this->sampMap[ev->coords];
+        this->sampMap.erase(ev->coords);
+        Sample* sTarget = new Sample(this->finalSamples.size(), -1, vector<Lineage*>());
 
-    Coords pos = ev->first;
+        while (sample->getNlineages() > 0) {
+            sTarget->addLineage(sample->getRandomLineageForMigration());
+        }
+
+        cout << "put sample " << ev->coords << "to final rest" << endl;
+        this->finalSamples.push_back(sTarget);
+
+    }
+
+    Coords pos = ev->coords;
     //int* arr = this->params->ms->coords1d2d(pos);
     int x = pos.first;
     int y = pos.second;
     //delete[] arr;
     if (Parameters::verbose > 499) {
-        cout << "[" << ev->second << "]:Expansion in deme (" << x << "," << y << ")" << endl;
+        cout << "[" << ev->time << "]:Expansion in deme (" << x << "," << y << ")" << endl;
     }
     if (Parameters::outputCoal) {
         coalEvent ce;
-        ce.t = ev->second;
+        ce.t = ev->time;
         ce.x = x;
         ce.y = y;
         ce.nDescendants = -1;
@@ -404,14 +427,14 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
         this->coalEvents.push_back(ce);
     }
 
-    int k = this->params->ms->getExpansionK(pos);
+    int k = ev->k;
     double pDir[4], mRate[4], rTot = 0, randomNumber;
     Lineage * lineage;
 
 
-    this->timeSinceStart = ev->second;
-    if (this->sampMap.count(ev->first) == 1) {
-        Sample * sample = this->sampMap[ev->first];
+    this->timeSinceStart = ev->time;
+    if (this->sampMap.count(ev->coords) == 1) {
+        Sample * sample = this->sampMap[ev->coords];
 
         //if there is a founding propagule size set, check if we need to perform
         // additional coalescent events

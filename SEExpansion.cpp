@@ -21,25 +21,26 @@ bool operator<(const aTime& a1, const aTime& a2) {
 }
 
 SEExpansion::SEExpansion() {
-    this->k = -1;
+    this->N = -1;
     this->mRate = 0;
     this->width = 0;
     this->height = 0;
-    this->expansionK = -1;
-    this->tLag = -1;
-    this->tStart = -1;
+    this->sp = new StartPos();
+    this->sp->expansionK = -1;
+    this->sp->tLag = -1;
+    this->sp->tStart = -1;
 }
 
 SEExpansion::SEExpansion(double tStart, double tLag, int k, int* startPos,
         int* dims, int expansionK) {
-    this->tStart = tStart;
-    this->tLag = tLag;
-    this->k = k;
-    this->startX = startPos[0];
-    this->startY = startPos[1];
+    this->sp->tStart = tStart;
+    this->sp->tLag = tLag;
+    this->N = k;
+    this->sp->startX = startPos[0];
+    this->sp->startY = startPos[1];
     this->width = dims[0];
     this->height = dims[1];
-    this->expansionK = expansionK;
+    this->sp->expansionK = expansionK;
 }
 
 void SEExpansion::init() {
@@ -65,7 +66,7 @@ vector<ExpansionEvent>* SEExpansion::getExpansionEvents() {
             tArrival = this->getArrivalTime(Coords(i, j));
             if (tArrival > 0) {
                 //coord1d=this->coords2d1d(i,j);
-                ExpansionEvent p = ExpansionEvent(Coords(i, j), tArrival);
+                ExpansionEvent p = ExpansionEvent(Coords(i, j), tArrival,this->sp->expansionK);
                 evVect->push_back(p);
             }
         }
@@ -94,7 +95,7 @@ bool SEExpansion::isInitialized() {
             //cerr<<"n"<<this->mRate[3]<<endl;
             return false;
         }
-        if (this->k <= 0) {
+        if (this->N <= 0) {
             cerr << "k not initialized" << endl;
             return false;
         }
@@ -106,11 +107,11 @@ bool SEExpansion::isInitialized() {
             cerr << "height not initialized" << endl;
             return false;
         }
-        if (this->tStart < 0) {
+        if (this->sp->tStart < 0) {
             cerr << "tStart not initialized" << endl;
             return false;
         }
-        if (this->tLag < 0) {
+        if (this->sp->tLag < 0) {
             cerr << "tLag not initialized" << endl;
             return false;
         }
@@ -123,7 +124,7 @@ bool SEExpansion::isInitialized() {
 
 double SEExpansion::getPopSize(const Coords pos, const double t) {
     if (t<this->getArrivalTime(pos) & t >= 0)
-        return this->k;
+        return this->N;
     return 0;
 }
 
@@ -157,25 +158,29 @@ double SEExpansion::getMigrationRate(const int direction, const Coords pos,
 }
 
 void SEExpansion::setStartPos(int* startPos) {
-    this->startX = startPos[0];
-    this->startY = startPos[1];
+    this->sp->startX = startPos[0];
+    this->sp->startY = startPos[1];
 }
 
 void SEExpansion::setStartPos(int x, int y) {
-    this->startX = x;
-    this->startY = y;
+    this->sp->startX = x;
+    this->sp->startY = y;
 }
 
 void SEExpansion::setTLag(double t) {
-    this->tLag = t;
+    this->sp->tLag = t;
 }
 
 void SEExpansion::setTStart(double t) {
-    this->tStart = t;
+    this->sp->tStart = t;
 }
 
 void SEExpansion::setCarCapUniform(double cc) {
-    this->k = cc;
+    this->N = cc;
+}
+
+void SEExpansion::setExpansionK(double ek) {
+    this->sp->expansionK = ek;
 }
 
 void SEExpansion::setMigrationRatesUniform(double north, double south, double east,
@@ -225,13 +230,13 @@ double SEExpansion::getArrivalTime(const Coords pos) {
 
 void SEExpansion::calcArrivalTime(const int i, const int j, int xDir, int yDir) {
     this->arrivalTimes[c1d(Coords(i, j))] = max(
-            this->arrivalTimes[c1d(Coords(i - xDir, j))] - tLag,
-            this->arrivalTimes[c1d(Coords(i, j - yDir))] - tLag
+            this->arrivalTimes[c1d(Coords(i - xDir, j))] - sp->tLag,
+            this->arrivalTimes[c1d(Coords(i, j - yDir))] - sp->tLag
             );
 
     this->arrivalTimes[c1d(Coords(i, j))] = max(
             this->arrivalTimes[c1d(Coords(i, j))],
-            this->arrivalTimes[c1d(Coords(i - xDir, j - xDir))] - tLag * sqrt(2)
+            this->arrivalTimes[c1d(Coords(i - xDir, j - xDir))] - sp->tLag * sqrt(2)
             );
 
     for (vector<Barrier*>::iterator it = barriers.begin(); it != barriers.end(); ++it) {
@@ -264,9 +269,9 @@ void SEExpansion::setupArrivalTimes() {
     }
 
     //start with starting pos
-    unvisited[0] = Coords(startX, startY);
-    unvisited[c1d(startX, startY)] = Coords(0, 0);
-    arrivalTimes[c1d(startX, startY)] = this->tStart;
+    unvisited[0] = Coords(sp->startX, sp->startY);
+    unvisited[c1d(sp->startX, sp->startY)] = Coords(0, 0);
+    arrivalTimes[c1d(sp->startX, sp->startY)] = this->sp->tStart;
     int nVisited = width*height;
 
 
@@ -308,7 +313,7 @@ void SEExpansion::setupArrivalTimes() {
 
 
 
-    this->arrivalTimes[c1d(Coords(startX, startY))] = 1e10;
+    this->arrivalTimes[c1d(Coords(sp->startX, sp->startY))] = 1e10;
 }
 
 void SEExpansion::dCheckPos(Coords curPos, Coords newPos, double f, vector<bool> &visited,
@@ -331,7 +336,7 @@ void SEExpansion::dCheckPos(Coords curPos, Coords newPos, double f, vector<bool>
 
 
     if (!visited[c1d(newPos)]) {
-        double newTime = arrivalTimes[c1d(curPos)] - f * this->tLag;
+        double newTime = arrivalTimes[c1d(curPos)] - f * this->sp->tLag;
         if (newTime > arrivalTimes[c1d(newPos)]) {
             if (Parameters::verbose > 999) {
                 cout << "[dj]: better path found to" << newPos << " via " << curPos;

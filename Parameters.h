@@ -27,6 +27,7 @@
 #include "IsolationByDistanceBarrier.h"
 #include "SEExpansionBarrier.h"
 #include "utils.h"
+#include "StartPos.h"
 
 typedef boost::unordered_map<Coords, Sample*> SampleList;
 
@@ -78,6 +79,7 @@ public:
     static int seed;
     static double theta;
     static bool memoryEfficient;
+    static int kMax;
 private:
     void generateRandomSample(int nSamples, int sampSize);
 

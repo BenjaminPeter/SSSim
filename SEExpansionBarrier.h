@@ -26,7 +26,7 @@ public:
     virtual bool isInitialized(){return true;}
     virtual void addBarriersToMigrationScheme();
 
-private:
+protected:
     vector<double*> mRates;
     vector<double> popSizes;
 };

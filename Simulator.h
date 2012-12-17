@@ -58,7 +58,7 @@ public:
     void setMigrationScheme(MigrationScheme* ms){
         this->migrationScheme=ms;
         //this->expansionEvents=ms->getExpansionEvents();
-        int k=this->migrationScheme->getExpansionK();
+        int k=Parameters::kMax;
         if (k>0){
             utils::setupStirlingNumberTableD(k);
             utils::setupStirlingNumberTable(k);

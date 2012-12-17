@@ -21,8 +21,8 @@ SEExpansionDiffK::~SEExpansionDiffK() {
 
 int SEExpansionDiffK::getExpansionK(int x, int y) const{
     
-   int distance=sqrt((float(x)-float(this->startX))*(float(x)-float(this->startX))
-            +(float(y)-float(this->startY))*(float(y)-float(this->startY)));
+   int distance=sqrt((float(x)-float(this->sp->startX))*(float(x)-float(this->sp->startX))
+            +(float(y)-float(this->sp->startY))*(float(y)-float(this->sp->startY)));
    
    
    if(distance>this->centralArea){

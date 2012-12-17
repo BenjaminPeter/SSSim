@@ -13,7 +13,6 @@ IsolationByDistance::IsolationByDistance() {
     this->mRate=new double[4];
     this->width=-1;
     this->height=-1;
-    this->expansionK=20;
 }
 
 IsolationByDistance::IsolationByDistance(const IsolationByDistance& orig) {

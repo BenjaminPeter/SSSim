@@ -13,6 +13,7 @@
 #include <sstream>
 #include <set>
 #include <list>
+#include "StartPos.h"
 
 using namespace std;
 class SEExpansion : public MigrationScheme {
@@ -28,44 +29,42 @@ public:
     virtual double getMigrationRate(const int direction, const Coords pos,
                                     const double t);
     
-    void setStartPos(int* startPos);
-    void setStartPos(int x,int y);
-    void setTLag(double tLag);
-    void setTStart(double tStart);
+    virtual void setStartPos(int* startPos);
+    virtual void setStartPos(int x,int y);
+    virtual void setTLag(double tLag);
+    virtual void setTStart(double tStart);
+    virtual void setExpansionK(double ek);
     virtual void setCarCapUniform(double cc);
     virtual void setMigrationRatesUniform(double north, double south, double east,
                                   double west);
     //double getArrivalTime(const int x, const int y);
     virtual double getArrivalTime(const Coords pos);
-    void setupArrivalTimes();
+    virtual void setupArrivalTimes();
     string toString(){
         cout << "SEExpansion:\twidth\theight\ttStart\ttLag\tk\tstartX\tstartY\teK"<<endl;
         cout << "\t\t";
         cout << this->width << "\t";
         cout << this->height << "\t";
-        cout << this->tStart << "\t";
-        cout << this->tLag << "\t";
-        cout << this->k << "\t";
-        cout << this->startX << "\t";
-        cout << this->startY << "\t";
-        cout << this->expansionK << endl;
+        cout << sp->tStart << "\t";
+        cout << sp->tLag << "\t";
+        cout << this->N << "\t";
+        cout << sp->startX << "\t";
+        cout << sp->startY << "\t";
+        cout << sp->expansionK << endl;
         return "";
     }
     
     virtual void init();
-    virtual void addBarriersToMigrationScheme(){
-        cerr << "use IsolationByDistanceBarrier instead" << endl;
-    }
+    virtual void addBarriersToMigrationScheme(){}
 protected:   
     void calcArrivalTime(const int x,const int y, int xDir=1, int yDir=1);
     
     SEExpansion(const SEExpansion& orig);
-    double tStart,tLag,k;
-    int startX,startY;
-    
+    StartPos* sp;
+    double N;
     double* mRate;
     vector<double> arrivalTimes;
-private:
+protected:
     void dCheckPos(Coords curPos, Coords newPos, double mult, vector<bool> &visited,
             vector<Coords> &unvisited);
 

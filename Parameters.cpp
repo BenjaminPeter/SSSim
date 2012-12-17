@@ -7,6 +7,7 @@
 
 
 #include "Parameters.h"
+#include "SEExpansionMultiOrigin.h"
 
 
 using namespace std;
@@ -23,6 +24,7 @@ bool Parameters::memoryEfficient = true;
 double Parameters::theta = -1;
 bool Parameters::outputCoal = false;
 std::vector<Barrier*> Parameters::barriers;
+int Parameters::kMax = 0;
 
 void Parameters::printHelp() {
     cout << "Usage and options: /sssim <number of trees>" << endl;
@@ -97,7 +99,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     Parameters::verbose = 0;
     this->nSNP = 0;
 
-
+    vector<StartPos*> sp;
 
     //cout <<" "<< nReplicates <<endl;
     bool hasMigScheme = false;
@@ -156,11 +158,11 @@ Parameters::Parameters(int argc, char* argv[]) {
         if (string(argv[i]) == "--ocmd") {
             this->outputCommand = true;
         }
-        
+
         if (string(argv[i]) == "--ocoal") {
             this->outputCoal = true;
         }
-        
+
         if (string(argv[i]) == "--verbose") {
             Parameters::verbose = atoi(argv[i + 1]);
             i += 1;
@@ -320,6 +322,18 @@ Parameters::Parameters(int argc, char* argv[]) {
         /**********************************************************
          *  Models         
          **********************************************************/
+        //read startPosition
+        if (string(argv[i]) == "--sp") {
+            x = atoi(argv[i + 1]);
+            y = atoi(argv[i + 2]);
+            double t0 = atof(argv[i + 3]);
+            double tLag = atof(argv[i + 4]);
+            int ek = atoi(argv[i + 5]);
+            this->kMax = max(ek, this->kMax);
+            sp.push_back(new StartPos(x, y, t0, tLag, ek));
+            i += 5;
+        }
+
         //ibd: set width, height, k, 1 migration rate
         if (string(argv[i]) == "--ibd") {
             if (hasMigScheme) {
@@ -340,7 +354,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             ibd->setHeight(height);
             ibd->setCarCapUniform(k);
             ibd->setMigrationRatesUniform(m, m, m, m);
-
+            this->kMax = 0;
             this->ms = ibd;
 
             i += 4;
@@ -367,7 +381,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             ibd->setXStart(startX);
             ibd->setYStart(startY);
             this->ms = ibd;
-
+            this->kMax = 0;
             i += 4;
         }
         //Slatkin & Excoffier expansion
@@ -400,6 +414,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             see->setStartPos(x, y);
             see->setTLag(tLag);
             see->setTStart(t0);
+            this->kMax = ek;
             see->setExpansionK(ek);
 
             //see->setupArrivalTimes();
@@ -407,7 +422,32 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->ms = see;
             i += 9;
         }
+        //Slatkin & Excoffier expansion with multiple expansion starts
+        //width, height, k, m
+        if (string(argv[i]) == "--seem") {
+            if (hasMigScheme) {
+                cerr << "error: migration scheme already defined";
+                exit;
+            }
+            hasMigScheme = true;
+            int width = atoi(argv[i + 1]);
+            int height = atoi(argv[i + 2]);
+            double k = atof(argv[i + 3]);
+            double m = atof(argv[i + 4]);
+            SEExpansionMultiOrigin * see;
+            see = new SEExpansionMultiOrigin();
 
+
+            see->setWidth(width);
+            see->setHeight(height);
+            see->setCarCapUniform(k);
+            see->setMigrationRatesUniform(m, m, m, m);
+
+            //see->setupArrivalTimes();
+            //cout <<see->toString()<<endl;
+            this->ms = see;
+            i += 4;
+        }
 
         //Slatkin & Excoffier expansion with central area with different expansion k
         //width, height, k, ek, m, x0, y0, t0, tLag centralArea ekCentral
@@ -428,7 +468,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             double tLag = atof(argv[i + 9]);
             int centralArea = atof(argv[i + 10]);
             int ekCentral = atof(argv[i + 11]);
-
+            this->kMax = ek;
             SEExpansionDiffK * see = new SEExpansionDiffK();
             see->setCarCapUniform(k);
             see->setMigrationRatesUniform(m, m, m, m);
@@ -442,6 +482,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             //see->setupArrivalTimes();
             see->setCentralArea(centralArea);
             see->setCentralK(ekCentral);
+            this->kMax = ek;
             //cout <<see->toString()<<endl;
             this->ms = see;
 
@@ -460,6 +501,12 @@ Parameters::Parameters(int argc, char* argv[]) {
         this->generateRandomSample(rsPar1, rsPar2);
 
 
+    if (sp.size() > 0) {
+        SEExpansionMultiOrigin* semo = static_cast<SEExpansionMultiOrigin*>(this->ms);
+        for (int i = 0; i < sp.size(); ++i)
+            semo->startPositions.push_back(sp[i]);
+
+    }
 
 
     this->ms->addBarriersToMigrationScheme();

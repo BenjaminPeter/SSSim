@@ -14,13 +14,15 @@
 #include "Lineage.h"
 #include "Event.h"
 
+class IslandSimulator;
 
-struct coalEvent{
+struct coalEvent {
     double t;
     int x;
     int y;
     int nDescendants;
 };
+
 struct LCV {
     Lineage* l;
     vector<coalEvent> c;
@@ -28,42 +30,45 @@ struct LCV {
 
 class TreeSimulator {
 public:
+    TreeSimulator();
     TreeSimulator(Parameters* params);
     TreeSimulator(const TreeSimulator& orig);
     virtual ~TreeSimulator();
     LCV run(int id = 0);
     string toString();
 
+    vector<Sample*> finalSamples; //final samples, assumed in island model
+    double timeSinceLastCoalEvent, timeSinceStart;
+    vector<coalEvent> coalEvents;
+    int nMigrationEvents;
 
-private:
+
+protected:
     Parameters* params;
     void copySampStartToSamp();
     SampleList sampMap;
     int nSamples, nLineages;
-    double timeSinceLastCoalEvent, timeSinceStart;
-    int nMigrationEvents;
     vector<ExpansionEvent>* expansionEvents;
-    vector<coalEvent> coalEvents;
 
     //next event
-    Event* getNextEvent();
-    void addEvent(Event* ev);
-    Event* getNextCoalEvent();
-    Event* getNextMigEvent();
+    virtual Event* getNextEvent();
+    virtual Event* getNextCoalEvent();
+    virtual Event* getNextMigEvent();
 
 
-    void removeSample(int x, int y);
+    virtual void removeSample(int x, int y);
     //adding events
-    void addExpansionEvent(ExpansionEvent* ev);
-    void addCoalEvent(Event* ev);
-    void addMigrationEvent(Event* ev);
-    void terminate();
+    virtual void addEvent(Event* ev);
+    virtual void addExpansionEvent(ExpansionEvent* ev);
+    virtual void addCoalEvent(Event* ev);
+    virtual void addMigrationEvent(Event* ev);
+    virtual void terminate();
 
-    double coalRejFunction(const double t);
-    double migRejFunction(const double t);
+    virtual double coalRejFunction(const double t);
+    virtual double migRejFunction(const double t);
 
-    Event* whichCoalEvent(double t);
-    Event* whichMigEvent(double t);
+    virtual Event* whichCoalEvent(double t);
+    virtual Event* whichMigEvent(double t);
 
     static double wrapper_coalRejFunction(void* myself_ptr, double t) {
         TreeSimulator* myself = (TreeSimulator*) myself_ptr;

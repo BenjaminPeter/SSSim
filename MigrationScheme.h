@@ -15,7 +15,17 @@
 #include "Barrier.h"
 
 using namespace std;
-typedef pair<Coords, double> ExpansionEvent;
+struct ExpansionEvent{
+    Coords coords;
+    double time;
+    int k;
+    ExpansionEvent(Coords c, double t, int k){
+        this->coords =c;
+        this->time = t;
+        this->k =k;
+    }
+};
+
 
 class MigrationScheme {
 public:
@@ -40,7 +50,7 @@ public:
     static const int WEST = 3;
 
     static bool sorter(const ExpansionEvent& x, const ExpansionEvent& y) {
-        return x.second > y.second;
+        return x.time > y.time;
     }
 
     virtual vector<ExpansionEvent >* getExpansionEvents() {
@@ -62,6 +72,12 @@ public:
 
     int c1d(int x, int y) {
         return x * this->height + y;
+    }
+    
+    Coords c2d(int c){
+        int x = c / this->height;
+        int y = c % this->height;
+        return Coords(x,y);
     }
     //getters for population size and migration rate
 
@@ -120,18 +136,6 @@ public:
         this->width = width;
     }
 
-    virtual int getExpansionK() const {
-        return expansionK;
-    }
-
-    virtual int getExpansionK(Coords pos) const {
-        return expansionK;
-    }
-
-    virtual void setExpansionK(int expansionK) {
-        this->expansionK = expansionK;
-    }
-
 
     //barriers
     virtual void addBarriersToMigrationScheme() = 0;
@@ -140,7 +144,7 @@ public:
         return (0 <= c.first && c.first < width && 0 <= c.second && c.second < height);
     }
 protected:
-    int width, height, expansionK;
+    int width, height;
     vector<ExpansionEvent>* expansionEvents;
     vector<Barrier*> barriers;
 
