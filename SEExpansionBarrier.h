@@ -20,11 +20,14 @@ public:
     virtual void setMigrationRatesUniform(double north, double south, double east,
             double west);
     virtual void setCarCapUniform(double cc);
+    virtual void setCarCapGamma(double cc, double alpha);
 
     virtual double getPopSize(const Coords pos, const double t);
     virtual double getMigrationRate(const int direction, const Coords pos, const double t);
     virtual bool isInitialized(){return true;}
     virtual void addBarriersToMigrationScheme();
+    
+    void dumpMigrationMatrix() const;
 
 protected:
     vector<double*> mRates;

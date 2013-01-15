@@ -65,6 +65,22 @@ void Parameters::printHelp() {
     throw 1;
 }
 
+void Parameters::readNSNP(char* argv[], int &i) {
+    cout << "Parameters::readNSNP" << endl;
+    if (this->theta > 0)
+        cerr << "Warning: Setting theta and N at the same time" << endl;
+    this->nSNP = atoi(argv[i + 1]);
+    i += 1;
+}
+
+void Parameters::readTheta(char* argv[], int &i) {
+    cout << "Parameters::readNSNP" << endl;
+    if (this->nSNP > 0)
+        cerr << "Warning: Setting theta and N at the same time" << endl;
+    this->theta = atof(argv[i + 1]);
+    i += 1;
+}
+
 Parameters::Parameters(int argc, char* argv[]) {
     for (int i = 0; i < argc; i++) {
         cout << argv[i] << " ";
@@ -72,6 +88,7 @@ Parameters::Parameters(int argc, char* argv[]) {
     cout << endl;
 
     this->seed = 0;
+    utils::setupRng(this->seed);
     this->mPropagulePool = false;
     this->outputPrefix = "out_";
     this->nReplicates = atoi(argv[1]);
@@ -108,20 +125,14 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     while (i < argc) {
         if (string(argv[i]) == "-t" || string(argv[i]) == "--theta") {
-            if (this->nSNP > 0)
-                cerr << "Warning: Setting theta and N at the same time" << endl;
-            this->theta = atof(argv[i + 1]);
-            i += 1;
+            this->readTheta(argv, i);
         }
 
         //set number of SNP
         if (string(argv[i]) == "-N") {
-            if (this->theta > 0)
-                cerr << "Warning: Setting theta and N at the same time" << endl;
-            //cout <<argv[i+1]<<endl;
-            this->nSNP = atoi(argv[i + 1]);
-            i += 1;
+            this->readNSNP(argv, i);
         }
+
         //*****************************************************************************        
         //*******     performance options                                             ********
         //***************************************************************************** 
@@ -140,6 +151,8 @@ Parameters::Parameters(int argc, char* argv[]) {
         //rng seed
         if (string(argv[i]) == "--seed") {
             Parameters::seed = atoi(argv[i + 1]);
+            utils::setupRng(this->seed);
+
             i += 1;
         }
         //*****************************************************************************        
@@ -422,6 +435,43 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->ms = see;
             i += 9;
         }
+        //Slatkin & Excoffier expansion
+        //width, height, k, ek, m, x0, y0, t0, tLag
+        if (string(argv[i]) == "--seeg") {
+            if (hasMigScheme) {
+                cerr << "error: migration scheme already defined";
+                exit;
+            }
+            hasMigScheme = true;
+            int width = atoi(argv[i + 1]);
+            int height = atoi(argv[i + 2]);
+            double k = atof(argv[i + 3]);
+            double kVar = atof(argv[i + 4]);
+            double ek = atoi(argv[i + 5]);
+            double m = atof(argv[i + 6]);
+            x = atoi(argv[i + 7]);
+            y = atoi(argv[i + 8]);
+            double t0 = atof(argv[i + 9]);
+            double tLag = atof(argv[i + 10]);
+            SEExpansionBarrier * see;
+
+            see = new SEExpansionBarrier();
+
+            see->setWidth(width);
+            see->setHeight(height);
+            see->setCarCapGamma(k,kVar);
+            see->setMigrationRatesUniform(m, m, m, m);
+            see->setStartPos(x, y);
+            see->setTLag(tLag);
+            see->setTStart(t0);
+            this->kMax = ek;
+            see->setExpansionK(ek);
+
+            //see->setupArrivalTimes();
+            //cout <<see->toString()<<endl;
+            this->ms = see;
+            i += 9;
+        }
         //Slatkin & Excoffier expansion with multiple expansion starts
         //width, height, k, m
         if (string(argv[i]) == "--seem") {
@@ -496,13 +546,12 @@ Parameters::Parameters(int argc, char* argv[]) {
 
 
     //has to be done afterwards because of rng init
-    utils::setupRng(this->seed);
     if (doRandomSample)
         this->generateRandomSample(rsPar1, rsPar2);
 
 
     if (sp.size() > 0) {
-        SEExpansionMultiOrigin* semo = static_cast<SEExpansionMultiOrigin*>(this->ms);
+        SEExpansionMultiOrigin* semo = static_cast<SEExpansionMultiOrigin*> (this->ms);
         for (int i = 0; i < sp.size(); ++i)
             semo->startPositions.push_back(sp[i]);
 

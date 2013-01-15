@@ -82,6 +82,10 @@ public:
     static int kMax;
 private:
     void generateRandomSample(int nSamples, int sampSize);
+    
+    
+    void readNSNP(char* argv[], int &i);
+    void readTheta(char* argv[], int &i);
 
 };
 

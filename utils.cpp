@@ -71,6 +71,10 @@ int utils::rpois(const double lambda){
     return gsl_ran_poisson(utils::rng,lambda);
 }
 
+double utils::rgamma(const double alpha, const double beta){
+    return gsl_ran_gamma(utils::rng,alpha,beta);
+}
+
 unsigned int* utils::rmultinom(int nTrials, int size, double* probabilities){
     unsigned int* res = new unsigned int[size];
     gsl_ran_multinomial(utils::rng,size,nTrials,probabilities,res);

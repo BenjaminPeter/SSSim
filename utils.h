@@ -29,6 +29,7 @@ public:
     static double randomD(const double d);
     static double rexp(const double rate);
     static int rpois(const double lambda);
+    static double rgamma(const double alpha, const double beta);
     static double nhpp(double rMax, double(*rejFunction)(const double),bool isConst=false);
     static double nhpp2(void* obj, double rMax, double (*rejFunction)(void* obj, const double), double tAdd=0,bool isConst=false);    
     static gsl_rng* rng;
