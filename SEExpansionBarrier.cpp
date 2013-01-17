@@ -15,7 +15,7 @@ SEExpansionBarrier::SEExpansionBarrier(const SEExpansionBarrier& orig) {
 }
 
 SEExpansionBarrier::~SEExpansionBarrier() {
-    delete[] this->mRate;
+    //delete[] this->mRate;
 
 }
 

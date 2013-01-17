@@ -149,7 +149,7 @@ SNPTable* FreqTable::drawSNP(int nSNP){
             snpFinal->push_back( newSNP);
         }
     }
-    delete snp;
+    delete[] snp;
     if (Parameters::verbose>99) cout << "got SNP: "<<endl;
     utils::rshuffle(snpFinal);
     if (Parameters::verbose>99) cout << "done randomizing: " <<endl;
