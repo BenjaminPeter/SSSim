@@ -66,15 +66,15 @@ public:
         cerr << "x" << std::endl;
     };
 
-    int c1d(Coords c) {
+    int c1d(const Coords c) const{
         return c.first * this->height + c.second;
     }
 
-    int c1d(int x, int y) {
+    int c1d(const int x, const int y) const {
         return x * this->height + y;
     }
     
-    Coords c2d(int c){
+    Coords c2d(const int c) const{
         int x = c / this->height;
         int y = c % this->height;
         return Coords(x,y);

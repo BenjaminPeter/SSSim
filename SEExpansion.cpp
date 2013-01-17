@@ -240,7 +240,7 @@ void SEExpansion::calcArrivalTime(const int i, const int j, int xDir, int yDir) 
             );
 
     for (vector<Barrier*>::iterator it = barriers.begin(); it != barriers.end(); ++it) {
-        if ((*it)->isInside(Coords(i, j))) {
+        if ((*it)->isInside(Coords(i, j))&& ((*it)->mBoundary==0 || (*it)->mInside==0)) {
             this->arrivalTimes[c1d(Coords(i, j))] = 0;
         }
     }
@@ -319,14 +319,14 @@ void SEExpansion::setupArrivalTimes() {
 void SEExpansion::dCheckPos(Coords curPos, Coords newPos, double f, vector<bool> &visited,
         vector<Coords> &unvisited) {
     //check validity of newPos
-    if (!this->inBounds(newPos)) {
+    if ( !this->inBounds( newPos ) ) {
         if (Parameters::verbose > 999)
             cout << "[dj]: not adjusting " << newPos << " because of oob" << endl;
         return;
     }
     for (vector<Barrier*>::iterator it = this->barriers.begin();
             it != barriers.end(); ++it) {
-        if ((*it)->isInside(newPos)) {
+        if ((*it)->isInside(newPos) && ((*it)->mBoundary==0 || (*it)->mInside==0)) {
             if (Parameters::verbose > 999)
                 cout << "[dj]: not adjusting " << newPos << " because of barrier" << endl;
             return;

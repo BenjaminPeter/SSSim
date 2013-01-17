@@ -435,7 +435,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             this->ms = see;
             i += 9;
         }
-        //Slatkin & Excoffier expansion
+        //Slatkin & Excoffier expansion with gamma deme size variation
         //width, height, k, ek, m, x0, y0, t0, tLag
         if (string(argv[i]) == "--seeg") {
             if (hasMigScheme) {

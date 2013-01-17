@@ -110,32 +110,32 @@ int main(int argc, char* argv[]) {
         sprintf(s, "%s.snps", params->outputPrefix.c_str());
         vector<SNP*>::const_iterator it1;
         vector<int>::const_iterator it2;
-	if(params->outputSNPShared)
-        f.open(s, ios::out);
+        if (params->outputSNPShared)
+            f.open(s, ios::out);
 
         int i;
         bool firstCol;
         //
-	if(params->outputSNPShared){
-        for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
-            firstCol = true;
-            vector<int>* curSNP = (*it1);
-            for (it2 = curSNP->begin(); it2 != curSNP->end(); ++it2) {
-                if (firstCol) {
-                    firstCol = false;
-                } else {
-                    f << "\t";
+        if (params->outputSNPShared) {
+            for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
+                firstCol = true;
+                vector<int>* curSNP = (*it1);
+                for (it2 = curSNP->begin(); it2 != curSNP->end(); ++it2) {
+                    if (firstCol) {
+                        firstCol = false;
+                    } else {
+                        f << "\t";
+                    }
+                    i = (*it2);
+                    f << i;
                 }
-                i = (*it2);
-                f << i;
+                f << endl;
             }
-            f << endl;
-        }
-        f.close();
+            f.close();
 
-        if (Parameters::verbose > 99)
-            cout << "wrote snps file" << endl;
-	}
+            if (Parameters::verbose > 99)
+                cout << "wrote snps file" << endl;
+        }
 
         //print associated stats
         if (params->outputSNPSharedStats) {
@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
         bool firstCol;
         for (it1 = snps->begin(); it1 != snps->end(); ++it1) {
             firstCol = true;
-            vector<int>* curSNP = (*it1);//.GetFreqs();
+            vector<int>* curSNP = (*it1); //.GetFreqs();
             for (it2 = curSNP->begin(); it2 != curSNP->end(); ++it2) {
                 if (firstCol) {
                     firstCol = false;
