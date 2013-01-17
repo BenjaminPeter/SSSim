@@ -104,3 +104,4 @@ void IsolationByDistanceBarrier::addBarriersToMigrationScheme() {
         }
     }
 }
+

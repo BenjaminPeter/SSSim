@@ -26,6 +26,7 @@ public:
     virtual double getMigrationRate(const int direction, const Coords pos, const double t);
     virtual bool isInitialized(){return true;}
     virtual void addBarriersToMigrationScheme();
+    virtual void setupArrivalTimes();
     
     void dumpMigrationMatrix() const;
 

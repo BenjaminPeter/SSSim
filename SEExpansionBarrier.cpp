@@ -21,6 +21,14 @@ SEExpansionBarrier::~SEExpansionBarrier() {
 
 void SEExpansionBarrier::setMigrationRatesUniform(double north, double south,
         double east, double west) {
+
+    this->mRate = new double[4];
+    this->mRate[NORTH] = north;
+    this->mRate[SOUTH] = south;
+    this->mRate[EAST] = east;
+    this->mRate[WEST] = west;
+
+
     this->mRates.reserve(width * height);
     for (int i = 0; i<this->width; ++i) {
         for (int j = 0; j<this->height; ++j) {
@@ -56,9 +64,9 @@ void SEExpansionBarrier::setCarCapGamma(double cc, double alpha) {
     this->popSizes.reserve(width * height);
     for (int i = 0; i<this->width; ++i) {
         for (int j = 0; j<this->height; ++j) {
-            double d=utils::rgamma(alpha,cc/alpha);
+            double d = utils::rgamma(alpha, cc / alpha);
             this->popSizes.push_back(d);
-            cout << Coords(i,j) << ":" << d <<endl;
+            cout << Coords(i, j) << ":" << d << endl;
         }
     }
 }
@@ -147,16 +155,81 @@ void SEExpansionBarrier::addBarriersToMigrationScheme() {
             }
         }
     }
-    
+
     //this->dumpMigrationMatrix();
 }
 
-void SEExpansionBarrier::dumpMigrationMatrix() const{
-    for (int i=0; i<this->width; ++i){
-        for (int j=0; j<this->height; ++j){
-            
-            cout << this->popSizes[c1d(i,j)] << " ";
+void SEExpansionBarrier::dumpMigrationMatrix() const {
+    for (int i = 0; i<this->width; ++i) {
+        for (int j = 0; j<this->height; ++j) {
+
+            cout << this->popSizes[c1d(i, j)] << " ";
         }
-        cout <<endl;
+        cout << endl;
     }
+}
+
+void SEExpansionBarrier::setupArrivalTimes() {
+
+    this->arrivalTimes.reserve(width * height);
+    vector<Coords> unvisited;
+    vector<bool> visited;
+    visited.reserve(width * height);
+    //    unvisited.resize(width*height);
+
+    for (int i = 0; i<this->width; i++) {
+        for (int j = 0; j<this->height; j++) {
+            this->arrivalTimes.push_back(0);
+            visited.push_back(false);
+            unvisited.push_back(Coords(i, j));
+        }
+    }
+
+    //start with starting pos
+    unvisited[0] = Coords(sp->startX, sp->startY);
+    unvisited[c1d(sp->startX, sp->startY)] = Coords(0, 0);
+    arrivalTimes[c1d(sp->startX, sp->startY)] = this->sp->tStart;
+    int nVisited = width*height;
+
+
+    while (nVisited > 0) {
+        nVisited--;
+        if (Parameters::verbose > 999)
+            cout << "[dj]: nodes left" << nVisited << endl;
+        Coords curPos = (*unvisited.begin());
+        visited[c1d(curPos)] = true;
+        unvisited.erase(unvisited.begin());
+        if (Parameters::verbose > 999) {
+            cout << "-------------------------------" << endl;
+            cout << "[dj]: visiting " << curPos << "time:" << arrivalTimes[c1d(curPos)] << endl;
+        }
+
+        //if (arrivalTimes[curPos] == 0) {
+        //    cerr << "could not reach all demes:" << curNode.c <<endl;
+        //}
+
+        int x = curPos.first;
+        int y = curPos.second;
+
+        int cp1d = c1d(curPos);
+        dCheckPos(curPos, Coords(x + 1, y), 1. / this->mRates[cp1d][EAST] * this->mRate[EAST], visited, unvisited);
+        dCheckPos(curPos, Coords(x - 1, y), 1. / this->mRates[cp1d][WEST] * this->mRate[WEST], visited, unvisited);
+        dCheckPos(curPos, Coords(x, y + 1), 1. / this->mRates[cp1d][NORTH] * this->mRate[NORTH], visited, unvisited);
+        dCheckPos(curPos, Coords(x, y - 1), 1. / this->mRates[cp1d][SOUTH] * this->mRate[SOUTH], visited, unvisited);
+
+
+
+        dCheckPos(curPos, Coords(x - 1, y - 1), sqrt(2) / ((this->mRates[cp1d][WEST]/this->mRate[WEST] + this->mRates[cp1d][SOUTH]/this->mRate[SOUTH]) / 2), visited, unvisited);
+        dCheckPos(curPos, Coords(x - 1, y + 1), sqrt(2) / ((this->mRates[cp1d][WEST]/this->mRate[WEST] + this->mRates[cp1d][NORTH]/this->mRate[NORTH]) / 2), visited, unvisited);
+        dCheckPos(curPos, Coords(x + 1, y + 1), sqrt(2) / ((this->mRates[cp1d][EAST]/this->mRate[EAST] + this->mRates[cp1d][SOUTH]/this->mRate[SOUTH]) / 2), visited, unvisited);
+        dCheckPos(curPos, Coords(x + 1, y - 1), sqrt(2) / ((this->mRates[cp1d][EAST]/this->mRate[EAST] + this->mRates[cp1d][NORTH]/this->mRate[NORTH]) / 2), visited, unvisited);
+        if (Parameters::verbose > 999)
+            cout << "-------------------------------" << endl;
+    }
+
+
+
+
+
+    this->arrivalTimes[c1d(Coords(sp->startX, sp->startY))] = 1e10;
 }

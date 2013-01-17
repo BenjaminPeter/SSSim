@@ -318,6 +318,9 @@ void SEExpansion::setupArrivalTimes() {
 
 void SEExpansion::dCheckPos(Coords curPos, Coords newPos, double f, vector<bool> &visited,
         vector<Coords> &unvisited) {
+    
+    if(f<1e-10) return;
+    
     //check validity of newPos
     if ( !this->inBounds( newPos ) ) {
         if (Parameters::verbose > 999)
