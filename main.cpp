@@ -213,6 +213,7 @@ int main(int argc, char* argv[]) {
     //delete res;
     delete sim;
     delete params;
+    utils::destroyStirlingNumberTables();  
     return 0;
 }
 

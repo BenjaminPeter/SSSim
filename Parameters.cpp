@@ -679,7 +679,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize) {
 
 
     while (nSuccessfulSamples < nSamples) {
-        prop = Coords(utils::random1(width), utils::random1(height));
+        prop = Coords(utils::random1(width*3/5)+width/5, utils::random1(height*3/5)+width/5);
 
         for (vector<Barrier*>::iterator itb = this->barriers.begin();
                 itb != this->barriers.end(); ++itb) {

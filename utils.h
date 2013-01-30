@@ -37,6 +37,7 @@ public:
     static long int getStirlingNumber(int i,int j);
     static void setupStirlingNumberTableD(int maxK);
     static long double getStirlingNumberD(int i,int j);
+    static void destroyStirlingNumberTables();
     static long int fallingFactorial(int n, int j);   
     static long double logFallingFactorial(int n, int j);  
     static unsigned int* rmultinom(int nTrials, int size, double* probabilities);

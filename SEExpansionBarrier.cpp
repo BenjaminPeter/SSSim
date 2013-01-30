@@ -16,6 +16,9 @@ SEExpansionBarrier::SEExpansionBarrier(const SEExpansionBarrier& orig) {
 
 SEExpansionBarrier::~SEExpansionBarrier() {
     //delete[] this->mRate;
+    for(int i=0; i<this->mRates.size();++i){
+        delete[] this->mRates[i];
+    }
 
 }
 
