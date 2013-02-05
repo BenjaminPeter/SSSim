@@ -81,7 +81,7 @@ public:
     static bool memoryEfficient;
     static int kMax;
 private:
-    void generateRandomSample(int nSamples, int sampSize);
+    void generateRandomSample(int nSamples, int sampSize, double boundary=0);
     
     
     void readNSNP(char* argv[], int &i);

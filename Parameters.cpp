@@ -661,7 +661,7 @@ void Parameters::addSampleStart(int x, int y, int nNewLineages, bool outputLoci,
 
 }
 
-void Parameters::generateRandomSample(int nSamples, int sampSize) {
+void Parameters::generateRandomSample(int nSamples, int sampSize, double boundary) {
     if (this->ms == NULL) {
         cerr << "migration scheme has to be set first" << endl;
         throw 10;
@@ -679,7 +679,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize) {
 
 
     while (nSuccessfulSamples < nSamples) {
-        prop = Coords(utils::random1(width*3/5)+width/5, utils::random1(height*3/5)+width/5);
+        prop = Coords(utils::random1(width*(1-2*boundary))+width*boundary, utils::random1(height*(1-2*boundary))+width*boundary);
 
         for (vector<Barrier*>::iterator itb = this->barriers.begin();
                 itb != this->barriers.end(); ++itb) {
