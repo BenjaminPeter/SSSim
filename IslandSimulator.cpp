@@ -14,11 +14,11 @@ IslandSimulator::IslandSimulator() {
 //this is the default way this should be initialized
 
 IslandSimulator::IslandSimulator(TreeSimulator* ts) {
-    if (Parameters::verbose > 99) {
+    if (Parameters::verbose > 299) {
         cout << "starting island model ";
     }
     this->samples = ts->finalSamples;
-    if (Parameters::verbose > 99) {
+    if (Parameters::verbose > 299) {
         cout << "with " << this->samples.size() << " islands ";
     }
     this->timeSinceStart = ts->timeSinceStart;
@@ -32,7 +32,7 @@ IslandSimulator::IslandSimulator(TreeSimulator* ts) {
         this->popSizes.push_back(1);
     }
     this->mRate =100;
-        if (Parameters::verbose > 99) {
+        if (Parameters::verbose > 299) {
         cout << "and " << this->nLineages << " lineages" << endl;
     }
 }

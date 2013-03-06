@@ -404,7 +404,7 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
             sTarget->addLineage(sample->getRandomLineageForMigration());
         }
 
-        cout << "put sample " << ev->coords << "to final rest" << endl;
+//        cout << "put sample " << ev->coords << "to final rest" << endl;
         this->finalSamples.push_back(sTarget);
 
     }
