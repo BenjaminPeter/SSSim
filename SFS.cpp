@@ -63,6 +63,7 @@ SFS::~SFS() {
 }
 
     SFS SFS::operator+(const SFS &otherSFS){
+        cout <<"adding sfs"<<endl;
         if ( this->size1!=otherSFS.size1 || this->size2!=otherSFS.size2){
             cerr <<"cannot add SFS of different sizes"<<endl;
             throw 10;

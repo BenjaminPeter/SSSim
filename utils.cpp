@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "Event.h"
 #include "stdio.h"
+#include "Parameters.h"
 
 gsl_rng* utils::rng = NULL;
 long int** utils::stirlingNumberMatrix = 0;
@@ -15,6 +16,7 @@ long double** utils::stirlingNumberMatrixD = 0;
 bool utils::stirlingNumbersReady = false;
 int utils::stirlingNumberMax = 0;
 
+class Parameters;
 utils::utils(long seed) {
     utils::setupRng(seed);
     utils::stirlingNumberMatrix = 0;
@@ -232,9 +234,11 @@ void utils::printProgressBar(int percent, string label) {
         }
     }
 
+    if(Parameters::verbose > 100){
     std::cout << "\r" "[" << bar << "] ";
     std::cout.width(3);
     std::cout << percent << "% " << label << std::flush;
+    }
 }
 
 void utils::destroyStirlingNumberTables() {

@@ -99,6 +99,7 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
                 for (unsigned int j = i + 1; j < samples.size(); j++) {
                     sfs = Simulator::seqSim->create2DSFS(l, i, j);
                     *(res->sumSFS[pos]) += *sfs;
+                    cout << (*sfs).toString() <<endl;
 
                     delete sfs;
                     pos++;
