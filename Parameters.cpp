@@ -679,6 +679,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize, double boundar
 
 
     while (nSuccessfulSamples < nSamples) {
+        isAccepted = true;
         prop = Coords(utils::random1(width*(1-2*boundary))+width*boundary, utils::random1(height*(1-2*boundary))+width*boundary);
 	cout <<prop <<endl;
 
@@ -700,7 +701,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize, double boundar
             nUnsuccessfulSamples++;
         }
 
-        if (nUnsuccessfulSamples > 1000) {
+        if (nUnsuccessfulSamples > 10000) {
             cerr << "couldn't generate random sample" << endl;
             throw 1;
         }
