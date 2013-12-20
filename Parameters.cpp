@@ -547,7 +547,7 @@ Parameters::Parameters(int argc, char* argv[]) {
 
     //has to be done afterwards because of rng init
     if (doRandomSample)
-        this->generateRandomSample(rsPar1, rsPar2);
+        this->generateRandomSample(rsPar1, rsPar2,.2);
 
 
     if (sp.size() > 0) {
@@ -679,7 +679,9 @@ void Parameters::generateRandomSample(int nSamples, int sampSize, double boundar
 
 
     while (nSuccessfulSamples < nSamples) {
+        isAccepted = true;
         prop = Coords(utils::random1(width*(1-2*boundary))+width*boundary, utils::random1(height*(1-2*boundary))+width*boundary);
+	cout <<prop <<endl;
 
         for (vector<Barrier*>::iterator itb = this->barriers.begin();
                 itb != this->barriers.end(); ++itb) {
@@ -699,7 +701,7 @@ void Parameters::generateRandomSample(int nSamples, int sampSize, double boundar
             nUnsuccessfulSamples++;
         }
 
-        if (nUnsuccessfulSamples > 1000) {
+        if (nUnsuccessfulSamples > 10000) {
             cerr << "couldn't generate random sample" << endl;
             throw 1;
         }
