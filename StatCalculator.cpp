@@ -63,12 +63,23 @@ double StatCalculator::getPsi(SFS* sfs) {
         for (int j = 1; j <= sfs->getSize2(); ++j) {
             double entry = sfs->getEntry(i, j);
             psi += entry* (i - j);
-            if (i != sfs->getSize1() && j != sfs->getSize2())
+            if (i != sfs->getSize1() || j != sfs->getSize2())
                 all += entry;
         }
     }
     if (all == 0) {
         return 0;
+    }
+    if (all < psi){
+        printf("psi: %f / %f\n",psi,all);
+        for (int i = 0; i <= sfs->getSize1(); ++i) {
+            for (int j = 0; j <= sfs->getSize2(); ++j) {
+                printf(" %f",sfs->getEntry(i,j));
+            }
+            printf("\n");
+        }
+        printf("-------------------------------------------------------\n");
+        
     }
     return psi / all;
 } 

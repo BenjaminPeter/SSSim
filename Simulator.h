@@ -69,6 +69,8 @@ public:
     bool migrationSchemeReady(){
         return this->migrationScheme->isInitialized();
     }
+
+    static double avgNMigrationEvents;
     
 
 

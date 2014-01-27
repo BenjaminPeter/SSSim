@@ -12,6 +12,7 @@ class TreeSimulator;
 
 SequenceSimulator* Simulator::seqSim = 0;
 int Simulator::replicate = 0;
+double Simulator::avgNMigrationEvents = 0.0;
 boost::mutex Simulator::ftMutex, Simulator::ft2Mutex, Simulator::sfsMutex;
 boost::mutex Simulator::counterMutex, Simulator::oCoalMutex;
 ofstream Simulator::fCoal;
@@ -51,6 +52,8 @@ void Simulator::getNewGeneTree(Parameters* params, SimulationResults* res, int i
 
         TreeSimulator* ts = new TreeSimulator(params);
         LCV lcv = ts->run(Simulator::replicate);
+        Simulator::avgNMigrationEvents += float(ts->nMigrationEvents) / float(params->nReplicates);
+//        printf("migEvents: %d\n",ts->nMigrationEvents);
         Lineage* l = lcv.l;
 
         if (Parameters::outputCoal) {
@@ -130,6 +133,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     vector<int*> samples = params->samples;
 
     this->replicate = params->nReplicates;
+    this->avgNMigrationEvents = 0.0;
     this->setMigrationScheme(params->ms);
     this->addSequenceSimulator(params->ss);
 
@@ -155,6 +159,7 @@ SimulationResults* Simulator::doSimulations(Parameters* params) {
     }
     tg.join_all();
 
+    printf("\nmigEvents: %f\n",this->avgNMigrationEvents);
 
     //close stream for coal output
     if (Parameters::outputCoal) {

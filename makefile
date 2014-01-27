@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGSRELEASE = -O3 -ffast-math -march=native
 CXXFLAGSDEBUG = -g 
 COMPILEFLAGS = -c
-LIBFLAGS = -lm -lgsl -lgslcblas -lboost_thread
+LIBFLAGS = -lm -lgsl -lgslcblas -lboost_thread  -lboost_system
 TARGETDIR=maketest
 EXENAME=sssim
 

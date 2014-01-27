@@ -526,6 +526,7 @@ void TreeSimulator::addExpansionEvent(ExpansionEvent* ev) {
                         if (sample->getNlineages() == 1) {
                             samplePresent = false;
                         }
+                        this->nMigrationEvents--; //we don't wanna count expansion as migrations
                         this->addMigrationEvent(new Event(i + 2, sample, 0));
                         break;
                     }

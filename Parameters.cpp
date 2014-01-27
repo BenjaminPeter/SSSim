@@ -296,6 +296,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             int yEnd = atoi(argv[i + 4]);
             int dist = atoi(argv[i + 5]);
             int sampSize = atoi(argv[i + 6]);
+
             for (int x = xStart; x <= xEnd; x += dist) {
                 for (int y = yStart; y <= yEnd; y += dist) {
                     int* newSample = new int[3];
@@ -303,6 +304,7 @@ Parameters::Parameters(int argc, char* argv[]) {
                     newSample[1] = y;
                     newSample[2] = sampSize;
                     samples.push_back(newSample);
+                    cout << "ADDED SAMPLE"<<x <<"/" <<y<<endl;
                 }
             }
             i += 6;
