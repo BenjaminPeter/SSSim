@@ -315,19 +315,22 @@ Parameters::Parameters(int argc, char* argv[]) {
             int xStart = atoi(argv[i + 1]);
             int yStart = atoi(argv[i + 2]);
             int yEnd = atoi(argv[i + 3]);
+            int step = atoi(argv[i + 4]);
 
             int offset = 1;
-            if (i + 5 < argc) {
-                if (argv[i + 5][0] != '-') {
-                    offset = atoi(argv[i + 5]);
+            if (i + 6 < argc) {
+                if (argv[i + 6][0] != '-') {
+                    offset = atoi(argv[i + 6]);
                 }
             }
 
-            for (int j = 0; j < yEnd - yStart; ++j) {
+            printf("start _samples: %d/%d \n", xStart, step);
+            for (int j = 0; j < yEnd - yStart; j+=step) {
+                printf("samples: %d/%d \n", j, step);
                 int* newSample = new int[3];
                 newSample[0] = xStart + j;
                 newSample[1] = yStart + j;
-                newSample[2] = atoi(argv[i + 4]);
+                newSample[2] = atoi(argv[i + 5]);
                 samples.push_back(newSample);
             }
             i += 4;
@@ -438,7 +441,7 @@ Parameters::Parameters(int argc, char* argv[]) {
             i += 9;
         }
         //Slatkin & Excoffier expansion with gamma deme size variation
-        //width, height, k, ek, m, x0, y0, t0, tLag
+        //width, height, k, kVar, ek, m, x0, y0, t0, tLag
         if (string(argv[i]) == "--seeg") {
             if (hasMigScheme) {
                 cerr << "error: migration scheme already defined";
