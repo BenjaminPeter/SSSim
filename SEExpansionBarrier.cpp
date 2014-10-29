@@ -67,7 +67,7 @@ void SEExpansionBarrier::setCarCapGamma(double cc, double alpha) {
     this->popSizes.reserve(width * height);
     for (int i = 0; i<this->width; ++i) {
         for (int j = 0; j<this->height; ++j) {
-            double d = utils::rgamma(alpha, cc / alpha);
+            double d = utils::rgamma(cc / alpha, cc / alpha);
             this->popSizes.push_back(d);
             cout << Coords(i, j) << ":" << d << endl;
         }
